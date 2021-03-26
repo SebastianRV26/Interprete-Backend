@@ -1,6 +1,6 @@
 parser grammar InterpreteParser;
 
-/*options{
+/*`options{
     tokenVocab=InterpreteScanner;
 }*/
 
