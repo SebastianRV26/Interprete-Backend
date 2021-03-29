@@ -4,6 +4,34 @@ options{
     tokenVocab=InterpreteScanner;
 }
 
+program             : (statement)*                                              ;
+statement           : variableDecl PyCOMA
+                    | classDecl PyCOMA
+                    | assignment PyCOMA
+	                | arrayAssignment PyCOMA
+                    | printStatement PyCOMA
+                    | ifStatement
+                    | whileStatement
+                    | returnStatement PyCOMA
+                    | functionDecl
+                    | block                                                     ;
+block               : LLAVEIZQ (statement)* LLAVEDER                            ;
+functionDecl        : type ID PARENTESISIZQ (formalParams) PARENTESISDER block  ;
+formalParams        : formalParam (COMA formalParam)*                           ;
+formalParam         : type ID                                                   ;
+whileStatement      : WHILE PARENTESISIZQ expression PARENTESISDER block        ;
+ifStatement         : IF PARENTESISIZQ expression PARENTESISDER block (ELSE block);
+returnStatement     : RETURN expression                                          ;
+printStatement      : PRINT expression                                          ;
+classDecl           : CLASS ID LLAVEIZQ (classVariableDecl)* LLAVEDER;
+classVariableDecl   : simpleType ID (ASYGN expression)                          ;
+variableDecl        : type ID (ASYGN expression)                                ;
+type                : simpleType
+                    | arrayType
+                    | ID                                                        ;
+arrayType           : simpleType BRACKETIZQ BRACKE5TDER                         ;
+assignment          : ID ( PUNTO ID ) ASYGN expression                          ;
+arrayAssignment     : ID BRACKETIZQ expression BRACKE5TDER ASYGN expression     ;
 
 simpleType: BOOLEAN
             | CHAR

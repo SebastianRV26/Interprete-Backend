@@ -1,6 +1,5 @@
 package com.edbinns.interprete.controller;
 
-import com.edbinns.interprete.generated.InterpreteScanner;
 import com.edbinns.interprete.models.ResponseBody;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
