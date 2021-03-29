@@ -4,7 +4,7 @@ options{
     tokenVocab=InterpreteScanner;
 }
 
-program             : (statement)*                                              ;
+program             : (statement)* EOF                                              ;
 statement           : variableDecl PyCOMA
                     | classDecl PyCOMA
                     | assignment PyCOMA
@@ -16,44 +16,46 @@ statement           : variableDecl PyCOMA
                     | functionDecl
                     | block                                                     ;
 block               : LLAVEIZQ (statement)* LLAVEDER                            ;
-functionDecl        : type ID PARENTESISIZQ (formalParams) PARENTESISDER block  ;
-formalParams        : formalParam (COMA formalParam)*                           ;
+functionDecl        : type ID PARENTESISIZQ (formalParams)? PARENTESISDER block  ;
+formalParams        : formalParam (COMA formalParam)*                            ;
 formalParam         : type ID                                                   ;
 whileStatement      : WHILE PARENTESISIZQ expression PARENTESISDER block        ;
-ifStatement         : IF PARENTESISIZQ expression PARENTESISDER block (ELSE block);
+ifStatement         : IF PARENTESISIZQ expression PARENTESISDER block (ELSE block)?;
 returnStatement     : RETURN expression                                          ;
 printStatement      : PRINT expression                                          ;
-classDecl           : CLASS ID LLAVEIZQ (classVariableDecl)* LLAVEDER;
-classVariableDecl   : simpleType ID (ASYGN expression)                          ;
-variableDecl        : type ID (ASYGN expression)                                ;
+classDecl           : CLASS ID LLAVEIZQ (classVariableDecl)*  LLAVEDER;
+classVariableDecl   : simpleType ID (ASYGN expression)?                         ;
+variableDecl        : type ID (ASYGN expression)?                                ;
 type                : simpleType
                     | arrayType
                     | ID                                                        ;
 arrayType           : simpleType BRACKETIZQ BRACKE5TDER                         ;
-assignment          : ID ( PUNTO ID ) ASYGN expression                          ;
+assignment          : ID (PUNTO ID)? ASYGN expression                          ;
 arrayAssignment     : ID BRACKETIZQ expression BRACKE5TDER ASYGN expression     ;
 
-simpleType: BOOLEAN
-            | CHAR
-            | INT
-            | STRING;
-expression: simpleExpression (RELACIONALOP simpleExpression)*;
-simpleExpression: term (ADDITIVEOP term)*;
-term : factor (MULTIPLICATIVEOP factor)*;
-factor : LITERAL
-         | ID (PUNTO ID)
-         | functionCall
-         | arrayLookup
-         | arrayLenght
-         | subEspression
-         | arrayAllocationEspression
-         | allocationExpression
-         | unary;
-unary: (SUM|RES|ADMIRACION) expression*;
-allocationExpression : NEW ID  PARENTESISIZQ PARENTESISDER;
-arrayAllocationEspression: NEW simpleType BRACKETIZQ expression BRACKE5TDER ;
-subEspression : PARENTESISIZQ expression PARENTESISDER;
-functionCall : ID PARENTESISIZQ (actualParams) PARENTESISDER;//revisar este
-actualParams: expression (COMA expression)*;
-arrayLookup: ID BRACKETIZQ expression BRACKE5TDER;
-arrayLenght : ID PUNTO LENGHT;
+simpleType          : BOOLEAN
+                    | CHAR
+                    | INT
+| STRING                                                                        ;
+expression          : simpleExpression (RELACIONALOP simpleExpression)*        ;
+simpleExpression    : term (ADDITIVEOP term)*                                   ;
+term                : factor (MULTIPLICATIVEOP factor)*                       ;
+factor              :  LITERAL
+                    | ID (PUNTO ID)?
+                    | functionCall
+                    | arrayLookup
+                    | arrayLenght
+                    | subEspression
+                    | arrayAllocationEspression
+                    | allocationExpression
+                    | unary                                                       ;
+unary               : (SUM|RES|ADMIRACION) (expression)*                         ;
+allocationExpression : NEW ID  PARENTESISIZQ PARENTESISDER                        ;
+arrayAllocationEspression: NEW simpleType BRACKETIZQ expression BRACKE5TDER       ;
+subEspression       : PARENTESISIZQ expression PARENTESISDER                      ;
+functionCall        : ID PARENTESISIZQ (actualParams)? PARENTESISDER               ;//revisar este
+actualParams        : expression (COMA expression)*                               ;
+arrayLookup         : ID BRACKETIZQ expression BRACKE5TDER                        ;
+arrayLenght         : ID PUNTO LENGHT                                             ;
+
+
