@@ -10,7 +10,7 @@ public class ResponseBody<T> {
     private final String message;
     private final T data;
 
-    ResponseBody(HttpStatus statusCode, String message, T data) {
+    public ResponseBody(HttpStatus statusCode, String message, T data) {
         this.statusCode = statusCode;
         this.message = message;
         this.data = data;
