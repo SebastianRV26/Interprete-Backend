@@ -1,4 +1,4 @@
-// Generated from C:/Users/edubi/OneDrive - Estudiantes ITCR/Quinto Semestre/Compiladores e interpretes/Proyectos/Proyecto 1/backend\InterpreteScanner.g4 by ANTLR 4.9.1
+// Generated from C:/Users/Usuario/IdeaProjects/Interprete-Backend\InterpreteScanner.g4 by ANTLR 4.9.1
 package generated;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;
