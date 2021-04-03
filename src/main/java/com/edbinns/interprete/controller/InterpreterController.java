@@ -21,15 +21,7 @@ public class InterpreterController {
         if((snippet == null) || (snippet.isEmpty()) || (snippet.isBlank()) ){
             return new ResponseBody<>(HttpStatus.NOT_FOUND, "Failed", "El snippet esta vacio");
         }
-        if((snippet.endsWith("}")) || (snippet.endsWith(";")) ){
-            ///llamar a la funcion que haga algo con el snippet XD
-            return new ResponseBody<>(HttpStatus.ACCEPTED, "success", "Aqui se devulve lo que devuelva la funcion");
-        }else if(snippet.endsWith("{")){
-            ///llamar a la funcion que haga algo con el snippet XD
-            return new ResponseBody<>(HttpStatus.NOT_ACCEPTABLE, "Failed", "El snippet esta incompleto");
 
-        }else{
-            return new ResponseBody<>(HttpStatus.NOT_ACCEPTABLE, "Failed", "El snippet enviado es invalido");
-        }
+        return  null;
     }
 }

@@ -1,4 +1,4 @@
-int x = t;
+int x = t
 while(x <= 5){
     print("Hola");
 }
