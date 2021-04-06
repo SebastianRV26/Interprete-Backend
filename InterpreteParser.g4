@@ -4,7 +4,7 @@ options{
     tokenVocab=InterpreteScanner;
 }
 
-program             : (statement)* EOF                                              ;
+program             : (statement)*                                              ;
 statement           : variableDecl PyCOMA
                     | classDecl PyCOMA
                     | assignment PyCOMA

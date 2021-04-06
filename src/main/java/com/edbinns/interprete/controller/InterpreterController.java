@@ -24,6 +24,7 @@ public class InterpreterController {
         return "Home page";
     }
 
+    @CrossOrigin(origins = "http://localhost:4200")
     @GetMapping("/validateSnippet")
     public ResponseBody<java.io.Serializable> validateSnippet(@RequestParam(value = "snippet") String snippet) throws JSONException {
         if((snippet == null) || (snippet.isEmpty()) || (snippet.isBlank()) ){
