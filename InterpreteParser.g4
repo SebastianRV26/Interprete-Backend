@@ -37,9 +37,9 @@ simpleType          : BOOLEAN
                     | CHAR
                     | INT
 | STRING                                                                        ;
-expression          : simpleExpression (RELACIONALOP simpleExpression)*        ;
-simpleExpression    : term (ADDITIVEOP term)*                                   ;
-term                : factor (MULTIPLICATIVEOP factor)*                       ;
+expression          : simpleExpression (relacionalop simpleExpression)*        ;
+simpleExpression    : term (additiveop term)*                                   ;
+term                : factor (multiplicativeop factor)*                       ;
 factor              :  LITERAL
                     | ID (PUNTO ID)?
                     | functionCall
@@ -58,4 +58,7 @@ actualParams        : expression (COMA expression)*                             
 arrayLookup         : ID BRACKETIZQ expression BRACKE5TDER                        ;
 arrayLenght         : ID PUNTO LENGHT                                             ;
 
+relacionalop        : MAYOR|MAYORIGUAL|MENOR|MENORIGUAL|EQUALS|DIF                ;
+additiveop          : SUM|RES|OR                                                  ;
+multiplicativeop    : MUL|DIV|AND                                                 ;
 
