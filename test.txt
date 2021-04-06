@@ -1,4 +1,7 @@
-int x = t
-while(x <= 5){
-    print("Hola");
+int x = 3;
+
+if(x <= 3){
+
 }
+
+!=
