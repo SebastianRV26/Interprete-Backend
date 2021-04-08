@@ -21,7 +21,13 @@ public class ErrorListener extends BaseErrorListener {
     @Override
     public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine, String msg, RecognitionException e) {
         setExistError(true);
-        setMessageError( "Error: "+ msg);
+        if (recognizer instanceof generated.InterpreteParser)
+            setMessageError("PARSER ERROR: " + msg);
+        else if (recognizer instanceof generated.InterpreteScanner)
+            setMessageError("SCANNER ERROR: " + msg);
+        else
+            setMessageError("Error: " + msg);
+        System.out.println(getMessageError());
         System.out.println( "Error: "+ msg);
     }
 
