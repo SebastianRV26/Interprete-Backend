@@ -73,6 +73,7 @@ public class InterpreterFunctions {
         ErrorListener errorListener = ErrorListener.getInstance();
         input = CharStreams.fromString(snippet);
         inst = new InterpreteScanner(input);
+        inst.removeErrorListeners();
         inst.addErrorListener(errorListener);
         tokens = new CommonTokenStream(inst);
         parser = new InterpreteParser(tokens);

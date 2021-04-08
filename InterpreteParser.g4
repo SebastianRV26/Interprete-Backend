@@ -40,7 +40,7 @@ simpleType          : BOOLEAN
 expression          : simpleExpression (relacionalop simpleExpression)*        ;
 simpleExpression    : term (additiveop term)*                                   ;
 term                : factor (multiplicativeop factor)*                       ;
-factor              :  LITERAL
+factor              :  literal
                     | ID (PUNTO ID)?
                     | functionCall
                     | arrayLookup
@@ -53,7 +53,7 @@ unary               : (SUM|RES|ADMIRACION) (expression)*                        
 allocationExpression : NEW ID  PARENTESISIZQ PARENTESISDER                        ;
 arrayAllocationEspression: NEW simpleType BRACKETIZQ expression BRACKE5TDER       ;
 subEspression       : PARENTESISIZQ expression PARENTESISDER                      ;
-functionCall        : ID PARENTESISIZQ (actualParams)? PARENTESISDER               ;//revisar este
+functionCall        : ID PARENTESISIZQ (actualParams)? PARENTESISDER               ;
 actualParams        : expression (COMA expression)*                               ;
 arrayLookup         : ID BRACKETIZQ expression BRACKE5TDER                        ;
 arrayLenght         : ID PUNTO LENGHT                                             ;
@@ -61,4 +61,4 @@ arrayLenght         : ID PUNTO LENGHT                                           
 relacionalop        : MAYOR|MAYORIGUAL|MENOR|MENORIGUAL|EQUALS|DIF                ;
 additiveop          : SUM|RES|OR                                                  ;
 multiplicativeop    : MUL|DIV|AND                                                 ;
-
+literal             : INTLITERAL|REALLITERAL|BOOLLITERAL|STRINGLITERAL            ;

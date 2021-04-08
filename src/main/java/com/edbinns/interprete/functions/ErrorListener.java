@@ -21,8 +21,8 @@ public class ErrorListener extends BaseErrorListener {
     @Override
     public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine, String msg, RecognitionException e) {
         setExistError(true);
-        setMessageError("line " + line + ":" + charPositionInLine + " " + msg);
-        System.out.println("line " + line + ":" + charPositionInLine + " " + msg);
+        setMessageError( "Error: "+ msg);
+        System.out.println( "Error: "+ msg);
     }
 
     public boolean getExistError() {

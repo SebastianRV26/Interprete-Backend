@@ -24,7 +24,11 @@ public class InterpreterController {
         return "Home page";
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
+    @CrossOrigin(allowedHeaders =
+            {"Orgin", "X-Requested-With", "Content-Type", "Accept", "Authorization"},
+            methods = {RequestMethod.POST, RequestMethod.GET, RequestMethod.PUT,
+                    RequestMethod.DELETE}
+    )
     @GetMapping("/validateSnippet")
     public ResponseBody<java.io.Serializable> validateSnippet(@RequestParam(value = "snippet") String snippet) throws JSONException {
         if((snippet == null) || (snippet.isEmpty()) || (snippet.isBlank()) ){
@@ -35,7 +39,6 @@ public class InterpreterController {
         if(responses.get(0).equals("error")){
             return new ResponseBody<>(HttpStatus.NOT_ACCEPTABLE.value(), "Failed", responses.get(1));
         }else{
-
             return new ResponseBody<>(HttpStatus.OK.value(), "Success",responses.get(1)) ;
         }
     }
