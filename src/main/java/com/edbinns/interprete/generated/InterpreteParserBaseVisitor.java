@@ -171,7 +171,7 @@ public class InterpreteParserBaseVisitor<T> extends AbstractParseTreeVisitor<T> 
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitSimpleTypeAST(InterpreteParser.SimpleTypeASTContext ctx) { return visitChildren(ctx); }
+	@Override public T visitTypeAST(InterpreteParser.TypeASTContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *

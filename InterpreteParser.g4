@@ -26,7 +26,7 @@ printStatement      : PRINT expression                                          
 classDecl           : CLASS ID LLAVEIZQ (classVariableDecl)*  LLAVEDER              #classDeclAST;
 classVariableDecl   : simpleType ID (ASYGN expression)?                             #classVariableDeclAST;
 variableDecl        : type ID (ASYGN expression)?                                   #variableDeclAST;
-type                : simpleType                                                    #simpleTypeAST
+type                : simpleType                                                    #typeAST
                     | arrayType                                                     #arrayTypeTAST
                     | ID                                                            #idAST;
 arrayType           : simpleType BRACKETIZQ BRACKE5TDER                             #arrayTypeAST;

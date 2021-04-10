@@ -1154,14 +1154,14 @@ public class InterpreteParser extends Parser {
 			else return visitor.visitChildren(this);
 		}
 	}
-	public static class SimpleTypeASTContext extends TypeContext {
+	public static class TypeASTContext extends TypeContext {
 		public SimpleTypeContext simpleType() {
 			return getRuleContext(SimpleTypeContext.class,0);
 		}
-		public SimpleTypeASTContext(TypeContext ctx) { copyFrom(ctx); }
+		public TypeASTContext(TypeContext ctx) { copyFrom(ctx); }
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof InterpreteParserVisitor ) return ((InterpreteParserVisitor<? extends T>)visitor).visitSimpleTypeAST(this);
+			if ( visitor instanceof InterpreteParserVisitor ) return ((InterpreteParserVisitor<? extends T>)visitor).visitTypeAST(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -1185,7 +1185,7 @@ public class InterpreteParser extends Parser {
 			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,9,_ctx) ) {
 			case 1:
-				_localctx = new SimpleTypeASTContext(_localctx);
+				_localctx = new TypeASTContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
 				setState(171);

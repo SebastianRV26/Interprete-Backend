@@ -1,6 +1,5 @@
 // Generated from C:/Users/Usuario/IdeaProjects/Interprete-Backend\InterpreteParser.g4 by ANTLR 4.9.1
 package com.edbinns.interprete.generated;
-
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
 /**
@@ -166,12 +165,12 @@ public interface InterpreteParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitVariableDeclAST(InterpreteParser.VariableDeclASTContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code simpleTypeAST}
+	 * Visit a parse tree produced by the {@code typeAST}
 	 * labeled alternative in {@link InterpreteParser#type}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitSimpleTypeAST(InterpreteParser.SimpleTypeASTContext ctx);
+	T visitTypeAST(InterpreteParser.TypeASTContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code arrayTypeTAST}
 	 * labeled alternative in {@link InterpreteParser#type}.
