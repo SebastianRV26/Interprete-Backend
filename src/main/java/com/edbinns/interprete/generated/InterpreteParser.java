@@ -1,4 +1,4 @@
-// Generated from C:/Users/edubi/OneDrive - Estudiantes ITCR/Quinto Semestre/Compiladores e interpretes/Proyectos/Proyecto 1/backend\InterpreteParser.g4 by ANTLR 4.9.1
+// Generated from C:/Users/Usuario/IdeaProjects/Interprete-Backend\InterpreteParser.g4 by ANTLR 4.9.1
 package generated;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
@@ -64,7 +64,7 @@ public class InterpreteParser extends Parser {
 			"'implements'", "'interface'", "'new'", "'import'", "'package'", "'native'", 
 			"'void'", "' public'", "'private'", "'protected'", "'static'", "'try'", 
 			"'catch'", "'finally'", "'throw'", "'throws'", "'final'", "'instanceof'", 
-			"'volatile'", "'lenght'", "'string'", "'boolean'", "'byte'", "'char'", 
+			"'volatile'", "'lenght'", "'String'", "'boolean'", "'byte'", "'char'", 
 			"'double'", "'float'", "'int'", "'long'", "'short'", "';'", "'='", "'=='", 
 			"'+'", "'-'", "'/'", "'*'", "'!='", "'>'", "'>='", "'<'", "'<='", "'!'", 
 			"'?'", "'\"'", "'#'", "'$'", "'%'", "'&'", "'|'", "'('", "')'", "','", 

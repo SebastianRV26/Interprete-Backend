@@ -1,4 +1,4 @@
-// Generated from C:/Users/edubi/OneDrive - Estudiantes ITCR/Quinto Semestre/Compiladores e interpretes/Proyectos/Proyecto 1/backend\InterpreteScanner.g4 by ANTLR 4.9.1
+// Generated from C:/Users/Usuario/IdeaProjects/Interprete-Backend\InterpreteScanner.g4 by ANTLR 4.9.1
 package generated;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;
@@ -68,7 +68,7 @@ public class InterpreteScanner extends Lexer {
 			"'implements'", "'interface'", "'new'", "'import'", "'package'", "'native'", 
 			"'void'", "' public'", "'private'", "'protected'", "'static'", "'try'", 
 			"'catch'", "'finally'", "'throw'", "'throws'", "'final'", "'instanceof'", 
-			"'volatile'", "'lenght'", "'string'", "'boolean'", "'byte'", "'char'", 
+			"'volatile'", "'lenght'", "'String'", "'boolean'", "'byte'", "'char'", 
 			"'double'", "'float'", "'int'", "'long'", "'short'", "';'", "'='", "'=='", 
 			"'+'", "'-'", "'/'", "'*'", "'!='", "'>'", "'>='", "'<'", "'<='", "'!'", 
 			"'?'", "'\"'", "'#'", "'$'", "'%'", "'&'", "'|'", "'('", "')'", "','", 
@@ -319,7 +319,7 @@ public class InterpreteScanner extends Lexer {
 		"\7q\2\2\u01cc\u01cd\7n\2\2\u01cd\u01ce\7c\2\2\u01ce\u01cf\7v\2\2\u01cf"+
 		"\u01d0\7k\2\2\u01d0\u01d1\7n\2\2\u01d1\u01d2\7g\2\2\u01d2P\3\2\2\2\u01d3"+
 		"\u01d4\7n\2\2\u01d4\u01d5\7g\2\2\u01d5\u01d6\7p\2\2\u01d6\u01d7\7i\2\2"+
-		"\u01d7\u01d8\7j\2\2\u01d8\u01d9\7v\2\2\u01d9R\3\2\2\2\u01da\u01db\7u\2"+
+		"\u01d7\u01d8\7j\2\2\u01d8\u01d9\7v\2\2\u01d9R\3\2\2\2\u01da\u01db\7U\2"+
 		"\2\u01db\u01dc\7v\2\2\u01dc\u01dd\7t\2\2\u01dd\u01de\7k\2\2\u01de\u01df"+
 		"\7p\2\2\u01df\u01e0\7i\2\2\u01e0T\3\2\2\2\u01e1\u01e2\7d\2\2\u01e2\u01e3"+
 		"\7q\2\2\u01e3\u01e4\7q\2\2\u01e4\u01e5\7n\2\2\u01e5\u01e6\7g\2\2\u01e6"+

@@ -40,7 +40,7 @@ null
 'instanceof'
 'volatile'
 'lenght'
-'string'
+'String'
 'boolean'
 'byte'
 'char'
