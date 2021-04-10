@@ -64,7 +64,7 @@ public class InterpreteParser extends Parser {
 			"'implements'", "'interface'", "'new'", "'import'", "'package'", "'native'", 
 			"'void'", "' public'", "'private'", "'protected'", "'static'", "'try'", 
 			"'catch'", "'finally'", "'throw'", "'throws'", "'final'", "'instanceof'", 
-			"'volatile'", "'lenght'", "'string'", "'boolean'", "'byte'", "'char'", 
+			"'volatile'", "'lenght'", "'String'", "'boolean'", "'byte'", "'char'", 
 			"'double'", "'float'", "'int'", "'long'", "'short'", "';'", "'='", "'=='", 
 			"'+'", "'-'", "'/'", "'*'", "'!='", "'>'", "'>='", "'<'", "'<='", "'!'", 
 			"'?'", "'\"'", "'#'", "'$'", "'%'", "'&'", "'|'", "'('", "')'", "','", 

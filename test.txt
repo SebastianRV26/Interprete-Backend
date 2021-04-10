@@ -1,3 +1,5 @@
 
-String x = "hola"
 
+class prueba{
+int var = 1
+};

@@ -42,7 +42,7 @@ INSTANCEOF : 'instanceof';
 VOLATILE : 'volatile';
 LENGHT: 'lenght';
 // TYPES
-STRING : 'string';
+STRING : 'String';
 BOOLEAN : 'boolean';
 BYTE : 'byte';
 CHAR : 'char';
