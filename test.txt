@@ -1,5 +1,2 @@
 
 
-class prueba{
-int var = 1
-};

@@ -34,7 +34,7 @@ public class InterpreterController {
         if((snippet == null) || (snippet.isEmpty()) || (snippet.isBlank()) ){
             return new ResponseBody<>(HttpStatus.NOT_FOUND.value(), "Failed", "El snippet esta vacio");
         }
-        System.out.println(snippet);
+        snippet = snippet.replace("!!!", "+");
         ArrayList<String> responses = interpreterFunctions.validateSnippet(snippet);
 
         if(responses.get(0).equals("error")){
