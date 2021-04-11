@@ -1,10 +1,10 @@
 package com.edbinns.interprete.test;
 
 import com.edbinns.interprete.functions.ErrorListener;
+import com.edbinns.interprete.generated.InterpreteParser;
+import com.edbinns.interprete.generated.InterpreteScanner;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import generated.InterpreteParser;
-import generated.InterpreteScanner;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;

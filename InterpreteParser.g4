@@ -58,7 +58,7 @@ actualParams        : expression (COMA expression)*                             
 arrayLookup         : ID BRACKETIZQ expression BRACKE5TDER                        ;
 arrayLenght         : ID PUNTO LENGHT                                             ;
 
-relacionalop        : MAYOR|MAYORIGUAL|MENOR|MENORIGUAL|EQUALS|DIF                ;
+relacionalop        : MAYOR|MAYORIGUAL|MENOR|MENORIGUAL|EQUALS|DIF|OR|OR2|AND|AND2;
 additiveop          : SUM|RES|OR                                                  ;
 multiplicativeop    : MUL|DIV|AND                                                 ;
 literal             : INTLITERAL|REALLITERAL|BOOLLITERAL|STRINGLITERAL            ;
