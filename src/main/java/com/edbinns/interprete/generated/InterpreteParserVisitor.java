@@ -11,207 +11,479 @@ import org.antlr.v4.runtime.tree.ParseTreeVisitor;
  */
 public interface InterpreteParserVisitor<T> extends ParseTreeVisitor<T> {
 	/**
-	 * Visit a parse tree produced by {@link InterpreteParser#program}.
+	 * Visit a parse tree produced by the {@code programAST}
+	 * labeled alternative in {@link InterpreteParser#program}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitProgram(InterpreteParser.ProgramContext ctx);
+	T visitProgramAST(InterpreteParser.ProgramASTContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link InterpreteParser#statement}.
+	 * Visit a parse tree produced by the {@code variableDeclSAST}
+	 * labeled alternative in {@link InterpreteParser#statement}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitStatement(InterpreteParser.StatementContext ctx);
+	T visitVariableDeclSAST(InterpreteParser.VariableDeclSASTContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link InterpreteParser#block}.
+	 * Visit a parse tree produced by the {@code classDeclSAST}
+	 * labeled alternative in {@link InterpreteParser#statement}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitBlock(InterpreteParser.BlockContext ctx);
+	T visitClassDeclSAST(InterpreteParser.ClassDeclSASTContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link InterpreteParser#functionDecl}.
+	 * Visit a parse tree produced by the {@code assignSAST}
+	 * labeled alternative in {@link InterpreteParser#statement}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitFunctionDecl(InterpreteParser.FunctionDeclContext ctx);
+	T visitAssignSAST(InterpreteParser.AssignSASTContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link InterpreteParser#formalParams}.
+	 * Visit a parse tree produced by the {@code arrayAssignSAST}
+	 * labeled alternative in {@link InterpreteParser#statement}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitFormalParams(InterpreteParser.FormalParamsContext ctx);
+	T visitArrayAssignSAST(InterpreteParser.ArrayAssignSASTContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link InterpreteParser#formalParam}.
+	 * Visit a parse tree produced by the {@code printSAST}
+	 * labeled alternative in {@link InterpreteParser#statement}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitFormalParam(InterpreteParser.FormalParamContext ctx);
+	T visitPrintSAST(InterpreteParser.PrintSASTContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link InterpreteParser#whileStatement}.
+	 * Visit a parse tree produced by the {@code ifSAST}
+	 * labeled alternative in {@link InterpreteParser#statement}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitWhileStatement(InterpreteParser.WhileStatementContext ctx);
+	T visitIfSAST(InterpreteParser.IfSASTContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link InterpreteParser#ifStatement}.
+	 * Visit a parse tree produced by the {@code whileSAST}
+	 * labeled alternative in {@link InterpreteParser#statement}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitIfStatement(InterpreteParser.IfStatementContext ctx);
+	T visitWhileSAST(InterpreteParser.WhileSASTContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link InterpreteParser#returnStatement}.
+	 * Visit a parse tree produced by the {@code returnSAST}
+	 * labeled alternative in {@link InterpreteParser#statement}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitReturnStatement(InterpreteParser.ReturnStatementContext ctx);
+	T visitReturnSAST(InterpreteParser.ReturnSASTContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link InterpreteParser#printStatement}.
+	 * Visit a parse tree produced by the {@code functionDeclSAST}
+	 * labeled alternative in {@link InterpreteParser#statement}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitPrintStatement(InterpreteParser.PrintStatementContext ctx);
+	T visitFunctionDeclSAST(InterpreteParser.FunctionDeclSASTContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link InterpreteParser#classDecl}.
+	 * Visit a parse tree produced by the {@code blockSAST}
+	 * labeled alternative in {@link InterpreteParser#statement}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitClassDecl(InterpreteParser.ClassDeclContext ctx);
+	T visitBlockSAST(InterpreteParser.BlockSASTContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link InterpreteParser#classVariableDecl}.
+	 * Visit a parse tree produced by the {@code blockAST}
+	 * labeled alternative in {@link InterpreteParser#block}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitClassVariableDecl(InterpreteParser.ClassVariableDeclContext ctx);
+	T visitBlockAST(InterpreteParser.BlockASTContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link InterpreteParser#variableDecl}.
+	 * Visit a parse tree produced by the {@code functionDeclAST}
+	 * labeled alternative in {@link InterpreteParser#functionDecl}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitVariableDecl(InterpreteParser.VariableDeclContext ctx);
+	T visitFunctionDeclAST(InterpreteParser.FunctionDeclASTContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link InterpreteParser#type}.
+	 * Visit a parse tree produced by the {@code formalParamsAST}
+	 * labeled alternative in {@link InterpreteParser#formalParams}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitType(InterpreteParser.TypeContext ctx);
+	T visitFormalParamsAST(InterpreteParser.FormalParamsASTContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link InterpreteParser#arrayType}.
+	 * Visit a parse tree produced by the {@code formalParamAST}
+	 * labeled alternative in {@link InterpreteParser#formalParam}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitArrayType(InterpreteParser.ArrayTypeContext ctx);
+	T visitFormalParamAST(InterpreteParser.FormalParamASTContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link InterpreteParser#assignment}.
+	 * Visit a parse tree produced by the {@code whileAST}
+	 * labeled alternative in {@link InterpreteParser#whileStatement}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitAssignment(InterpreteParser.AssignmentContext ctx);
+	T visitWhileAST(InterpreteParser.WhileASTContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link InterpreteParser#arrayAssignment}.
+	 * Visit a parse tree produced by the {@code ifAST}
+	 * labeled alternative in {@link InterpreteParser#ifStatement}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitArrayAssignment(InterpreteParser.ArrayAssignmentContext ctx);
+	T visitIfAST(InterpreteParser.IfASTContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link InterpreteParser#simpleType}.
+	 * Visit a parse tree produced by the {@code returnAST}
+	 * labeled alternative in {@link InterpreteParser#returnStatement}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitSimpleType(InterpreteParser.SimpleTypeContext ctx);
+	T visitReturnAST(InterpreteParser.ReturnASTContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link InterpreteParser#expression}.
+	 * Visit a parse tree produced by the {@code printAST}
+	 * labeled alternative in {@link InterpreteParser#printStatement}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitExpression(InterpreteParser.ExpressionContext ctx);
+	T visitPrintAST(InterpreteParser.PrintASTContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link InterpreteParser#simpleExpression}.
+	 * Visit a parse tree produced by the {@code classDeclAST}
+	 * labeled alternative in {@link InterpreteParser#classDecl}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitSimpleExpression(InterpreteParser.SimpleExpressionContext ctx);
+	T visitClassDeclAST(InterpreteParser.ClassDeclASTContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link InterpreteParser#term}.
+	 * Visit a parse tree produced by the {@code classVariableDeclAST}
+	 * labeled alternative in {@link InterpreteParser#classVariableDecl}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitTerm(InterpreteParser.TermContext ctx);
+	T visitClassVariableDeclAST(InterpreteParser.ClassVariableDeclASTContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link InterpreteParser#factor}.
+	 * Visit a parse tree produced by the {@code variableDeclAST}
+	 * labeled alternative in {@link InterpreteParser#variableDecl}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitFactor(InterpreteParser.FactorContext ctx);
+	T visitVariableDeclAST(InterpreteParser.VariableDeclASTContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link InterpreteParser#unary}.
+	 * Visit a parse tree produced by the {@code typeAST}
+	 * labeled alternative in {@link InterpreteParser#type}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitUnary(InterpreteParser.UnaryContext ctx);
+	T visitTypeAST(InterpreteParser.TypeASTContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link InterpreteParser#allocationExpression}.
+	 * Visit a parse tree produced by the {@code arrayTypeTAST}
+	 * labeled alternative in {@link InterpreteParser#type}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitAllocationExpression(InterpreteParser.AllocationExpressionContext ctx);
+	T visitArrayTypeTAST(InterpreteParser.ArrayTypeTASTContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link InterpreteParser#arrayAllocationEspression}.
+	 * Visit a parse tree produced by the {@code idAST}
+	 * labeled alternative in {@link InterpreteParser#type}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitArrayAllocationEspression(InterpreteParser.ArrayAllocationEspressionContext ctx);
+	T visitIdAST(InterpreteParser.IdASTContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link InterpreteParser#subEspression}.
+	 * Visit a parse tree produced by the {@code arrayTypeAST}
+	 * labeled alternative in {@link InterpreteParser#arrayType}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitSubEspression(InterpreteParser.SubEspressionContext ctx);
+	T visitArrayTypeAST(InterpreteParser.ArrayTypeASTContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link InterpreteParser#functionCall}.
+	 * Visit a parse tree produced by the {@code assignAST}
+	 * labeled alternative in {@link InterpreteParser#assignment}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitFunctionCall(InterpreteParser.FunctionCallContext ctx);
+	T visitAssignAST(InterpreteParser.AssignASTContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link InterpreteParser#actualParams}.
+	 * Visit a parse tree produced by the {@code arrayAssignAST}
+	 * labeled alternative in {@link InterpreteParser#arrayAssignment}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitActualParams(InterpreteParser.ActualParamsContext ctx);
+	T visitArrayAssignAST(InterpreteParser.ArrayAssignASTContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link InterpreteParser#arrayLookup}.
+	 * Visit a parse tree produced by the {@code booleanTAST}
+	 * labeled alternative in {@link InterpreteParser#simpleType}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitArrayLookup(InterpreteParser.ArrayLookupContext ctx);
+	T visitBooleanTAST(InterpreteParser.BooleanTASTContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link InterpreteParser#arrayLenght}.
+	 * Visit a parse tree produced by the {@code charTAST}
+	 * labeled alternative in {@link InterpreteParser#simpleType}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitArrayLenght(InterpreteParser.ArrayLenghtContext ctx);
+	T visitCharTAST(InterpreteParser.CharTASTContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link InterpreteParser#relacionalop}.
+	 * Visit a parse tree produced by the {@code intTAST}
+	 * labeled alternative in {@link InterpreteParser#simpleType}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitRelacionalop(InterpreteParser.RelacionalopContext ctx);
+	T visitIntTAST(InterpreteParser.IntTASTContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link InterpreteParser#additiveop}.
+	 * Visit a parse tree produced by the {@code stringTAST}
+	 * labeled alternative in {@link InterpreteParser#simpleType}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitAdditiveop(InterpreteParser.AdditiveopContext ctx);
+	T visitStringTAST(InterpreteParser.StringTASTContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link InterpreteParser#multiplicativeop}.
+	 * Visit a parse tree produced by the {@code expressionAST}
+	 * labeled alternative in {@link InterpreteParser#expression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitMultiplicativeop(InterpreteParser.MultiplicativeopContext ctx);
+	T visitExpressionAST(InterpreteParser.ExpressionASTContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link InterpreteParser#literal}.
+	 * Visit a parse tree produced by the {@code simpleExpressionAST}
+	 * labeled alternative in {@link InterpreteParser#simpleExpression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitLiteral(InterpreteParser.LiteralContext ctx);
+	T visitSimpleExpressionAST(InterpreteParser.SimpleExpressionASTContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code termAST}
+	 * labeled alternative in {@link InterpreteParser#term}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTermAST(InterpreteParser.TermASTContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code literalFAST}
+	 * labeled alternative in {@link InterpreteParser#factor}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitLiteralFAST(InterpreteParser.LiteralFASTContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code idFAST}
+	 * labeled alternative in {@link InterpreteParser#factor}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIdFAST(InterpreteParser.IdFASTContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code functionCallFAST}
+	 * labeled alternative in {@link InterpreteParser#factor}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFunctionCallFAST(InterpreteParser.FunctionCallFASTContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code arrayLookupFAST}
+	 * labeled alternative in {@link InterpreteParser#factor}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitArrayLookupFAST(InterpreteParser.ArrayLookupFASTContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code arrayLenghtFAST}
+	 * labeled alternative in {@link InterpreteParser#factor}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitArrayLenghtFAST(InterpreteParser.ArrayLenghtFASTContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code subEspressionFAST}
+	 * labeled alternative in {@link InterpreteParser#factor}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSubEspressionFAST(InterpreteParser.SubEspressionFASTContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code arrayAllocationEspressionFAST}
+	 * labeled alternative in {@link InterpreteParser#factor}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitArrayAllocationEspressionFAST(InterpreteParser.ArrayAllocationEspressionFASTContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code allocationExpressionFAST}
+	 * labeled alternative in {@link InterpreteParser#factor}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAllocationExpressionFAST(InterpreteParser.AllocationExpressionFASTContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code unaryFAST}
+	 * labeled alternative in {@link InterpreteParser#factor}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitUnaryFAST(InterpreteParser.UnaryFASTContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code unaryAST}
+	 * labeled alternative in {@link InterpreteParser#unary}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitUnaryAST(InterpreteParser.UnaryASTContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code allocationExpressionAST}
+	 * labeled alternative in {@link InterpreteParser#allocationExpression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAllocationExpressionAST(InterpreteParser.AllocationExpressionASTContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code arrayAllocationEspressionAST}
+	 * labeled alternative in {@link InterpreteParser#arrayAllocationEspression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitArrayAllocationEspressionAST(InterpreteParser.ArrayAllocationEspressionASTContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code subEspressionAST}
+	 * labeled alternative in {@link InterpreteParser#subEspression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSubEspressionAST(InterpreteParser.SubEspressionASTContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code functionCallAST}
+	 * labeled alternative in {@link InterpreteParser#functionCall}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFunctionCallAST(InterpreteParser.FunctionCallASTContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code actualParamsAST}
+	 * labeled alternative in {@link InterpreteParser#actualParams}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitActualParamsAST(InterpreteParser.ActualParamsASTContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code arrayLookupAST}
+	 * labeled alternative in {@link InterpreteParser#arrayLookup}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitArrayLookupAST(InterpreteParser.ArrayLookupASTContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code arrayLenghtAST}
+	 * labeled alternative in {@link InterpreteParser#arrayLenght}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitArrayLenghtAST(InterpreteParser.ArrayLenghtASTContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code mayorRAST}
+	 * labeled alternative in {@link InterpreteParser#relacionalop}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitMayorRAST(InterpreteParser.MayorRASTContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code mayorIgualRAST}
+	 * labeled alternative in {@link InterpreteParser#relacionalop}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitMayorIgualRAST(InterpreteParser.MayorIgualRASTContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code menorRAST}
+	 * labeled alternative in {@link InterpreteParser#relacionalop}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitMenorRAST(InterpreteParser.MenorRASTContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code menorIgualRAST}
+	 * labeled alternative in {@link InterpreteParser#relacionalop}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitMenorIgualRAST(InterpreteParser.MenorIgualRASTContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code equalsRAST}
+	 * labeled alternative in {@link InterpreteParser#relacionalop}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitEqualsRAST(InterpreteParser.EqualsRASTContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code difRAST}
+	 * labeled alternative in {@link InterpreteParser#relacionalop}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitDifRAST(InterpreteParser.DifRASTContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code sumAST}
+	 * labeled alternative in {@link InterpreteParser#additiveop}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSumAST(InterpreteParser.SumASTContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code resAST}
+	 * labeled alternative in {@link InterpreteParser#additiveop}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitResAST(InterpreteParser.ResASTContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code orAST}
+	 * labeled alternative in {@link InterpreteParser#additiveop}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitOrAST(InterpreteParser.OrASTContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code mulAST}
+	 * labeled alternative in {@link InterpreteParser#multiplicativeop}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitMulAST(InterpreteParser.MulASTContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code divAST}
+	 * labeled alternative in {@link InterpreteParser#multiplicativeop}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitDivAST(InterpreteParser.DivASTContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code andAST}
+	 * labeled alternative in {@link InterpreteParser#multiplicativeop}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAndAST(InterpreteParser.AndASTContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code inLAST}
+	 * labeled alternative in {@link InterpreteParser#literal}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitInLAST(InterpreteParser.InLASTContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code realLAST}
+	 * labeled alternative in {@link InterpreteParser#literal}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRealLAST(InterpreteParser.RealLASTContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code boolLAST}
+	 * labeled alternative in {@link InterpreteParser#literal}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBoolLAST(InterpreteParser.BoolLASTContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code stringLAST}
+	 * labeled alternative in {@link InterpreteParser#literal}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitStringLAST(InterpreteParser.StringLASTContext ctx);
 }
