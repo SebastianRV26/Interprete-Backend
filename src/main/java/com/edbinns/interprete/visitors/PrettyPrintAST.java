@@ -6,6 +6,8 @@ import com.edbinns.interprete.generated.InterpreteParserBaseVisitor;
 public class PrettyPrintAST<Object> extends InterpreteParserBaseVisitor<Object> {
     private int numTabs = 0;
 
+
+
     @Override
     public Object visitProgramAST(InterpreteParser.ProgramASTContext ctx) {
         System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
@@ -123,9 +125,7 @@ public class PrettyPrintAST<Object> extends InterpreteParserBaseVisitor<Object> 
         System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
         numTabs++;
         this.visit(ctx.type());
-        /*for (InterpreteParser.FormalParamsContext s : ctx.formalParams()) {
-            this.visit(s);
-        }*/
+        this.visit(ctx.formalParams());
         this.visit(ctx.block());
         numTabs--;
         return null;
@@ -166,8 +166,9 @@ public class PrettyPrintAST<Object> extends InterpreteParserBaseVisitor<Object> 
         System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
         numTabs++;
         this.visit(ctx.expression());
-        //this.visit(ctx.block());
-        //this.visit(ctx.singleCommand());
+        for(InterpreteParser.BlockContext s : ctx.block()) {
+            this.visit(s);
+        }
         numTabs--;
         return null;
     }
@@ -206,9 +207,7 @@ public class PrettyPrintAST<Object> extends InterpreteParserBaseVisitor<Object> 
         System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
         numTabs++;
         this.visit(ctx.simpleType());
-        /*for (InterpreteParser.ExpressionContext c : ctx.expression()) {
-            this.visit(c);
-        }*/
+        this.visit(ctx.expression());
         numTabs--;
         return null;
     }
@@ -218,9 +217,7 @@ public class PrettyPrintAST<Object> extends InterpreteParserBaseVisitor<Object> 
         System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
         numTabs++;
         this.visit(ctx.type());
-        /*for (InterpreteParser.ExpressionContext c : ctx.expression()) {
-            this.visit(c);
-        }*/
+        this.visit(ctx.expression());
         numTabs--;
         return null;
     }
@@ -277,6 +274,9 @@ public class PrettyPrintAST<Object> extends InterpreteParserBaseVisitor<Object> 
         numTabs++;
         // Nota: dos expression, expression pide int, ctx.depth() es int
         this.visit(ctx.expression(ctx.depth()));
+        for (InterpreteParser.ExpressionContext c : ctx.expression()) {
+            this.visit(c);
+        }
         numTabs--;
         return null;
     }
@@ -321,10 +321,10 @@ public class PrettyPrintAST<Object> extends InterpreteParserBaseVisitor<Object> 
     public Object visitExpressionAST(InterpreteParser.ExpressionASTContext ctx) {
         System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
         numTabs++;
-        //this.visit(ctx.simpleExpression());
-        /*for (InterpreteParser.SimpleExpressionASTContext s : ctx.simpleExpression()) {
+       this.visit(ctx.relacionalop(ctx.depth()));
+        for (InterpreteParser.SimpleExpressionContext s : ctx.simpleExpression()) {
             this.visit(s);
-        }*/
+        }
         numTabs--;
         return null;
     }
@@ -333,10 +333,12 @@ public class PrettyPrintAST<Object> extends InterpreteParserBaseVisitor<Object> 
     public Object visitSimpleExpressionAST(InterpreteParser.SimpleExpressionASTContext ctx) {
         System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
         numTabs++;
-        //this.visit(ctx.term());
-        /*for (InterpreteParser.SimpleExpressionASTContext s : ctx.children()) {
+        for (InterpreteParser.TermContext s : ctx.term()) {
             this.visit(s);
-        }*/
+        }
+        for (InterpreteParser.AdditiveopContext s : ctx.additiveop()) {
+            this.visit(s);
+        }
         numTabs--;
         return null;
     }
@@ -345,28 +347,22 @@ public class PrettyPrintAST<Object> extends InterpreteParserBaseVisitor<Object> 
     public Object visitTermAST(InterpreteParser.TermASTContext ctx) {
         System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
         numTabs++;
-        //this.visit(ctx.factor());
-        /*for (InterpreteParser.SimpleExpressionASTContext s : ctx.children()) {
+        for (InterpreteParser.FactorContext s : ctx.factor()) {
             this.visit(s);
-        }*/
+        }
+        for (InterpreteParser.MultiplicativeopContext s : ctx.multiplicativeop()) {
+            this.visit(s);
+        }
         numTabs--;
         return null;
     }
 
     @Override
-    public Object visitLiteralFAST(InterpreteParser.LiteralFASTContext ctx) {
+    public Object visitLiteralFA(InterpreteParser.LiteralFAContext ctx) {
         System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
         numTabs++;
+
         this.visit(ctx.literal());
-        numTabs--;
-        return null;
-    }
-
-    @Override
-    public Object visitIdFAST(InterpreteParser.IdFASTContext ctx) {
-        System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
-        numTabs++;
-        //this.visit(ctx.singleCommand());
         numTabs--;
         return null;
     }
@@ -438,7 +434,9 @@ public class PrettyPrintAST<Object> extends InterpreteParserBaseVisitor<Object> 
     public Object visitUnaryAST(InterpreteParser.UnaryASTContext ctx) {
         System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
         numTabs++;
-        //this.visit(ctx.singleCommand());
+        for (InterpreteParser.ExpressionContext s : ctx.expression()) {
+            this.visit(s);
+        }
         numTabs--;
         return null;
     }
@@ -456,7 +454,8 @@ public class PrettyPrintAST<Object> extends InterpreteParserBaseVisitor<Object> 
     public Object visitArrayAllocationEspressionAST(InterpreteParser.ArrayAllocationEspressionASTContext ctx) {
         System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
         numTabs++;
-        //this.visit(ctx.singleCommand());
+        this.visit(ctx.simpleType());
+        this.visit(ctx.expression());
         numTabs--;
         return null;
     }
@@ -465,7 +464,7 @@ public class PrettyPrintAST<Object> extends InterpreteParserBaseVisitor<Object> 
     public Object visitSubEspressionAST(InterpreteParser.SubEspressionASTContext ctx) {
         System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
         numTabs++;
-        //this.visit(ctx.singleCommand());
+        this.visit(ctx.expression());
         numTabs--;
         return null;
     }
@@ -474,7 +473,7 @@ public class PrettyPrintAST<Object> extends InterpreteParserBaseVisitor<Object> 
     public Object visitFunctionCallAST(InterpreteParser.FunctionCallASTContext ctx) {
         System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
         numTabs++;
-        //this.visit(ctx.singleCommand());
+        this.visit(ctx.actualParams());
         numTabs--;
         return null;
     }
@@ -483,7 +482,9 @@ public class PrettyPrintAST<Object> extends InterpreteParserBaseVisitor<Object> 
     public Object visitActualParamsAST(InterpreteParser.ActualParamsASTContext ctx) {
         System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
         numTabs++;
-        //this.visit(ctx.singleCommand());
+        for (InterpreteParser.ExpressionContext s : ctx.expression()) {
+            this.visit(s);
+        }
         numTabs--;
         return null;
     }
@@ -492,7 +493,7 @@ public class PrettyPrintAST<Object> extends InterpreteParserBaseVisitor<Object> 
     public Object visitArrayLookupAST(InterpreteParser.ArrayLookupASTContext ctx) {
         System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
         numTabs++;
-        //this.visit(ctx.singleCommand());
+        this.visit(ctx.expression());
         numTabs--;
         return null;
     }
@@ -544,6 +545,43 @@ public class PrettyPrintAST<Object> extends InterpreteParserBaseVisitor<Object> 
 
     @Override
     public Object visitEqualsRAST(InterpreteParser.EqualsRASTContext ctx) {
+        System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
+        numTabs++;
+        //this.visit(ctx.singleCommand());
+        numTabs--;
+        return null;
+    }
+
+
+    @Override
+    public Object visitOrRAST(InterpreteParser.OrRASTContext ctx) {
+        System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
+        numTabs++;
+        //this.visit(ctx.singleCommand());
+        numTabs--;
+        return null;
+    }
+
+    @Override
+    public Object visitOr2RAST(InterpreteParser.Or2RASTContext ctx) {
+        System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
+        numTabs++;
+        //this.visit(ctx.singleCommand());
+        numTabs--;
+        return null;
+    }
+
+    @Override
+    public Object visitAndRAST(InterpreteParser.AndRASTContext ctx) {
+        System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
+        numTabs++;
+        //this.visit(ctx.singleCommand());
+        numTabs--;
+        return null;
+    }
+
+    @Override
+    public Object visitAnd2RAST(InterpreteParser.And2RASTContext ctx) {
         System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
         numTabs++;
         //this.visit(ctx.singleCommand());

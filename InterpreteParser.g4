@@ -40,8 +40,7 @@ simpleType          : BOOLEAN                                                   
 expression          : simpleExpression (relacionalop simpleExpression)*             #expressionAST;
 simpleExpression    : term (additiveop term)*                                       #simpleExpressionAST;
 term                : factor (multiplicativeop factor)*                             #termAST;
-factor              : literal                                                       #literalFAST
-                    | ID (PUNTO ID)?                                                #idFAST
+factor              : literal                                                       #literalFA
                     | functionCall                                                  #functionCallFAST
                     | arrayLookup                                                   #arrayLookupFAST
                     | arrayLenght                                                   #arrayLenghtFAST
@@ -58,18 +57,17 @@ actualParams        : expression (COMA expression)*                             
 arrayLookup         : ID BRACKETIZQ expression BRACKE5TDER                          #arrayLookupAST;
 arrayLenght         : ID PUNTO LENGHT                                               #arrayLenghtAST;
 
-<<<<<<< HEAD
-relacionalop        : MAYOR|MAYORIGUAL|MENOR|MENORIGUAL|EQUALS|DIF|OR|OR2|AND|AND2;
-additiveop          : SUM|RES|OR                                                  ;
-multiplicativeop    : MUL|DIV|AND                                                 ;
-literal             : INTLITERAL|REALLITERAL|BOOLLITERAL|STRINGLITERAL            ;
-=======
+
 relacionalop        : MAYOR                                                         #mayorRAST
                     | MAYORIGUAL                                                    #mayorIgualRAST
                     | MENOR                                                         #menorRAST
                     | MENORIGUAL                                                    #menorIgualRAST
                     | EQUALS                                                        #equalsRAST
-                    | DIF                                                           #difRAST;
+                    | DIF                                                           #difRAST
+                    | OR                                                            #orRAST
+                    | OR2                                                           #or2RAST
+                    |AND                                                            #andRAST
+                    |AND2                                                           #and2RAST;
 additiveop          : SUM                                                           #sumAST
                     | RES                                                           #resAST
                     | OR                                                            #orAST;
@@ -80,4 +78,4 @@ literal             : INTLITERAL                                                
                     | REALLITERAL                                                   #realLAST
                     | BOOLLITERAL                                                   #boolLAST
                     | STRINGLITERAL                                                 #stringLAST;
->>>>>>> 010e1a8e91fc734518ef9d5a1c307641dcf83296
+
