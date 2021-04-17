@@ -1,12 +1,10 @@
-package com.edbinns.interprete.visitors;
+package com.edbinns.interprete.visitors.pretty_print;
 
 import com.edbinns.interprete.generated.InterpreteParser;
 import com.edbinns.interprete.generated.InterpreteParserBaseVisitor;
 
 public class PrettyPrintAST<Object> extends InterpreteParserBaseVisitor<Object> {
     private int numTabs = 0;
-
-
 
     @Override
     public Object visitProgramAST(InterpreteParser.ProgramASTContext ctx) {
@@ -166,7 +164,7 @@ public class PrettyPrintAST<Object> extends InterpreteParserBaseVisitor<Object> 
         System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
         numTabs++;
         this.visit(ctx.expression());
-        for(InterpreteParser.BlockContext s : ctx.block()) {
+        for (InterpreteParser.BlockContext s : ctx.block()) {
             this.visit(s);
         }
         numTabs--;
@@ -321,7 +319,7 @@ public class PrettyPrintAST<Object> extends InterpreteParserBaseVisitor<Object> 
     public Object visitExpressionAST(InterpreteParser.ExpressionASTContext ctx) {
         System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
         numTabs++;
-       this.visit(ctx.relacionalop(ctx.depth()));
+        this.visit(ctx.relacionalop(ctx.depth()));
         for (InterpreteParser.SimpleExpressionContext s : ctx.simpleExpression()) {
             this.visit(s);
         }
