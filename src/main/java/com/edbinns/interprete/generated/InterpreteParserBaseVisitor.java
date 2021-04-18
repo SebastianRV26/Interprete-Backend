@@ -1,4 +1,4 @@
-// Generated from C:/Users/edubi/OneDrive - Estudiantes ITCR/Quinto Semestre/Compiladores e interpretes/Proyectos/Proyecto 1/backend\InterpreteParser.g4 by ANTLR 4.9.1
+// Generated from C:/Users/Usuario/IdeaProjects/Interprete-Backend\InterpreteParser.g4 by ANTLR 4.9.1
 package com.edbinns.interprete.generated;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 
@@ -262,7 +262,14 @@ public class InterpreteParserBaseVisitor<T> extends AbstractParseTreeVisitor<T> 
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitLiteralFA(InterpreteParser.LiteralFAContext ctx) { return visitChildren(ctx); }
+	@Override public T visitLiteralFAST(InterpreteParser.LiteralFASTContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitIdFAST(InterpreteParser.IdFASTContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *

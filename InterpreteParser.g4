@@ -40,7 +40,8 @@ simpleType          : BOOLEAN                                                   
 expression          : simpleExpression (relacionalop simpleExpression)*             #expressionAST;
 simpleExpression    : term (additiveop term)*                                       #simpleExpressionAST;
 term                : factor (multiplicativeop factor)*                             #termAST;
-factor              : literal                                                       #literalFA
+factor              : literal                                                       #literalFAST
+                    | ID (PUNTO ID)?                                                #idFAST
                     | functionCall                                                  #functionCallFAST
                     | arrayLookup                                                   #arrayLookupFAST
                     | arrayLenght                                                   #arrayLenghtFAST

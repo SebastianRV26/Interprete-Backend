@@ -1,4 +1,4 @@
-// Generated from C:/Users/edubi/OneDrive - Estudiantes ITCR/Quinto Semestre/Compiladores e interpretes/Proyectos/Proyecto 1/backend\InterpreteParser.g4 by ANTLR 4.9.1
+// Generated from C:/Users/Usuario/IdeaProjects/Interprete-Backend\InterpreteParser.g4 by ANTLR 4.9.1
 package com.edbinns.interprete.generated;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
@@ -256,12 +256,19 @@ public interface InterpreteParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitTermAST(InterpreteParser.TermASTContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code literalFA}
+	 * Visit a parse tree produced by the {@code literalFAST}
 	 * labeled alternative in {@link InterpreteParser#factor}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitLiteralFA(InterpreteParser.LiteralFAContext ctx);
+	T visitLiteralFAST(InterpreteParser.LiteralFASTContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code idFAST}
+	 * labeled alternative in {@link InterpreteParser#factor}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIdFAST(InterpreteParser.IdFASTContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code functionCallFAST}
 	 * labeled alternative in {@link InterpreteParser#factor}.

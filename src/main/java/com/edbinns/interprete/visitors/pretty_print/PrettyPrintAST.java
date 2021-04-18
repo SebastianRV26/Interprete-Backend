@@ -356,7 +356,7 @@ public class PrettyPrintAST<Object> extends InterpreteParserBaseVisitor<Object> 
     }
 
     @Override
-    public Object visitLiteralFA(InterpreteParser.LiteralFAContext ctx) {
+    public Object visitLiteralFAST(InterpreteParser.LiteralFASTContext ctx) {
         System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
         numTabs++;
 
