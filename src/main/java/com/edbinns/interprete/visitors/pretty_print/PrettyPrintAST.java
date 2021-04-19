@@ -2,16 +2,26 @@ package com.edbinns.interprete.visitors.pretty_print;
 
 import com.edbinns.interprete.generated.InterpreteParser;
 import com.edbinns.interprete.generated.InterpreteParserBaseVisitor;
+import com.edbinns.interprete.models.TreeItem;
+import com.google.gson.Gson;
+import org.antlr.runtime.tree.Tree;
+
+import java.util.ArrayList;
 
 public class PrettyPrintAST<Object> extends InterpreteParserBaseVisitor<Object> {
     private int numTabs = 0;
-
+    public TreeItem treeItem;
     @Override
     public Object visitProgramAST(InterpreteParser.ProgramASTContext ctx) {
         System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
         numTabs++;
+
+        ArrayList<TreeItem> list = new ArrayList<>();
+        treeItem = new TreeItem(ctx.getClass().getSimpleName().replace("Context", ""),numTabs);
+        treeItem.setChildren(list);
         for (InterpreteParser.StatementContext s : ctx.statement()) {
-            this.visit(s);
+            ArrayList<TreeItem> treeVisits = (ArrayList<TreeItem>) this.visit(s);
+            treeItem.getChildren().addAll(treeVisits);
         }
         numTabs--;
         return null;
@@ -21,101 +31,203 @@ public class PrettyPrintAST<Object> extends InterpreteParserBaseVisitor<Object> 
     public Object visitVariableDeclSAST(InterpreteParser.VariableDeclSASTContext ctx) {
         System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
         numTabs++;
-        this.visit(ctx.variableDecl());
+        ArrayList<TreeItem> list = new ArrayList<>();
+        TreeItem ppVisit = new TreeItem(ctx.getClass().getSimpleName().replace("Context", ""), numTabs);
+        ppVisit.setChildren(list);
+        TreeItem ppPyCOMA = new TreeItem(ctx.PyCOMA().getText(), numTabs);
+
+        ArrayList<TreeItem> treeVisits = (ArrayList<TreeItem>) this.visit(ctx.variableDecl());
+
+//        ppVisit.getChildren().addAll(treeVisits);
+        ArrayList<TreeItem> finalList = new ArrayList<>();
+        finalList.add(ppVisit);
+        finalList.add(ppPyCOMA);
+
         numTabs--;
-        return null;
+
+        return (Object) finalList;
     }
 
     @Override
     public Object visitClassDeclSAST(InterpreteParser.ClassDeclSASTContext ctx) {
         System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
         numTabs++;
-        this.visit(ctx.classDecl());
+        ArrayList<TreeItem> list = new ArrayList<>();
+        TreeItem ppVisit = new TreeItem(ctx.getClass().getSimpleName().replace("Context", ""), numTabs);
+        ppVisit.setChildren(list);
+        TreeItem ppPyCOMA = new TreeItem(ctx.PyCOMA().getText(), numTabs);
+
+        ArrayList<TreeItem> treeVisits = (ArrayList<TreeItem>) this.visit(ctx.classDecl());
+        ppVisit.getChildren().addAll(treeVisits);
+
+        ArrayList<TreeItem> finalList = new ArrayList<>();
+        finalList.add(ppVisit);
+        finalList.add(ppPyCOMA);
+
         numTabs--;
-        return null;
+        return (Object) finalList;
     }
 
     @Override
     public Object visitAssignSAST(InterpreteParser.AssignSASTContext ctx) {
         System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
         numTabs++;
-        this.visit(ctx.assignment());
+        ArrayList<TreeItem> list = new ArrayList<>();
+        TreeItem ppVisit = new TreeItem(ctx.getClass().getSimpleName().replace("Context", ""), numTabs);
+        ppVisit.setChildren(list);
+        TreeItem ppPyCOMA = new TreeItem(ctx.PyCOMA().getText(), numTabs);
+
+        ArrayList<TreeItem> treeVisits = (ArrayList<TreeItem>) this.visit(ctx.assignment());
+//        ppVisit.getChildren().addAll(treeVisits);
+
+        ArrayList<TreeItem> finalList = new ArrayList<>();
+        finalList.add(ppVisit);
+        finalList.add(ppPyCOMA);
         numTabs--;
-        return null;
+        return (Object) finalList;
     }
 
     @Override
     public Object visitArrayAssignSAST(InterpreteParser.ArrayAssignSASTContext ctx) {
         System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
         numTabs++;
-        this.visit(ctx.arrayAssignment());
+        ArrayList<TreeItem> list = new ArrayList<>();
+        TreeItem ppVisit = new TreeItem(ctx.getClass().getSimpleName().replace("Context", ""), numTabs);
+        ppVisit.setChildren(list);
+        TreeItem ppPyCOMA = new TreeItem(ctx.PyCOMA().getText(), numTabs);
+        ArrayList<TreeItem> treeVisits = (ArrayList<TreeItem>) this.visit(ctx.arrayAssignment());
+        ppVisit.getChildren().addAll(treeVisits);
+
+        ArrayList<TreeItem> finalList = new ArrayList<>();
+        finalList.add(ppVisit);
+        finalList.add(ppPyCOMA);
         numTabs--;
-        return null;
+        return (Object) finalList;
     }
 
     @Override
     public Object visitPrintSAST(InterpreteParser.PrintSASTContext ctx) {
         System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
         numTabs++;
-        this.visit(ctx.printStatement());
+        ArrayList<TreeItem> list = new ArrayList<>();
+        TreeItem ppVisit = new TreeItem(ctx.getClass().getSimpleName().replace("Context", ""), numTabs);
+        ppVisit.setChildren(list);
+        TreeItem ppPyCOMA = new TreeItem(ctx.PyCOMA().getText(), numTabs);
+        ArrayList<TreeItem> treeVisits = (ArrayList<TreeItem>) this.visit(ctx.printStatement());
+        ppVisit.getChildren().addAll(treeVisits);
+
+        ArrayList<TreeItem> finalList = new ArrayList<>();
+        finalList.add(ppVisit);
+        finalList.add(ppPyCOMA);
         numTabs--;
-        return null;
+        return (Object) finalList;
     }
 
     @Override
     public Object visitIfSAST(InterpreteParser.IfSASTContext ctx) {
         System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
         numTabs++;
-        this.visit(ctx.ifStatement());
+        ArrayList<TreeItem> list = new ArrayList<>();
+        TreeItem ppVisit = new TreeItem(ctx.getClass().getSimpleName().replace("Context", ""), numTabs);
+        ppVisit.setChildren(list);
+        ArrayList<TreeItem> treeVisits = (ArrayList<TreeItem>) this.visit(ctx.ifStatement());
+        ppVisit.getChildren().addAll(treeVisits);
+
+        ArrayList<TreeItem> finalList = new ArrayList<>();
+        finalList.add(ppVisit);
         numTabs--;
-        return null;
+        return (Object) finalList;
     }
 
     @Override
     public Object visitWhileSAST(InterpreteParser.WhileSASTContext ctx) {
         System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
         numTabs++;
-        this.visit(ctx.whileStatement());
+        ArrayList<TreeItem> list = new ArrayList<>();
+        TreeItem ppVisit = new TreeItem(ctx.getClass().getSimpleName().replace("Context", ""), numTabs);
+        ppVisit.setChildren(list);
+
+;       ArrayList<TreeItem> treeVisits = (ArrayList<TreeItem>) this.visit(ctx.whileStatement());
+        ppVisit.getChildren().addAll(treeVisits);
+
+        ArrayList<TreeItem> finalList = new ArrayList<>();
+        finalList.add(ppVisit);
         numTabs--;
-        return null;
+        return (Object) finalList;
     }
 
     @Override
     public Object visitReturnSAST(InterpreteParser.ReturnSASTContext ctx) {
         System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
         numTabs++;
-        this.visit(ctx.returnStatement());
+        ArrayList<TreeItem> list = new ArrayList<>();
+        TreeItem ppVisit = new TreeItem(ctx.getClass().getSimpleName().replace("Context", ""), numTabs);
+        ppVisit.setChildren(list);
+        TreeItem ppPyCOMA = new TreeItem(ctx.PyCOMA().getText(), numTabs);
+        ArrayList<TreeItem> treeVisits = (ArrayList<TreeItem>) this.visit(ctx.returnStatement());
+        ppVisit.getChildren().addAll(treeVisits);
+        ArrayList<TreeItem> finalList = new ArrayList<>();
+        finalList.add(ppVisit);
+        finalList.add(ppPyCOMA);
         numTabs--;
-        return null;
+        return (Object) finalList;
     }
 
     @Override
     public Object visitFunctionDeclSAST(InterpreteParser.FunctionDeclSASTContext ctx) {
         System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
         numTabs++;
-        this.visit(ctx.functionDecl());
+        ArrayList<TreeItem> list = new ArrayList<>();
+        TreeItem ppVisit = new TreeItem(ctx.getClass().getSimpleName().replace("Context", ""), numTabs);
+        ppVisit.setChildren(list);
+        ArrayList<TreeItem> treeVisits = (ArrayList<TreeItem>) this.visit(ctx.functionDecl());
+        ppVisit.getChildren().addAll(treeVisits);
+
+        ArrayList<TreeItem> finalList = new ArrayList<>();
+        finalList.add(ppVisit);
         numTabs--;
-        return null;
+        return (Object) finalList;
+
     }
 
     @Override
     public Object visitBlockSAST(InterpreteParser.BlockSASTContext ctx) {
         System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
         numTabs++;
-        this.visit(ctx.block());
+        ArrayList<TreeItem> list = new ArrayList<>();
+        TreeItem ppVisit = new TreeItem(ctx.getClass().getSimpleName().replace("Context", ""), numTabs);
+        ArrayList<TreeItem> treeVisits = (ArrayList<TreeItem>) this.visit(ctx.block());
+        ppVisit.getChildren().addAll(treeVisits);
+
+        ArrayList<TreeItem> finalList = new ArrayList<>();
+        finalList.add(ppVisit);
         numTabs--;
-        return null;
+        return (Object) finalList;
     }
 
     @Override
     public Object visitBlockAST(InterpreteParser.BlockASTContext ctx) {
         System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
         numTabs++;
-        for (InterpreteParser.StatementContext s : ctx.statement()) {
-            this.visit(s);
+        ArrayList<TreeItem> list = new ArrayList<>();
+        TreeItem ppVisit = new TreeItem(ctx.getClass().getSimpleName().replace("Context", ""), numTabs);
+        TreeItem ppLlaveIzq = new TreeItem(ctx.LLAVEIZQ().getText(), numTabs);
+        TreeItem ppLlavaDer = new TreeItem(ctx.LLAVEDER().getText(), numTabs);
+        ppVisit.setChildren(list);
+
+        ArrayList<TreeItem> treeVisits = (ArrayList<TreeItem>) this.visit(ctx.statement(0));
+        for(int i=1; i< ctx.statement().size(); i++) {
+            treeVisits.addAll( (ArrayList<TreeItem>) this.visit(ctx.statement(i)));
         }
+
+        ppVisit.getChildren().addAll(treeVisits);
         numTabs--;
-        return null;
+
+        ArrayList<TreeItem> finalList = new ArrayList<>();
+        finalList.add(ppLlaveIzq);
+        finalList.add(ppVisit);
+        finalList.add(ppLlavaDer);
+        return (Object) finalList;
     }
 
     @Override
@@ -261,7 +373,7 @@ public class PrettyPrintAST<Object> extends InterpreteParserBaseVisitor<Object> 
         System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
         numTabs++;
         // Nota: Token id opcional
-        this.visit(ctx.expression());
+//        this.visit(ctx.expression());
         numTabs--;
         return null;
     }
@@ -319,7 +431,10 @@ public class PrettyPrintAST<Object> extends InterpreteParserBaseVisitor<Object> 
     public Object visitExpressionAST(InterpreteParser.ExpressionASTContext ctx) {
         System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
         numTabs++;
-        this.visit(ctx.relacionalop(ctx.depth()));
+
+        for (InterpreteParser.RelacionalopContext s : ctx.relacionalop()) {
+            this.visit(s);
+        }
         for (InterpreteParser.SimpleExpressionContext s : ctx.simpleExpression()) {
             this.visit(s);
         }
@@ -500,54 +615,78 @@ public class PrettyPrintAST<Object> extends InterpreteParserBaseVisitor<Object> 
     public Object visitArrayLenghtAST(InterpreteParser.ArrayLenghtASTContext ctx) {
         System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
         numTabs++;
-        //this.visit(ctx.singleCommand());
+        ArrayList<TreeItem> list = new ArrayList<>();
+        TreeItem ppVisit = new TreeItem(ctx.getClass().getSimpleName().replace("Context", ""), numTabs);
+         ppVisit.setChildren(list);
+        TreeItem lenght = new TreeItem(ctx.LENGHT().getText(), numTabs);
+        TreeItem id = new TreeItem(ctx.ID().getText(), numTabs);
+        TreeItem punto = new TreeItem(ctx.PUNTO().getText(), numTabs);
+
         numTabs--;
-        return null;
+        ArrayList<TreeItem> finalList = new ArrayList<>();
+        finalList.add(ppVisit);
+
+        return (Object) finalList;
     }
 
     @Override
     public Object visitMayorRAST(InterpreteParser.MayorRASTContext ctx) {
         System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
         numTabs++;
-        //this.visit(ctx.singleCommand());
+
+        TreeItem ppVisit = new TreeItem(ctx.getClass().getSimpleName().replace("Context", ""), numTabs);
         numTabs--;
-        return null;
+        ArrayList<TreeItem> finalList = new ArrayList<>();
+        finalList.add(ppVisit);
+        return (Object) finalList;
     }
 
     @Override
     public Object visitMayorIgualRAST(InterpreteParser.MayorIgualRASTContext ctx) {
         System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
         numTabs++;
-        //this.visit(ctx.singleCommand());
+
+        TreeItem ppVisit = new TreeItem(ctx.getClass().getSimpleName().replace("Context", ""), numTabs);
         numTabs--;
-        return null;
+        ArrayList<TreeItem> finalList = new ArrayList<>();
+        finalList.add(ppVisit);
+        return (Object) finalList;
     }
 
     @Override
     public Object visitMenorRAST(InterpreteParser.MenorRASTContext ctx) {
         System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
         numTabs++;
-        //this.visit(ctx.singleCommand());
+
+        TreeItem ppVisit = new TreeItem(ctx.getClass().getSimpleName().replace("Context", ""), numTabs);
         numTabs--;
-        return null;
+        ArrayList<TreeItem> finalList = new ArrayList<>();
+        finalList.add(ppVisit);
+        return (Object) finalList;
     }
 
     @Override
     public Object visitMenorIgualRAST(InterpreteParser.MenorIgualRASTContext ctx) {
         System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
         numTabs++;
-        //this.visit(ctx.singleCommand());
+
+        TreeItem ppVisit = new TreeItem(ctx.getClass().getSimpleName().replace("Context", ""), numTabs);
         numTabs--;
-        return null;
+        ArrayList<TreeItem> finalList = new ArrayList<>();
+        finalList.add(ppVisit);
+        return (Object) finalList;
     }
 
     @Override
     public Object visitEqualsRAST(InterpreteParser.EqualsRASTContext ctx) {
         System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
         numTabs++;
-        //this.visit(ctx.singleCommand());
+
+        TreeItem ppVisit = new TreeItem(ctx.getClass().getSimpleName().replace("Context", ""), numTabs);
         numTabs--;
-        return null;
+        ArrayList<TreeItem> finalList = new ArrayList<>();
+        finalList.add(ppVisit);
+        return (Object) finalList;
     }
 
 
@@ -555,134 +694,180 @@ public class PrettyPrintAST<Object> extends InterpreteParserBaseVisitor<Object> 
     public Object visitOrRAST(InterpreteParser.OrRASTContext ctx) {
         System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
         numTabs++;
-        //this.visit(ctx.singleCommand());
+
+        TreeItem ppVisit = new TreeItem(ctx.getClass().getSimpleName().replace("Context", ""), numTabs);
         numTabs--;
-        return null;
+        ArrayList<TreeItem> finalList = new ArrayList<>();
+        finalList.add(ppVisit);
+        return (Object) finalList;
     }
 
     @Override
     public Object visitOr2RAST(InterpreteParser.Or2RASTContext ctx) {
         System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
         numTabs++;
-        //this.visit(ctx.singleCommand());
+
+        TreeItem ppVisit = new TreeItem(ctx.getClass().getSimpleName().replace("Context", ""), numTabs);
         numTabs--;
-        return null;
+        ArrayList<TreeItem> finalList = new ArrayList<>();
+        finalList.add(ppVisit);
+        return (Object) finalList;
     }
 
     @Override
     public Object visitAndRAST(InterpreteParser.AndRASTContext ctx) {
         System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
         numTabs++;
-        //this.visit(ctx.singleCommand());
+
+        TreeItem ppVisit = new TreeItem(ctx.getClass().getSimpleName().replace("Context", ""), numTabs);
         numTabs--;
-        return null;
+        ArrayList<TreeItem> finalList = new ArrayList<>();
+        finalList.add(ppVisit);
+        return (Object) finalList;
     }
 
     @Override
     public Object visitAnd2RAST(InterpreteParser.And2RASTContext ctx) {
         System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
         numTabs++;
-        //this.visit(ctx.singleCommand());
+
+        TreeItem ppVisit = new TreeItem(ctx.getClass().getSimpleName().replace("Context", ""), numTabs);
         numTabs--;
-        return null;
+        ArrayList<TreeItem> finalList = new ArrayList<>();
+        finalList.add(ppVisit);
+        return (Object) finalList;
     }
 
     @Override
     public Object visitDifRAST(InterpreteParser.DifRASTContext ctx) {
         System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
         numTabs++;
-        //this.visit(ctx.singleCommand());
+
+        TreeItem ppVisit = new TreeItem(ctx.getClass().getSimpleName().replace("Context", ""), numTabs);
         numTabs--;
-        return null;
+        ArrayList<TreeItem> finalList = new ArrayList<>();
+        finalList.add(ppVisit);
+        return (Object) finalList;
     }
 
     @Override
     public Object visitSumAST(InterpreteParser.SumASTContext ctx) {
         System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
         numTabs++;
-        //this.visit(ctx.singleCommand());
+
+        TreeItem ppVisit = new TreeItem(ctx.getClass().getSimpleName().replace("Context", ""), numTabs);
         numTabs--;
-        return null;
+        ArrayList<TreeItem> finalList = new ArrayList<>();
+        finalList.add(ppVisit);
+        return (Object) finalList;
     }
 
     @Override
     public Object visitResAST(InterpreteParser.ResASTContext ctx) {
         System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
         numTabs++;
-        //this.visit(ctx.singleCommand());
+
+        TreeItem ppVisit = new TreeItem(ctx.getClass().getSimpleName().replace("Context", ""), numTabs);
         numTabs--;
-        return null;
+        ArrayList<TreeItem> finalList = new ArrayList<>();
+        finalList.add(ppVisit);
+        return (Object) finalList;
     }
 
     @Override
     public Object visitOrAST(InterpreteParser.OrASTContext ctx) {
         System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
         numTabs++;
-        //this.visit(ctx.singleCommand());
+
+        TreeItem ppVisit = new TreeItem(ctx.getClass().getSimpleName().replace("Context", ""), numTabs);
         numTabs--;
-        return null;
+        ArrayList<TreeItem> finalList = new ArrayList<>();
+        finalList.add(ppVisit);
+        return (Object) finalList;
     }
 
     @Override
     public Object visitMulAST(InterpreteParser.MulASTContext ctx) {
         System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
         numTabs++;
-        //this.visit(ctx.singleCommand());
+
+        TreeItem ppVisit = new TreeItem(ctx.getClass().getSimpleName().replace("Context", ""), numTabs);
         numTabs--;
-        return null;
+        ArrayList<TreeItem> finalList = new ArrayList<>();
+        finalList.add(ppVisit);
+        return (Object) finalList;
     }
 
     @Override
     public Object visitDivAST(InterpreteParser.DivASTContext ctx) {
         System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
         numTabs++;
-        //this.visit(ctx.singleCommand());
+
+        TreeItem ppVisit = new TreeItem(ctx.getClass().getSimpleName().replace("Context", ""), numTabs);
         numTabs--;
-        return null;
+        ArrayList<TreeItem> finalList = new ArrayList<>();
+        finalList.add(ppVisit);
+        return (Object) finalList;
     }
 
     @Override
     public Object visitAndAST(InterpreteParser.AndASTContext ctx) {
         System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
         numTabs++;
-        //this.visit(ctx.singleCommand());
+
+        TreeItem ppVisit = new TreeItem(ctx.getClass().getSimpleName().replace("Context", ""), numTabs);
         numTabs--;
-        return null;
+        ArrayList<TreeItem> finalList = new ArrayList<>();
+        finalList.add(ppVisit);
+        return (Object) finalList;
     }
 
     @Override
     public Object visitInLAST(InterpreteParser.InLASTContext ctx) {
         System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
         numTabs++;
-        //this.visit(ctx.singleCommand());
+
+        TreeItem ppVisit = new TreeItem(ctx.getClass().getSimpleName().replace("Context", ""), numTabs);
         numTabs--;
-        return null;
+        ArrayList<TreeItem> finalList = new ArrayList<>();
+        finalList.add(ppVisit);
+        return (Object) finalList;
     }
 
     @Override
     public Object visitRealLAST(InterpreteParser.RealLASTContext ctx) {
         System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
         numTabs++;
-        //this.visit(ctx.singleCommand());
+
+        TreeItem ppVisit = new TreeItem(ctx.getClass().getSimpleName().replace("Context", ""), numTabs);
         numTabs--;
-        return null;
+        ArrayList<TreeItem> finalList = new ArrayList<>();
+        finalList.add(ppVisit);
+        return (Object) finalList;
     }
 
     @Override
     public Object visitBoolLAST(InterpreteParser.BoolLASTContext ctx) {
         System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
         numTabs++;
-        //this.visit(ctx.singleCommand());
+
+        TreeItem ppVisit = new TreeItem(ctx.getClass().getSimpleName().replace("Context", ""), numTabs);
         numTabs--;
-        return null;
+        ArrayList<TreeItem> finalList = new ArrayList<>();
+        finalList.add(ppVisit);
+        return (Object) finalList;
     }
 
     @Override
     public Object visitStringLAST(InterpreteParser.StringLASTContext ctx) {
         System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
         numTabs++;
-        //this.visit(ctx.singleCommand());
+
+        TreeItem ppVisit = new TreeItem(ctx.getClass().getSimpleName().replace("Context", ""), numTabs);
         numTabs--;
-        return null;
+        ArrayList<TreeItem> finalList = new ArrayList<>();
+        finalList.add(ppVisit);
+        return (Object) finalList;
+
     }
 }
