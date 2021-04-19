@@ -96,6 +96,11 @@ public class ParserTest {
             pp.visit(tree);
             System.out.println(new Gson().toJson(pp.treeItem));
             System.out.println(toJson(tree));
+
+            PrettyPrintAST ac = new PrettyPrintAST(); ///
+            ac.visit(tree); ///
+
+
             System.out.println("Compilación Terminada!!\n");
             java.util.concurrent.Future<JFrame> treeGUI = org.antlr.v4.gui.Trees.inspect(tree, parser);
             treeGUI.get().setVisible(true);

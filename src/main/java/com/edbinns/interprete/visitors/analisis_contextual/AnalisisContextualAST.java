@@ -123,6 +123,7 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
         System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
         numTabs++;
         this.visit(ctx.type());
+        System.out.println("ctx.formalParams() " + ctx.formalParams());
         this.visit(ctx.formalParams());
         this.visit(ctx.block());
         numTabs--;
@@ -319,9 +320,12 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
     public Object visitExpressionAST(InterpreteParser.ExpressionASTContext ctx) {
         System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
         numTabs++;
-        this.visit(ctx.relacionalop(ctx.depth()));
-        for (InterpreteParser.SimpleExpressionContext s : ctx.simpleExpression()) {
-            this.visit(s);
+        visit(ctx.simpleExpression(0));
+        for (int i = 1; i <= ctx.simpleExpression().toArray().length-1; i++) {
+            if (ctx.relacionalop(i - 1) != null) {
+                visit(ctx.relacionalop(i - 1));
+                visit(ctx.simpleExpression(i));
+            }
         }
         numTabs--;
         return null;
@@ -331,11 +335,12 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
     public Object visitSimpleExpressionAST(InterpreteParser.SimpleExpressionASTContext ctx) {
         System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
         numTabs++;
-        for (InterpreteParser.TermContext s : ctx.term()) {
-            this.visit(s);
-        }
-        for (InterpreteParser.AdditiveopContext s : ctx.additiveop()) {
-            this.visit(s);
+        visit(ctx.term(0));
+        for (int i = 1; i <= ctx.term().toArray().length - 1; i++) {
+            if (ctx.additiveop(i - 1) != null) {
+                visit(ctx.additiveop(i - 1));
+                visit(ctx.term(i));
+            }
         }
         numTabs--;
         return null;
@@ -345,11 +350,12 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
     public Object visitTermAST(InterpreteParser.TermASTContext ctx) {
         System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
         numTabs++;
-        for (InterpreteParser.FactorContext s : ctx.factor()) {
-            this.visit(s);
-        }
-        for (InterpreteParser.MultiplicativeopContext s : ctx.multiplicativeop()) {
-            this.visit(s);
+        visit(ctx.factor(0));
+        for (int i = 1; i <= ctx.factor().toArray().length - 1; i++) {
+            if (ctx.multiplicativeop(i - 1) != null) {
+                visit(ctx.multiplicativeop(i - 1));
+                visit(ctx.factor(i));
+            }
         }
         numTabs--;
         return null;
@@ -361,6 +367,15 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
         numTabs++;
 
         this.visit(ctx.literal());
+        numTabs--;
+        return null;
+    }
+
+    @Override
+    public Object visitIdFAST(InterpreteParser.IdFASTContext ctx) {
+        System.out.println("\t".repeat(numTabs) + ctx.getClass().getSimpleName().replace("Context", ""));
+        numTabs++;
+        // this.visit(ctx.id());
         numTabs--;
         return null;
     }
