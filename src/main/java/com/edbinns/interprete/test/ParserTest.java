@@ -3,6 +3,7 @@ package com.edbinns.interprete.test;
 import com.edbinns.interprete.functions.ErrorListener;
 import com.edbinns.interprete.generated.InterpreteParser;
 import com.edbinns.interprete.generated.InterpreteScanner;
+import com.edbinns.interprete.visitors.pretty_print.PrettyPrintAST;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.antlr.v4.runtime.CharStream;
@@ -92,6 +93,11 @@ public class ParserTest {
             tree = parser.program();
             System.out.println(tree.toStringTree(parser));
             System.out.println(toJson(tree));
+
+            PrettyPrintAST ac = new PrettyPrintAST(); ///
+            ac.visit(tree); ///
+
+
             System.out.println("Compilación Terminada!!\n");
             java.util.concurrent.Future<JFrame> treeGUI = org.antlr.v4.gui.Trees.inspect(tree, parser);
             treeGUI.get().setVisible(true);
