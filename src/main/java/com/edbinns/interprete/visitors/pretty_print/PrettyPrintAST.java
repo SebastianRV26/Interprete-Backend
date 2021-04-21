@@ -808,10 +808,12 @@ public class PrettyPrintAST<Object> extends InterpreteParserBaseVisitor<Object> 
         if(ctx.SUM() != null){
             TreeItem sum = new TreeItem(ctx.SUM().getText(),numTabs);
             finalList.add(sum);
-        }else if(ctx.RES() != null){
+        }
+        if(ctx.RES() != null){
             TreeItem res = new TreeItem(ctx.RES().getText(),numTabs);
             finalList.add(res);
-        }else if(ctx.ADMIRACION() != null){
+        }
+        if(ctx.ADMIRACION() != null){
             TreeItem admiracion = new TreeItem(ctx.ADMIRACION().getText(),numTabs);
             finalList.add(admiracion);
         }
