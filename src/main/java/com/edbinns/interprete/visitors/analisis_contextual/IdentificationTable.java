@@ -1,37 +1,40 @@
 package com.edbinns.interprete.visitors.analisis_contextual;
 
+import com.edbinns.interprete.visitors.analisis_contextual.models.Node;
+import org.antlr.v4.runtime.Token;
+
 import java.util.LinkedList;
 
-public class IdentificationTable {
+public class IdentificationTable <T extends Node>{
+
 
     private int level = 0;
-    private final LinkedList<Symbol> symbols = new LinkedList<>();
+    private final LinkedList<T> table = new LinkedList<>();
 
     /**
      * Agrega un identificador a la Tabla
      */
-    public void enter(String id, String attr) {
-        Symbol s = new Symbol(id, attr, level);
-        symbols.add(s);
+    public void enter(T node) {
+        table.add(node);
     }
 
     /**
      * Devuelve un identificador de la tabla. Retorna null
      * cuando el identificador no se encuentra en la tabla
      */
-    public String retrieve(String id) {
-        Symbol s = searchSymbol(id);
+    public Token retrieve(String id) {
+        Node s = searchNode(id);
         if (s != null) {
-            return s.attr;
+            return s.getId();
         }
         return null;
     }
 
-    public Symbol searchSymbol(String id) {
-        for (int i = symbols.size() - 1; i >= 0; i--) {
+    public T searchNode(String id) {
+        for (int i = table.size() - 1; i >= 0; i--) {
             //System.out.println(symbols.get(i));
-            if (symbols.get(i).id.equals(id)) {
-                return symbols.get(i);
+            if (table.get(i).getId().equals(id)) {
+                return table.get(i);
             }
         }
         return null;
@@ -50,10 +53,10 @@ public class IdentificationTable {
      * Se borran todos los campos de la tabla asociados con el nivel
      */
     public void closeScope() {
-        for (int i = symbols.size() - 1; i >= 0; i--) {
+        for (int i = table.size() - 1; i >= 0; i--) {
             // System.out.print(symbols.get(i) + " ");
-            if (symbols.get(i).level == level) {
-                symbols.remove(i);
+            if (table.get(i).getLevel() == level) {
+                table.remove(i);
             }
         }
         level--;
