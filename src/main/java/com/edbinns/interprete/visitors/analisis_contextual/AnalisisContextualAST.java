@@ -35,19 +35,20 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
 
     @Override
     public Object visitClassDeclSAST(InterpreteParser.ClassDeclSASTContext ctx) {
-         this.visit(ctx.classDecl());
+        this.visit(ctx.classDecl());
+        tablesSingleton.classTable.imprimir();
         return null;
     }
 
     @Override
     public Object visitAssignSAST(InterpreteParser.AssignSASTContext ctx) {
-         this.visit(ctx.assignment());
-         return null;
+        this.visit(ctx.assignment());
+        return null;
     }
 
     @Override
     public Object visitArrayAssignSAST(InterpreteParser.ArrayAssignSASTContext ctx) {
-         this.visit(ctx.arrayAssignment());
+        this.visit(ctx.arrayAssignment());
         return null;
     }
 
@@ -59,7 +60,7 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
 
     @Override
     public Object visitIfSAST(InterpreteParser.IfSASTContext ctx) {
-         this.visit(ctx.ifStatement());
+        this.visit(ctx.ifStatement());
         return null;
     }
 
@@ -94,7 +95,7 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
         tablesSingleton.functionsTable.openScope();
         tablesSingleton.variableTable.openScope();
         for (int i = 0; i < ctx.statement().size(); i++) {
-             this.visit(ctx.statement(i));
+            this.visit(ctx.statement(i));
         }
         tablesSingleton.functionsTable.closeScope();
         tablesSingleton.variableTable.closeScope();
@@ -162,10 +163,9 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
     public Object visitWhileAST(InterpreteParser.WhileASTContext ctx) {
 
 
+        this.visit(ctx.expression());
 
-         this.visit(ctx.expression());
-
-         this.visit(ctx.block());
+        this.visit(ctx.block());
         return null;
     }
 
@@ -176,7 +176,7 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
 
         this.visit(ctx.block(0));
 
-        if((ctx.ELSE() != null ) && (ctx.block(1) != null)){
+        if ((ctx.ELSE() != null) && (ctx.block(1) != null)) {
 
             this.visit(ctx.block(1));
         }
@@ -205,8 +205,7 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
 
         ArrayList<VariableNode> attrList = new ArrayList<>();
         for (int i = 0; i <= ctx.classVariableDecl().toArray().length - 1; i++) {
-             visit(ctx.classVariableDecl(i));
-
+            attrList.add((VariableNode) visit(ctx.classVariableDecl(i)));
         }
         Token id = ctx.ID().getSymbol();
         int level = tablesSingleton.classTable.getLevel();
@@ -299,8 +298,6 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
     public Object visitAssignAST(InterpreteParser.AssignASTContext ctx) {
 
 
-
-
         visit(ctx.expression());
 
         return null;
@@ -309,10 +306,10 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
     @Override
     public Object visitArrayAssignAST(InterpreteParser.ArrayAssignASTContext ctx) {
 
-         visit(ctx.expression(0));
+        visit(ctx.expression(0));
 
-        if(ctx.expression(1) != null){
-           visit(ctx.expression(1));
+        if (ctx.expression(1) != null) {
+            visit(ctx.expression(1));
         }
 
         return null;
@@ -388,9 +385,6 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
     public Object visitIdFAST(InterpreteParser.IdFASTContext ctx) {
 
 
-
-
-
         return null;
     }
 
@@ -406,7 +400,7 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
     @Override
     public Object visitArrayLookupFAST(InterpreteParser.ArrayLookupFASTContext ctx) {
 
-         this.visit(ctx.arrayLookup());
+        this.visit(ctx.arrayLookup());
 
         return null;
     }
@@ -438,7 +432,7 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
     @Override
     public Object visitAllocationExpressionFAST(InterpreteParser.AllocationExpressionFASTContext ctx) {
 
-         this.visit(ctx.allocationExpression());
+        this.visit(ctx.allocationExpression());
 
         return null;
     }
@@ -446,7 +440,7 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
     @Override
     public Object visitUnaryFAST(InterpreteParser.UnaryFASTContext ctx) {
 
-         this.visit(ctx.unary());
+        this.visit(ctx.unary());
 
         return null;
     }
@@ -456,7 +450,7 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
 
 
         for (int i = 0; i <= ctx.expression().toArray().length - 1; i++) {
-             visit(ctx.expression(i));
+            visit(ctx.expression(i));
         }
 
         return null;
@@ -464,7 +458,6 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
 
     @Override
     public Object visitAllocationExpressionAST(InterpreteParser.AllocationExpressionASTContext ctx) {
-
 
 
         return null;
@@ -487,21 +480,18 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
         this.visit(ctx.expression());
 
 
-
         return null;
     }
 
     @Override
     public Object visitFunctionCallAST(InterpreteParser.FunctionCallASTContext ctx) {
 
-        if(ctx.actualParams() != null){
+        if (ctx.actualParams() != null) {
             this.visit(ctx.actualParams());
         }
 
 
-
-
-       return null;
+        return null;
     }
 
     @Override
@@ -512,7 +502,7 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
 
             visit(ctx.expression(i));
         }
-         return null;
+        return null;
     }
 
     @Override
