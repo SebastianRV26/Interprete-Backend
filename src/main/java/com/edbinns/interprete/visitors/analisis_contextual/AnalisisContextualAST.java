@@ -2,19 +2,21 @@ package com.edbinns.interprete.visitors.analisis_contextual;
 
 import com.edbinns.interprete.generated.InterpreteParser;
 import com.edbinns.interprete.generated.InterpreteParserBaseVisitor;
-import com.edbinns.interprete.models.TreeItem;
 import com.edbinns.interprete.visitors.analisis_contextual.models.ClassNode;
 import com.edbinns.interprete.visitors.analisis_contextual.models.FunctionNode;
+import com.edbinns.interprete.visitors.analisis_contextual.models.Type;
 import com.edbinns.interprete.visitors.analisis_contextual.models.VariableNode;
+import org.antlr.v4.runtime.Token;
 
 import java.util.ArrayList;
 
 public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<Object> {
-    private int numTabs = 0;
 
-    IdentificationTable<VariableNode> variableTable = new IdentificationTable<>();
-    IdentificationTable<ClassNode> classTable = new IdentificationTable<>();
-    IdentificationTable<FunctionNode> functionsTable = new IdentificationTable<>();
+    TablesSingleton tablesSingleton;
+
+    public AnalisisContextualAST() {
+        this.tablesSingleton = TablesSingleton.getInstance();
+    }
 
     @Override
     public Object visitProgramAST(InterpreteParser.ProgramASTContext ctx) {
@@ -27,6 +29,7 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
     @Override
     public Object visitVariableDeclSAST(InterpreteParser.VariableDeclSASTContext ctx) {
         this.visit(ctx.variableDecl());
+        tablesSingleton.variableTable.imprimir();
         return null;
     }
 
@@ -75,6 +78,7 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
     @Override
     public Object visitFunctionDeclSAST(InterpreteParser.FunctionDeclSASTContext ctx) {
         this.visit(ctx.functionDecl());
+        tablesSingleton.functionsTable.imprimir();
         return null;
 
     }
@@ -87,57 +91,71 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
 
     @Override
     public Object visitBlockAST(InterpreteParser.BlockASTContext ctx) {
-        functionsTable.openScope();
-        classTable.openScope();
-        variableTable.closeScope();
+        tablesSingleton.functionsTable.openScope();
+        tablesSingleton.variableTable.openScope();
         for (int i = 0; i < ctx.statement().size(); i++) {
              this.visit(ctx.statement(i));
         }
-        functionsTable.closeScope();
-        classTable.closeScope();
-        variableTable.closeScope();
+        tablesSingleton.functionsTable.closeScope();
+        tablesSingleton.variableTable.closeScope();
         return null;
     }
 
     @Override
     public Object visitFunctionDeclAST(InterpreteParser.FunctionDeclASTContext ctx) {
 
-        this.visit(ctx.type());
+        Object objectType = this.visit(ctx.type());
+        String type = null;
+        if (objectType instanceof Type) {
+            type = ((Type) objectType).name();
+        } else {
+            //Validar si la clase que se instancio existe
+            type = ((Token) objectType).getText();
 
-        if(ctx.formalParams() != null){
-            this.visit(ctx.formalParams());
         }
 
+        ArrayList<VariableNode> parametersList = new ArrayList<>();
+        if (ctx.formalParams() != null) {
+            parametersList.addAll((ArrayList<VariableNode>) this.visit(ctx.formalParams()));
+        }
+        int level = tablesSingleton.functionsTable.getLevel();
         this.visit(ctx.block());
-
+        Token id = ctx.ID().getSymbol();
+        FunctionNode fn = new FunctionNode(id, level, ctx, type, parametersList);
+        tablesSingleton.functionsTable.enter(fn);
 
         return null;
     }
 
     @Override
     public Object visitFormalParamsAST(InterpreteParser.FormalParamsASTContext ctx) {
-
-        this.visit(ctx.formalParam(0));
+        ArrayList<VariableNode> parametersList = new ArrayList<>();
+        parametersList.add((VariableNode) this.visit(ctx.formalParam(0)));
 
         for (int i = 1; i <= ctx.formalParam().toArray().length - 1; i++) {
-            if (ctx.COMA(i - 1) != null) {
-                 visit(ctx.COMA(i - 1));
-                 visit(ctx.formalParam(i));
-
-            }
+            visit(ctx.COMA(i - 1));
+            parametersList.add((VariableNode) this.visit(ctx.formalParam(i)));
         }
-
-        return null;
+        return (Object) parametersList;
     }
 
     @Override
     public Object visitFormalParamAST(InterpreteParser.FormalParamASTContext ctx) {
 
-        this.visit(ctx.type());
+        Object objectType = this.visit(ctx.type());
+        String type = null;
+        if (objectType instanceof Type) {
+            type = ((Type) objectType).name();
+        } else {
+            //Validar si la clase que se instancio existe
+            type = ((Token) objectType).getText();
 
+        }
+        Token id = ctx.ID().getSymbol();
+        int level = tablesSingleton.functionsTable.getLevel();
+        VariableNode vn = new VariableNode(id,level,ctx, type,null);
 
-
-        return null;
+        return (Object) vn;
     }
 
     @Override
@@ -184,54 +202,73 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
 
     @Override
     public Object visitClassDeclAST(InterpreteParser.ClassDeclASTContext ctx) {
-       classTable.openScope();
-       variableTable.openScope();
+
+        ArrayList<VariableNode> attrList = new ArrayList<>();
         for (int i = 0; i <= ctx.classVariableDecl().toArray().length - 1; i++) {
              visit(ctx.classVariableDecl(i));
 
         }
-        classTable.closeScope();
-        variableTable.closeScope();
+        Token id = ctx.ID().getSymbol();
+        int level = tablesSingleton.classTable.getLevel();
+        ClassNode cn = new ClassNode(id,level,ctx,attrList);
+        tablesSingleton.classTable.enter(cn);
+
+
         return null;
     }
 
     @Override
     public Object visitClassVariableDeclAST(InterpreteParser.ClassVariableDeclASTContext ctx) {
+        tablesSingleton.classTable.openScope();
 
-
-         this.visit(ctx.simpleType());
-
-        if((ctx.ASYGN() != null) && (ctx.expression() != null)){
-
-            this.visit(ctx.expression());
+        Object objectType = this.visit(ctx.simpleType());
+        String type = null;
+        if (objectType instanceof Type) {
+            type = ((Type) objectType).name();
+        } else {
+            //Lanzar error en caso de que no sea valido
+            System.out.println("error en caso de que no sea valido");
         }
 
+        int level = tablesSingleton.classTable.getLevel();
+        Token id = ctx.ID().getSymbol();
+        Token value = null;
+        if ((ctx.ASYGN() != null) && (ctx.expression() != null)) {
+            this.visit(ctx.expression());
+        }
+        VariableNode variable = new VariableNode(id, level, ctx, type, value);
+        tablesSingleton.classTable.closeScope();
 
-        return null;
+        return (Object) variable;
     }
 
     @Override
     public Object visitVariableDeclAST(InterpreteParser.VariableDeclASTContext ctx) {
 
-
-        this.visit(ctx.type());
-
-
-        if((ctx.ASYGN() != null) && (ctx.expression() != null)){
-
-            this.visit(ctx.expression());
-
+        Object objectType = this.visit(ctx.type());
+        String type = null;
+        if (objectType instanceof Type) {
+            type = ((Type) objectType).name();
+        } else {
+            //Validar si la clase que se instancio existe
+            type = ((Token) objectType).getText();
+            ;
         }
-
-
+        int level = tablesSingleton.variableTable.getLevel();
+        Token id = ctx.ID().getSymbol();
+        Token value = null;
+        if ((ctx.ASYGN() != null) && (ctx.expression() != null)) {
+            this.visit(ctx.expression());
+        }
+        VariableNode variable = new VariableNode(id, level, ctx, type, value);
+        tablesSingleton.variableTable.enter(variable);
         return null;
     }
 
     @Override
     public Object visitTypeAST(InterpreteParser.TypeASTContext ctx) {
-
-        this.visit(ctx.simpleType());
-        return null;
+        //Este siempre va a retornar un enum Type
+        return this.visit(ctx.simpleType());
     }
 
     @Override
@@ -283,33 +320,22 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
 
     @Override
     public Object visitBooleanTAST(InterpreteParser.BooleanTASTContext ctx) {
-
-
-
-        return null;
+        return (Object) Type.BOOLEAN;
     }
 
     @Override
     public Object visitCharTAST(InterpreteParser.CharTASTContext ctx) {
-
-
-        return null;
+        return (Object) Type.CHAR;
     }
 
     @Override
     public Object visitIntTAST(InterpreteParser.IntTASTContext ctx) {
-
-
-
-        return null;
+        return (Object) Type.INT;
     }
 
     @Override
     public Object visitStringTAST(InterpreteParser.StringTASTContext ctx) {
-
-
-
-        return null;
+        return (Object) Type.STRING;
     }
 
     @Override
@@ -346,20 +372,16 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
 
         for (int i = 1; i <= ctx.factor().toArray().length - 1; i++) {
 
-            visit(ctx.multiplicativeop(i - 1));
-            visit(ctx.factor(i));
+            this.visit(ctx.multiplicativeop(i - 1));
+            this.visit(ctx.factor(i));
         }
 
-        return null;
+        return super.visitChildren(ctx);
     }
 
     @Override
     public Object visitLiteralFAST(InterpreteParser.LiteralFASTContext ctx) {
-
-        this.visit(ctx.literal());
-
-
-        return null;
+        return this.visit(ctx.literal());
     }
 
     @Override
@@ -608,25 +630,24 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
     @Override
     public Object visitInLAST(InterpreteParser.InLASTContext ctx) {
 
-        return null;
+        return (Object) ctx.INTLITERAL().getSymbol();
     }
 
     @Override
     public Object visitRealLAST(InterpreteParser.RealLASTContext ctx) {
 
-        return null;
+        return (Object) ctx.REALLITERAL().getSymbol();
     }
 
     @Override
     public Object visitBoolLAST(InterpreteParser.BoolLASTContext ctx) {
 
-        return null;
+        return (Object) ctx.BOOLLITERAL().getSymbol();
+
     }
 
     @Override
     public Object visitStringLAST(InterpreteParser.StringLASTContext ctx) {
-
-        return null;
-
+        return (Object) ctx.STRINGLITERAL().getSymbol();
     }
 }

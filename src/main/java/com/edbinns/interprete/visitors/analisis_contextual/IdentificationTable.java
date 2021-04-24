@@ -1,5 +1,6 @@
 package com.edbinns.interprete.visitors.analisis_contextual;
 
+import com.edbinns.interprete.functions.ErrorListener;
 import com.edbinns.interprete.visitors.analisis_contextual.models.Node;
 import org.antlr.v4.runtime.Token;
 
@@ -8,14 +9,20 @@ import java.util.LinkedList;
 public class IdentificationTable <T extends Node>{
 
 
+
     private int level = 0;
+
+    public int getLevel() {
+        return level;
+    }
+
     private final LinkedList<T> table = new LinkedList<>();
 
     /**
      * Agrega un identificador a la Tabla
      */
     public void enter(T node) {
-        table.add(node);
+        table.addLast(node);
     }
 
     /**
@@ -60,6 +67,13 @@ public class IdentificationTable <T extends Node>{
             }
         }
         level--;
+    }
+    public void imprimir() {
+        System.out.println("----- INICIO TABLA ------");
+        for (int i = table.size() - 1; i >= 0; i--) {
+            table.get(i).imprimir();
+        }
+        System.out.println("----- FIN TABLA ------");
     }
 
 }

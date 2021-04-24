@@ -3,6 +3,7 @@ package com.edbinns.interprete.test;
 import com.edbinns.interprete.functions.ErrorListener;
 import com.edbinns.interprete.generated.InterpreteParser;
 import com.edbinns.interprete.generated.InterpreteScanner;
+import com.edbinns.interprete.visitors.analisis_contextual.AnalisisContextualAST;
 import com.edbinns.interprete.visitors.pretty_print.PrettyPrintAST;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -94,11 +95,10 @@ public class ParserTest {
 
             PrettyPrintAST pp = new PrettyPrintAST();
             pp.visit(tree);
-            System.out.println((new Gson().toJson(pp.treeItem).toString()));
-            System.out.println(toJson(tree));
-
-            PrettyPrintAST ac = new PrettyPrintAST(); ///
-            ac.visit(tree); ///
+//            System.out.println((new Gson().toJson(pp.treeItem).toString()));
+//            System.out.println(toJson(tree));
+            AnalisisContextualAST ac = new AnalisisContextualAST();
+            ac.visit(tree);
 
 
             System.out.println("Compilación Terminada!!\n");

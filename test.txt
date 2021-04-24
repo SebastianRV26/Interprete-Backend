@@ -2,13 +2,16 @@
 int x = 3;
 
 int ComputeFac(int num) {
-  int x = 3;
+  int y = 3;
   int num_aux;
   if (num < 1){
        num_aux = 1;
   }
-  class hola{
-    int ccd
-  };
+
   return num_aux;
 }
+
+ class Persona{
+    int ccd
+    char x
+  };

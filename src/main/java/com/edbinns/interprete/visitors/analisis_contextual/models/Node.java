@@ -3,7 +3,9 @@ package com.edbinns.interprete.visitors.analisis_contextual.models;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 
-public class Node {
+import java.util.LinkedList;
+
+public abstract class Node {
     //El id es el nombre
     Token id;
     int level;
@@ -34,6 +36,8 @@ public class Node {
     public ParserRuleContext getDeclCtx() {
         return declCtx;
     }
+
+    public abstract void imprimir();
 
     public void setDeclCtx(ParserRuleContext declCtx) {
         this.declCtx = declCtx;
