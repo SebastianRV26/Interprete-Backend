@@ -6,6 +6,7 @@ import com.edbinns.interprete.visitors.analisis_contextual.models.ClassNode;
 import com.edbinns.interprete.visitors.analisis_contextual.models.FunctionNode;
 import com.edbinns.interprete.visitors.analisis_contextual.models.Type;
 import com.edbinns.interprete.visitors.analisis_contextual.models.VariableNode;
+import org.antlr.v4.codegen.model.chunk.RulePropertyRef_ctx;
 import org.antlr.v4.runtime.Token;
 
 import java.util.ArrayList;
@@ -151,10 +152,15 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
     public Object visitFormalParamsAST(InterpreteParser.FormalParamsASTContext ctx) {
         ArrayList<VariableNode> parametersList = new ArrayList<>();
         parametersList.add((VariableNode) this.visit(ctx.formalParam(0)));
-
         for (int i = 1; i <= ctx.formalParam().toArray().length - 1; i++) {
             visit(ctx.COMA(i - 1));
-            parametersList.add((VariableNode) this.visit(ctx.formalParam(i)));
+            VariableNode vn = (VariableNode) visit(ctx.formalParam(i));
+            for (VariableNode attr : parametersList) {
+                if (attr.getId().getText().equals(vn.getId().getText()))
+                    throw new AContextualException("Error, no se pueden repetir parametro dentro de una funcion");
+
+            }
+            parametersList.add(vn);
         }
         return (Object) parametersList;
     }
@@ -305,6 +311,7 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
             if(vn != null && level == vn.getLevel()){
                 throw new AContextualException("Error, ya existe una variable con el nombre " + id.getText() + " dentro del nivel " + level);
             }
+
             Token value = null;
             if ((ctx.ASYGN() != null) && (ctx.expression() != null)) {
                 Object objectValue = (Object) this.visit(ctx.expression());
@@ -419,12 +426,11 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
     @Override
     public Object visitTermAST(InterpreteParser.TermASTContext ctx) {
 
+        //Sirve para obtener el valor de la asignacion
         Token obj = (Token) this.visit(ctx.factor(0));
         if (obj != null) {
-            System.out.println(obj.getType());
-            System.out.println(obj.getText());
             if ((obj.getType() >= 87) && (obj.getType() <= 90)) {
-                System.out.println("entro");
+
                 return (Object) obj;
             }
         }
@@ -446,41 +452,39 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
     @Override
     public Object visitIdFAST(InterpreteParser.IdFASTContext ctx) {
 
-
+//        ClassNode cn = tablesSingleton.classTable.searchNode(ctx.ID(0).getText());
+//        if(cn == null){
+//            throw  new AContextualException("No se puede acceder a los atributos de esta clase, ya que no existe");
+//        }
+//
+//        if(ctx.ID(1) != null && ctx.PUNTO() != null){
+//            VariableNode vn = cn.search(ctx.ID(1).getText());
+//            if(vn == null){
+//                throw  new AContextualException("No se puede acceder al atributo " + vn.getId().getText() + " debido a que no es un atributo de la clase " + cn.getId().getText());
+//            }
+//        }
         return null;
     }
 
     @Override
     public Object visitFunctionCallFAST(InterpreteParser.FunctionCallFASTContext ctx) {
 
-
-        this.visit(ctx.functionCall());
-
-        return null;
+        return this.visit(ctx.functionCall());
     }
 
     @Override
     public Object visitArrayLookupFAST(InterpreteParser.ArrayLookupFASTContext ctx) {
-
-        this.visit(ctx.arrayLookup());
-
-        return null;
+        return this.visit(ctx.arrayLookup());
     }
 
     @Override
     public Object visitArrayLenghtFAST(InterpreteParser.ArrayLenghtFASTContext ctx) {
-
-        this.visit(ctx.arrayLenght());
-
-        return null;
+        return this.visit(ctx.arrayLenght());
     }
 
     @Override
     public Object visitSubEspressionFAST(InterpreteParser.SubEspressionFASTContext ctx) {
-
-        this.visit(ctx.subEspression());
-
-        return null;
+        return  this.visit(ctx.subEspression());
     }
 
     @Override
@@ -493,18 +497,12 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
 
     @Override
     public Object visitAllocationExpressionFAST(InterpreteParser.AllocationExpressionFASTContext ctx) {
-
-        this.visit(ctx.allocationExpression());
-
-        return null;
+        return   this.visit(ctx.allocationExpression());
     }
 
     @Override
     public Object visitUnaryFAST(InterpreteParser.UnaryFASTContext ctx) {
-
-        this.visit(ctx.unary());
-
-        return null;
+        return this.visit(ctx.unary());
     }
 
     @Override
@@ -520,60 +518,81 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
 
     @Override
     public Object visitAllocationExpressionAST(InterpreteParser.AllocationExpressionASTContext ctx) {
-
-
-        return null;
+        ClassNode cn = tablesSingleton.classTable.searchNode(ctx.ID().getText());
+        if(cn == null){
+            throw new AContextualException("No se puede insrtanciar la clase, ya que no existe");
+        }
+        return (Object) cn;
     }
 
     @Override
     public Object visitArrayAllocationEspressionAST(InterpreteParser.ArrayAllocationEspressionASTContext ctx) {
 
-        this.visit(ctx.simpleType());
-
+        Object obj = this.visit(ctx.simpleType());
         this.visit(ctx.expression());
-
-
-        return null;
+        return obj;
     }
 
     @Override
     public Object visitSubEspressionAST(InterpreteParser.SubEspressionASTContext ctx) {
-
-        this.visit(ctx.expression());
-
-
-        return null;
+        return  this.visit(ctx.expression());
     }
 
     @Override
     public Object visitFunctionCallAST(InterpreteParser.FunctionCallASTContext ctx) {
+//        FunctionNode fn = tablesSingleton.functionsTable.searchNode(ctx.ID().getText());
+//        if(fn == null){
+//            throw  new AContextualException("La funcion " + ctx.ID().getText() + " no ha sido declarada");
+//        }
+//        if (ctx.actualParams() != null) {
+//            ArrayList<Token> paremeters = (ArrayList<Token>)this.visit(ctx.actualParams());
+//
+//            if(paremeters.size() == fn.getParameterList().size()){
+//                for (int i = 0; i < fn.getParameterList().size(); i++) {
+//                   switch (paremeters.get(i).getType()){
+//                       case 87:
+//                       case 88:
+//                           break;
+//                       case 89:
+//                           break;
+//                       case 90:
+//                           break;
+//                       default:
+//                           break;
+//                   }
+//                }
+//            }else{
+//                throw  new AContextualException("La cantidad de parametros enviados no corresponden a la cantiad de parametros esperados por la funcion " + fn.getId().getText());
+//            }
+//
+//        }
 
-        if (ctx.actualParams() != null) {
-            this.visit(ctx.actualParams());
-        }
-
-
-        return null;
+       return super.visitChildren(ctx);
+//        return null;
     }
 
     @Override
     public Object visitActualParamsAST(InterpreteParser.ActualParamsASTContext ctx) {
 
-        visit(ctx.expression(0));
-        for (int i = 1; i <= ctx.expression().toArray().length - 1; i++) {
+        ArrayList<Token> paremeters = new ArrayList<>();
 
-            visit(ctx.expression(i));
+        Object first = visit(ctx.expression(0));
+        for (int i = 1; i <= ctx.expression().toArray().length - 1; i++) {
+            Object obj = visit(ctx.expression(i));
         }
-        return null;
+        return (Object) paremeters;
     }
 
     @Override
     public Object visitArrayLookupAST(InterpreteParser.ArrayLookupASTContext ctx) {
-
-        this.visit(ctx.expression());
-
-
-        return null;
+        VariableNode vn= tablesSingleton.variableTable.searchNode(ctx.ID().getText());
+        if(vn == null){
+            throw  new AContextualException("El arreglo " + ctx.ID().getText() +  " no existe");
+        }
+        if(!vn.getIsArray()){
+            throw  new AContextualException("No es posible hacer una busqueda en la variable " + ctx.ID().getText() +  " debido a que no es un array");
+        }
+        return this.visit(ctx.expression());
     }
 
     @Override

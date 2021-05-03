@@ -1,28 +1,8 @@
-
-int x = 0;
-
-
-int ComputeFac(numerito num) {
-  int[] y = 3;
-  int num_aux;
-  boolean w = true;
-  if (num < 1){
-       num_aux = 1;
-  }
-    int xd(int num) {
-      int y = 3;
-      int num_aux;
-      if (num < 1){
-           num_aux = 1;
-      }
-
-      return num_aux;
-    }
-  return num_aux;
+int hola(int num){
+    return "ajfohjasdfchdajfc";
 }
+int x = 2;
+int c = hola(x);
+{
 
- class Persona{
-    int ccd
-    char x
-  };
-
+}

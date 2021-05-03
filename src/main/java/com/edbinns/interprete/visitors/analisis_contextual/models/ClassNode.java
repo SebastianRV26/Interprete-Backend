@@ -32,4 +32,11 @@ public class ClassNode extends  Node{
 
         }
     }
+
+    public VariableNode search(String id){
+        for(VariableNode obj : getAttrList())
+            if ((obj).getId().getText().equals(id))
+                return (obj);
+        return null;
+    }
 }
