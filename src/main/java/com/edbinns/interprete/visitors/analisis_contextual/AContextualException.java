@@ -1,0 +1,17 @@
+package com.edbinns.interprete.visitors.analisis_contextual;
+
+public class AContextualException extends RuntimeException {
+
+    private String mensaje;
+
+    public AContextualException(String mensaje) {
+        this.mensaje = mensaje;
+    }
+
+    @Override
+    public String getMessage() {
+        return this.mensaje;
+    }
+
+
+}

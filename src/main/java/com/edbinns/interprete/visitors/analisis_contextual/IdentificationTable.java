@@ -22,7 +22,7 @@ public class IdentificationTable <T extends Node>{
      * Agrega un identificador a la Tabla
      */
     public void enter(T node) {
-        table.addLast(node);
+        table.addFirst(node);
     }
 
     /**
@@ -38,12 +38,9 @@ public class IdentificationTable <T extends Node>{
     }
 
     public T searchNode(String id) {
-        for (int i = table.size() - 1; i >= 0; i--) {
-            //System.out.println(symbols.get(i));
-            if (table.get(i).getId().equals(id)) {
-                return table.get(i);
-            }
-        }
+        for(T obj : table)
+            if ((obj).getId().getText().equals(id))
+                return (obj);
         return null;
     }
 
@@ -60,18 +57,13 @@ public class IdentificationTable <T extends Node>{
      * Se borran todos los campos de la tabla asociados con el nivel
      */
     public void closeScope() {
-        for (int i = table.size() - 1; i >= 0; i--) {
-            // System.out.print(symbols.get(i) + " ");
-            if (table.get(i).getLevel() == level) {
-                table.remove(i);
-            }
-        }
+        table.removeIf(n -> (((T)n).getLevel() == level));
         level--;
     }
     public void imprimir() {
         System.out.println("----- INICIO TABLA ------");
-        for (int i = table.size() - 1; i >= 0; i--) {
-            table.get(i).imprimir();
+        for (T t : table) {
+            t.imprimir();
         }
         System.out.println("----- FIN TABLA ------");
     }

@@ -93,8 +93,7 @@ public class ParserTest {
 
             tree = parser.program();
 
-            PrettyPrintAST pp = new PrettyPrintAST();
-            pp.visit(tree);
+
 //            System.out.println((new Gson().toJson(pp.treeItem).toString()));
 //            System.out.println(toJson(tree));
             AnalisisContextualAST ac = new AnalisisContextualAST();
