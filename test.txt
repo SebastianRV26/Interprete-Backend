@@ -1,13 +1,4 @@
 
-int x = y/hola();
+boolean a = !(2<12);
 
-int hola(int num) {
-    num = 1;
-    imt x = num;
-}
-
-
-int x(int num) {
-    num = 1;
-    imt x = num;
-}
+int[] x = new int[2323]

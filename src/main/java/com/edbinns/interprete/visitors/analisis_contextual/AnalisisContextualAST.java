@@ -6,6 +6,7 @@ import com.edbinns.interprete.visitors.analisis_contextual.models.ClassNode;
 import com.edbinns.interprete.visitors.analisis_contextual.models.FunctionNode;
 import com.edbinns.interprete.visitors.analisis_contextual.models.Type;
 import com.edbinns.interprete.visitors.analisis_contextual.models.VariableNode;
+import com.edbinns.interprete.visitors.analisis_contextual.utils.UtilsAContextual;
 import org.antlr.v4.codegen.model.chunk.RulePropertyRef_ctx;
 import org.antlr.v4.runtime.Token;
 
@@ -400,64 +401,96 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
     @Override
     public Object visitExpressionAST(InterpreteParser.ExpressionASTContext ctx) {
 
-        Object obj = visit(ctx.simpleExpression(0));
-
+        String typeObj = (String) visit(ctx.simpleExpression(0));
+        UtilsAContextual utils = new UtilsAContextual();
         for (int i = 1; i <= ctx.simpleExpression().toArray().length - 1; i++) {
 
-            visit(ctx.relacionalop(i - 1));
-            visit(ctx.simpleExpression(i));
+            Token relativeOP = (Token)visit(ctx.relacionalop(i - 1));
+            String typeObj2 = (String) visit(ctx.simpleExpression(i));
+            //52 equals, 57 dif, mayor 58, mi 59, menor 60, mei 61, and 68, and 2 69, or 70, 0r2 71
+           switch (relativeOP.getType()){
+               case 52:
+                   if(!typeObj.equals(typeObj2)){
+                       throw new AContextualException("Los tipos de datos no son compatibles para saber si son iguales ");
+                   }
+                   typeObj = "BOOLEAN";
+                   break;
+               case 57:
+                   if(typeObj.equals(typeObj2)){
+                       throw new AContextualException("Los tipos de datos son iguales");
+                   }
+                   typeObj = "BOOLEAN";
+                   break;
+               case 58:
+               case 59:
+               case 60:
+               case 61:
+                   utils.validateOP(typeObj,typeObj2,"INT"," en las comparaciones");
+                   typeObj = "BOOLEAN";
+                   break;
+               case 68:
+               case 69:
+               case 70:
+               case 71:
+                   typeObj = utils.validateOP(typeObj,typeObj2,"BOOLEAN"," en las comparaciones");
+                   break;
+               default:
+                   throw new AContextualException("Excepcion en el defaul de expression");
+           }
         }
 
-        return obj;
+        return (Object) typeObj;
     }
 
     @Override
     public Object visitSimpleExpressionAST(InterpreteParser.SimpleExpressionASTContext ctx) {
 
-        Object obj = visit(ctx.term(0));
+        String typeObj = (String) visit(ctx.term(0));
+        UtilsAContextual utils = new UtilsAContextual();
         for (int i = 1; i <= ctx.term().toArray().length - 1; i++) {
-
-            visit(ctx.additiveop(i - 1));
-            visit(ctx.term(i));
+            Token additiveOP = (Token) this.visit(ctx.additiveop(i - 1));
+            //53 suma ,54 resta ,70 or
+            String typeObj2 =  (String) this.visit(ctx.term(i));
+            if (additiveOP.getType() == 53) {
+                if((typeObj.equals("STRING")) && (typeObj2.equals("STRING"))){
+                    typeObj = utils.validateOP(typeObj, typeObj2, "STRING", "la suma");
+                } else if((typeObj.equals("INT")) && (typeObj2.equals("INT"))){
+                    typeObj = utils.validateOP(typeObj, typeObj2, "INT", "la suma");
+                }else{
+                    throw new AContextualException("Los tipos de datos no son compatibles en la suma" );
+                }
+            } else if (additiveOP.getType() == 54) {
+                typeObj = utils.validateOP(typeObj, typeObj2, "INT", "una resta");
+            } else if (additiveOP.getType() == 68) {
+                typeObj = utils.validateOP(typeObj, typeObj2, "BOOLEAN", "el operador logico or");
+            }
         }
 
-        return obj;
+        return (Object) typeObj;
     }
 
     @Override
     public Object visitTermAST(InterpreteParser.TermASTContext ctx) {
-//        if (obj != null) {
-//            if(obj instanceof  Token){
-//                 token = (Token) obj;
-////                if ((token.getType() >= 87) && (token.getType() <= 90)) {
-////                }
-//            } else  if (obj instanceof VariableNode) {
-//
-//            }
-//
-//        }
 
-
-        //Sirve para obtener el valor de la asignacion
         Object obj = (Object) this.visit(ctx.factor(0));
-
+        UtilsAContextual utils = new UtilsAContextual();
+        String typeObj = utils.validateObj(obj);
         for (int i = 1; i <= ctx.factor().toArray().length - 1; i++) {
 
-            Token additiveOP = (Token) this.visit(ctx.multiplicativeop(i - 1));
-            Object obj2 =  this.visit(ctx.factor(i));
+            Token multiplicativeOP = (Token) this.visit(ctx.multiplicativeop(i - 1));
+            Object obj2 = this.visit(ctx.factor(i));
+            String typeObj2 = utils.validateObj(obj2);
             //55,56,68
-            if(additiveOP.getType() == 55){
-                //div
-
-            } else  if(additiveOP.getType() == 56){
-                //mul
-            }else  if(additiveOP.getType() == 68){
-                //and
+            if (multiplicativeOP.getType() == 55) {
+                typeObj = utils.validateOP(typeObj, typeObj2, "INT", "una division");
+            } else if (multiplicativeOP.getType() == 56) {
+                typeObj =utils.validateOP(typeObj, typeObj2, "INT", "una multiplicacion");
+            } else if (multiplicativeOP.getType() == 68) {
+                typeObj = utils.validateOP(typeObj, typeObj2, "BOOLEAN", "el operador logico and");
             }
-
         }
 
-        return obj;
+        return (Object) typeObj;
     }
 
     @Override
@@ -529,13 +562,27 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
         } else if(ctx.RES() != null){
             tokenOperator = ctx.RES().getSymbol();
         }
-
-
+        String returnType = "";
         for (int i = 0; i <= ctx.expression().toArray().length - 1; i++) {
-            visit(ctx.expression(i));
+            String type = (String) visit(ctx.expression(i));
+            //53 suma, 54 resta 62 admiracion
+            if(tokenOperator.getType() == 53 || tokenOperator.getType() == 54  ){
+                if(type.equals("INT")){
+                    returnType = "INT";
+                }else{
+                    throw new AContextualException("Error, esta operacion no se le puede aplicar a otros tipos de datos que no sean enteros");
+                }
+            }
+            if(tokenOperator.getType() == 62 ){
+                if(type.equals("BOOLEAN")){
+                    returnType = "BOOLEAN";
+                }else{
+                    throw new AContextualException("Error, esta operacion no se le puede aplicar a otros tipos de datos que no sean booleanos");
+                }
+            }
         }
 
-        return (Object) "unary";
+        return (Object) returnType;
     }
 
     @Override
@@ -551,8 +598,11 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
     public Object visitArrayAllocationEspressionAST(InterpreteParser.ArrayAllocationEspressionASTContext ctx) {
 
         ///Falta validar que la expresion sea siempre un entero
-         Object type = this.visit(ctx.simpleType());
-        this.visit(ctx.expression());
+        Object type = this.visit(ctx.simpleType());
+        String cantIndex = (String) this.visit(ctx.expression());
+        if (!cantIndex.equals("INT")) {
+            throw new AContextualException("Al tamaño del array no se le puede asignar algo que no sea un entero");
+        }
         return type;
     }
 
@@ -570,60 +620,14 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
         if (ctx.actualParams() != null) {
             ArrayList<Object> paremeters = (ArrayList<Object>) this.visit(ctx.actualParams());
 
-            System.out.println("parameters " + paremeters.size());
-            System.out.println("parameters 2 " + fn.getParameterList().size());
+
             if (paremeters.size() == fn.getParameterList().size()) {
                 for (int i = 0; i < fn.getParameterList().size(); i++) {
-                    Object obj = paremeters.get(i);
+                    String typeObj = (String) paremeters.get(i);
                     VariableNode parameter = fn.getParameterList().get(i);
-                    if (!(obj instanceof Token)) {
-                        if (obj instanceof VariableNode) {
-                            VariableNode lookup = (VariableNode) obj;
-                            if (!lookup.getType().equals(parameter.getType())) {
-                                throw new AContextualException("Error,el tipo del parametro  " + parameter.getId().getText() + " no coincide tipo de " + lookup.getId().getText());
-                            }
-                        } else if (obj instanceof FunctionNode){
-                            FunctionNode function = (FunctionNode) obj;
-                            if (!function.getType().equals(parameter.getType())) {
-                                throw new AContextualException("Error,el tipo del parametro  " + parameter.getId().getText() + " no coincide con el retorno de la funcion " + function.getId().getText());
-                            }
-                        } else if(obj instanceof Type){
-                            Type type = (Type) obj;
-                            if (!type.name().equals(parameter.getType())) {
-                                throw new AContextualException("Error,el tipo del parametro  " + parameter.getId().getText() + " no coincide  con el del array");
-                            }
-                        }else if(obj instanceof ClassNode){
-                            ClassNode classNode = (ClassNode) obj;
-                            if (classNode.getId().getText().equals(parameter.getType())) {
-                                throw new AContextualException("Error,el tipo del parametro  " + parameter.getId().getText() + " no coincide  con el del valor enviado");
-                            }
-                        } else if(obj instanceof String){
-                            System.out.println("Esto es un unary");
-                        }
-                    } else {
-                        Token token = (Token) obj;
-                        switch (token.getType()) {
-                            case 40:
-                            case 87:
-                            case 88:
-                                if (!parameter.getType().equals("INT")) {
-                                    throw new AContextualException("Error,el " + parameter.getId().getText() + " debe de ser de tipo int");
-                                }
-                                break;
-                            case 89:
-                                if (!parameter.getType().equals("BOOLEAN")) {
-                                    throw new AContextualException("Error,el " + parameter.getId().getText() + " debe de ser de tipo int");
-                                }
-                                break;
-                            case 90:
-                                if (!parameter.getType().equals("STRING")) {
-                                    throw new AContextualException("Error,el " + parameter.getId().getText() + " debe de ser de tipo int");
-                                }
-                                break;
-                            default:
-                                throw new AContextualException("Error, tipo de dato no valido");
-
-                        }
+                    String typeParameter = parameter.getType();
+                    if(!typeObj.equals(typeParameter)){
+                        throw new AContextualException("Error, el parametro enviado no corresonde al tipo  que espera la funcion");
                     }
                 }
             } else {
@@ -649,14 +653,18 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
 
     @Override
     public Object visitArrayLookupAST(InterpreteParser.ArrayLookupASTContext ctx) {
-        VariableNode vn= tablesSingleton.variableTable.searchNode(ctx.ID().getText());
-        if(vn == null){
-            throw  new AContextualException("El arreglo " + ctx.ID().getText() +  " no existe");
+        VariableNode vn = tablesSingleton.variableTable.searchNode(ctx.ID().getText());
+        if (vn == null) {
+            throw new AContextualException("El arreglo " + ctx.ID().getText() + " no existe");
         }
-        if(!vn.getIsArray()){
-            throw  new AContextualException("No es posible hacer una busqueda en la variable " + ctx.ID().getText() +  " debido a que no es un array");
+        if (!vn.getIsArray()) {
+            throw new AContextualException("No es posible hacer una busqueda en la variable " + ctx.ID().getText() + " debido a que no es un array");
         }
-        this.visit(ctx.expression());
+
+        String position = (String) this.visit(ctx.expression());
+        if (!position.equals("INT")) {
+            throw new AContextualException("Para buscar en un array solo se puede con valores enteros");
+        }
         return (Object) vn;
     }
 
