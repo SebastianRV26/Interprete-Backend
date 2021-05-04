@@ -1,6 +1,7 @@
 package com.edbinns.interprete.visitors.analisis_contextual;
 
 import com.edbinns.interprete.functions.ErrorListener;
+import com.edbinns.interprete.visitors.analisis_contextual.models.FunctionNode;
 import com.edbinns.interprete.visitors.analisis_contextual.models.Node;
 import org.antlr.v4.runtime.Token;
 
@@ -8,9 +9,14 @@ import java.util.LinkedList;
 
 public class IdentificationTable <T extends Node>{
 
+    private int level;
+    public IdentificationTable() {
+        this.level = 0;
+    }
 
-
-    private int level = 0;
+    public LinkedList<T> getTable() {
+        return table;
+    }
 
     public int getLevel() {
         return level;

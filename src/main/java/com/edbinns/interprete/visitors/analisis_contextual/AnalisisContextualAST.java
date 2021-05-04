@@ -10,6 +10,7 @@ import org.antlr.v4.codegen.model.chunk.RulePropertyRef_ctx;
 import org.antlr.v4.runtime.Token;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<Object> {
 
@@ -425,23 +426,38 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
 
     @Override
     public Object visitTermAST(InterpreteParser.TermASTContext ctx) {
+//        if (obj != null) {
+//            if(obj instanceof  Token){
+//                 token = (Token) obj;
+////                if ((token.getType() >= 87) && (token.getType() <= 90)) {
+////                }
+//            } else  if (obj instanceof VariableNode) {
+//
+//            }
+//
+//        }
+
 
         //Sirve para obtener el valor de la asignacion
-        Token obj = (Token) this.visit(ctx.factor(0));
-        if (obj != null) {
-            if ((obj.getType() >= 87) && (obj.getType() <= 90)) {
-
-                return (Object) obj;
-            }
-        }
+        Object obj = (Object) this.visit(ctx.factor(0));
 
         for (int i = 1; i <= ctx.factor().toArray().length - 1; i++) {
 
-            this.visit(ctx.multiplicativeop(i - 1));
-            this.visit(ctx.factor(i));
+            Token additiveOP = (Token) this.visit(ctx.multiplicativeop(i - 1));
+            Object obj2 =  this.visit(ctx.factor(i));
+            //55,56,68
+            if(additiveOP.getType() == 55){
+                //div
+
+            } else  if(additiveOP.getType() == 56){
+                //mul
+            }else  if(additiveOP.getType() == 68){
+                //and
+            }
+
         }
 
-        return null;
+        return obj;
     }
 
     @Override
@@ -452,53 +468,49 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
     @Override
     public Object visitIdFAST(InterpreteParser.IdFASTContext ctx) {
 
-//        ClassNode cn = tablesSingleton.classTable.searchNode(ctx.ID(0).getText());
-//        if(cn == null){
-//            throw  new AContextualException("No se puede acceder a los atributos de esta clase, ya que no existe");
-//        }
-//
-//        if(ctx.ID(1) != null && ctx.PUNTO() != null){
-//            VariableNode vn = cn.search(ctx.ID(1).getText());
-//            if(vn == null){
-//                throw  new AContextualException("No se puede acceder al atributo " + vn.getId().getText() + " debido a que no es un atributo de la clase " + cn.getId().getText());
-//            }
-//        }
-        return null;
+        ClassNode cn = tablesSingleton.classTable.searchNode(ctx.ID(0).getText());
+
+        VariableNode vn = tablesSingleton.variableTable.searchNode(ctx.ID(0).getText());
+        LinkedList<FunctionNode> table =  tablesSingleton.functionsTable.getTable();
+        if(cn != null ){
+            if(ctx.ID(1) != null && ctx.PUNTO() != null){
+                VariableNode attr = cn.search(ctx.ID(1).getText());
+                if(attr == null){
+                    throw  new AContextualException("No se puede acceder al atributo " + attr.getId().getText() + " debido a que no es un atributo de la clase " + cn.getId().getText());
+                }
+                return (Object) attr;
+            }
+            return (Object) cn;
+        }else if(vn != null){
+            return (Object) vn;
+        } else{
+            for (FunctionNode fn: table) {
+               VariableNode parameter =  fn.searchParameters(ctx.ID(0).getText());
+               if(parameter != null){
+                   return (Object)  parameter;
+               }
+            }
+            throw  new AContextualException("Esta variable o clase no existe en el programa");
+        }
     }
 
     @Override
-    public Object visitFunctionCallFAST(InterpreteParser.FunctionCallFASTContext ctx) {
-
-        return this.visit(ctx.functionCall());
-    }
+    public Object visitFunctionCallFAST(InterpreteParser.FunctionCallFASTContext ctx) { return this.visit(ctx.functionCall()); }
 
     @Override
-    public Object visitArrayLookupFAST(InterpreteParser.ArrayLookupFASTContext ctx) {
-        return this.visit(ctx.arrayLookup());
-    }
+    public Object visitArrayLookupFAST(InterpreteParser.ArrayLookupFASTContext ctx) { return this.visit(ctx.arrayLookup()); }
 
     @Override
-    public Object visitArrayLenghtFAST(InterpreteParser.ArrayLenghtFASTContext ctx) {
-        return this.visit(ctx.arrayLenght());
-    }
+    public Object visitArrayLenghtFAST(InterpreteParser.ArrayLenghtFASTContext ctx) { return this.visit(ctx.arrayLenght()); }
 
     @Override
-    public Object visitSubEspressionFAST(InterpreteParser.SubEspressionFASTContext ctx) {
-        return  this.visit(ctx.subEspression());
-    }
+    public Object visitSubEspressionFAST(InterpreteParser.SubEspressionFASTContext ctx) { return  this.visit(ctx.subEspression()); }
 
     @Override
-    public Object visitArrayAllocationEspressionFAST(InterpreteParser.ArrayAllocationEspressionFASTContext ctx) {
-
-        this.visit(ctx.arrayAllocationEspression());
-
-        return null;
-    }
+    public Object visitArrayAllocationEspressionFAST(InterpreteParser.ArrayAllocationEspressionFASTContext ctx) { return   this.visit(ctx.arrayAllocationEspression()); }
 
     @Override
-    public Object visitAllocationExpressionFAST(InterpreteParser.AllocationExpressionFASTContext ctx) {
-        return   this.visit(ctx.allocationExpression());
-    }
+    public Object visitAllocationExpressionFAST(InterpreteParser.AllocationExpressionFASTContext ctx) { return   this.visit(ctx.allocationExpression()); }
 
     @Override
     public Object visitUnaryFAST(InterpreteParser.UnaryFASTContext ctx) {
@@ -508,19 +520,29 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
     @Override
     public Object visitUnaryAST(InterpreteParser.UnaryASTContext ctx) {
 
+        Token tokenOperator = null;
+
+        if(ctx.ADMIRACION() != null){
+            tokenOperator = ctx.ADMIRACION().getSymbol();
+        } else if(ctx.SUM() != null){
+            tokenOperator = ctx.SUM().getSymbol();
+        } else if(ctx.RES() != null){
+            tokenOperator = ctx.RES().getSymbol();
+        }
+
 
         for (int i = 0; i <= ctx.expression().toArray().length - 1; i++) {
             visit(ctx.expression(i));
         }
 
-        return null;
+        return (Object) "unary";
     }
 
     @Override
     public Object visitAllocationExpressionAST(InterpreteParser.AllocationExpressionASTContext ctx) {
         ClassNode cn = tablesSingleton.classTable.searchNode(ctx.ID().getText());
         if(cn == null){
-            throw new AContextualException("No se puede insrtanciar la clase, ya que no existe");
+            throw new AContextualException("No se puede instanciar la clase " +ctx.ID().getText()+ ", ya que no ha sido declarada");
         }
         return (Object) cn;
     }
@@ -528,9 +550,10 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
     @Override
     public Object visitArrayAllocationEspressionAST(InterpreteParser.ArrayAllocationEspressionASTContext ctx) {
 
-        Object obj = this.visit(ctx.simpleType());
+        ///Falta validar que la expresion sea siempre un entero
+         Object type = this.visit(ctx.simpleType());
         this.visit(ctx.expression());
-        return obj;
+        return type;
     }
 
     @Override
@@ -540,45 +563,86 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
 
     @Override
     public Object visitFunctionCallAST(InterpreteParser.FunctionCallASTContext ctx) {
-//        FunctionNode fn = tablesSingleton.functionsTable.searchNode(ctx.ID().getText());
-//        if(fn == null){
-//            throw  new AContextualException("La funcion " + ctx.ID().getText() + " no ha sido declarada");
-//        }
-//        if (ctx.actualParams() != null) {
-//            ArrayList<Token> paremeters = (ArrayList<Token>)this.visit(ctx.actualParams());
-//
-//            if(paremeters.size() == fn.getParameterList().size()){
-//                for (int i = 0; i < fn.getParameterList().size(); i++) {
-//                   switch (paremeters.get(i).getType()){
-//                       case 87:
-//                       case 88:
-//                           break;
-//                       case 89:
-//                           break;
-//                       case 90:
-//                           break;
-//                       default:
-//                           break;
-//                   }
-//                }
-//            }else{
-//                throw  new AContextualException("La cantidad de parametros enviados no corresponden a la cantiad de parametros esperados por la funcion " + fn.getId().getText());
-//            }
-//
-//        }
+        FunctionNode fn = tablesSingleton.functionsTable.searchNode(ctx.ID().getText());
+        if (fn == null) {
+            throw new AContextualException("La funcion " + ctx.ID().getText() + " no ha sido declarada");
+        }
+        if (ctx.actualParams() != null) {
+            ArrayList<Object> paremeters = (ArrayList<Object>) this.visit(ctx.actualParams());
 
-       return super.visitChildren(ctx);
-//        return null;
+            System.out.println("parameters " + paremeters.size());
+            System.out.println("parameters 2 " + fn.getParameterList().size());
+            if (paremeters.size() == fn.getParameterList().size()) {
+                for (int i = 0; i < fn.getParameterList().size(); i++) {
+                    Object obj = paremeters.get(i);
+                    VariableNode parameter = fn.getParameterList().get(i);
+                    if (!(obj instanceof Token)) {
+                        if (obj instanceof VariableNode) {
+                            VariableNode lookup = (VariableNode) obj;
+                            if (!lookup.getType().equals(parameter.getType())) {
+                                throw new AContextualException("Error,el tipo del parametro  " + parameter.getId().getText() + " no coincide tipo de " + lookup.getId().getText());
+                            }
+                        } else if (obj instanceof FunctionNode){
+                            FunctionNode function = (FunctionNode) obj;
+                            if (!function.getType().equals(parameter.getType())) {
+                                throw new AContextualException("Error,el tipo del parametro  " + parameter.getId().getText() + " no coincide con el retorno de la funcion " + function.getId().getText());
+                            }
+                        } else if(obj instanceof Type){
+                            Type type = (Type) obj;
+                            if (!type.name().equals(parameter.getType())) {
+                                throw new AContextualException("Error,el tipo del parametro  " + parameter.getId().getText() + " no coincide  con el del array");
+                            }
+                        }else if(obj instanceof ClassNode){
+                            ClassNode classNode = (ClassNode) obj;
+                            if (classNode.getId().getText().equals(parameter.getType())) {
+                                throw new AContextualException("Error,el tipo del parametro  " + parameter.getId().getText() + " no coincide  con el del valor enviado");
+                            }
+                        } else if(obj instanceof String){
+                            System.out.println("Esto es un unary");
+                        }
+                    } else {
+                        Token token = (Token) obj;
+                        switch (token.getType()) {
+                            case 40:
+                            case 87:
+                            case 88:
+                                if (!parameter.getType().equals("INT")) {
+                                    throw new AContextualException("Error,el " + parameter.getId().getText() + " debe de ser de tipo int");
+                                }
+                                break;
+                            case 89:
+                                if (!parameter.getType().equals("BOOLEAN")) {
+                                    throw new AContextualException("Error,el " + parameter.getId().getText() + " debe de ser de tipo int");
+                                }
+                                break;
+                            case 90:
+                                if (!parameter.getType().equals("STRING")) {
+                                    throw new AContextualException("Error,el " + parameter.getId().getText() + " debe de ser de tipo int");
+                                }
+                                break;
+                            default:
+                                throw new AContextualException("Error, tipo de dato no valido");
+
+                        }
+                    }
+                }
+            } else {
+                throw new AContextualException("La cantidad de parametros enviados no corresponden a la cantiad de parametros esperados por la funcion " + fn.getId().getText());
+            }
+        }
+        return (Object) fn;
     }
 
     @Override
     public Object visitActualParamsAST(InterpreteParser.ActualParamsASTContext ctx) {
 
-        ArrayList<Token> paremeters = new ArrayList<>();
+        ArrayList<Object> paremeters = new ArrayList<>();
 
         Object first = visit(ctx.expression(0));
+        paremeters.add(first);
         for (int i = 1; i <= ctx.expression().toArray().length - 1; i++) {
             Object obj = visit(ctx.expression(i));
+            paremeters.add(obj);
         }
         return (Object) paremeters;
     }
@@ -592,7 +656,8 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
         if(!vn.getIsArray()){
             throw  new AContextualException("No es posible hacer una busqueda en la variable " + ctx.ID().getText() +  " debido a que no es un array");
         }
-        return this.visit(ctx.expression());
+        this.visit(ctx.expression());
+        return (Object) vn;
     }
 
     @Override
@@ -604,7 +669,7 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
         if(!vn.getIsArray()){
             throw  new AContextualException("A la variable " + ctx.ID().getText() +  " no es posible obtener su lenght");
         }
-        return (Object) vn;
+        return (Object) ctx.LENGHT();
     }
 
     @Override
@@ -738,4 +803,6 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
         }
         return value;
     }
+
+
 }

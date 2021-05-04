@@ -96,8 +96,7 @@ public class ParserTest {
 
 //            System.out.println((new Gson().toJson(pp.treeItem).toString()));
 //            System.out.println(toJson(tree));
-            AnalisisContextualAST ac = new AnalisisContextualAST();
-            ac.visit(tree);
+
 
 
             System.out.println("Compilación Terminada!!\n");

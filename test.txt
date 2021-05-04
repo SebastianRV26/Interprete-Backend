@@ -1,8 +1,13 @@
-int hola(int num){
-    return "ajfohjasdfchdajfc";
-}
-int x = 2;
-int c = hola(x);
-{
 
+int x = y/hola();
+
+int hola(int num) {
+    num = 1;
+    imt x = num;
+}
+
+
+int x(int num) {
+    num = 1;
+    imt x = num;
 }
