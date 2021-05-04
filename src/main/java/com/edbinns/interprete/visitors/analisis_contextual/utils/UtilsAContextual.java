@@ -31,12 +31,15 @@ public class UtilsAContextual {
             switch (token.getType()) {
                 case 40:
                 case 87:
-                case 88:
                     return "INT";
+                case 88:
+                    return "REAL";
                 case 89:
                     return "BOOLEAN";
                 case 90:
                     return "STRING";
+                case 97:
+                    return "CHAR";
                 default:
                     throw new AContextualException("Error, tipo de dato no valido");
 

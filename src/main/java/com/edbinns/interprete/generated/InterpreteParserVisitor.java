@@ -1,4 +1,4 @@
-// Generated from C:/Users/Usuario/IdeaProjects/Interprete-Backend\InterpreteParser.g4 by ANTLR 4.9.1
+// Generated from C:/Users/edubi/OneDrive - Estudiantes ITCR/Quinto Semestre/Compiladores e interpretes/Proyectos/Proyecto 1/backend\InterpreteParser.g4 by ANTLR 4.9.1
 package com.edbinns.interprete.generated;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
@@ -514,4 +514,11 @@ public interface InterpreteParserVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitStringLAST(InterpreteParser.StringLASTContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code charLAST}
+	 * labeled alternative in {@link InterpreteParser#literal}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCharLAST(InterpreteParser.CharLASTContext ctx);
 }

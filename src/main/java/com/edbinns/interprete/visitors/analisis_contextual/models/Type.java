@@ -8,5 +8,6 @@ public enum Type {
     STRING,
     CHAR,
     INT,
-    BOOLEAN
+    BOOLEAN,
+    REAL
 }

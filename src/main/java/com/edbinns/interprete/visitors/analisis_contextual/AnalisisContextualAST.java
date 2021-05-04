@@ -172,16 +172,22 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
 
         Object objectType = this.visit(ctx.type());
         String type = null;
+        Boolean isArray = false;
         if (objectType instanceof Type) {
             type = ((Type) objectType).name();
-        } else {
+            isArray = false;
+        }  else if (objectType instanceof String) {
+            //Se detecta si es de tipo array
+            type = ((String) objectType).replace("[]", "");
+            isArray = true;
+        }else {
             //Validar si la clase que se instancio existe
             type = ((Token) objectType).getText();
         }
         Token id = ctx.ID().getSymbol();
         int level = tablesSingleton.functionsTable.getLevel();
-        VariableNode vn = new VariableNode(id, level, ctx, type, null, false);
-
+        VariableNode vn = new VariableNode(id, level, ctx, type, null, isArray);
+        tablesSingleton.variableTable.enter(vn);
         return (Object) vn;
     }
 
@@ -222,7 +228,6 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
     public Object visitPrintAST(InterpreteParser.PrintASTContext ctx) {
 
         this.visit(ctx.expression());
-
         return null;
     }
 
@@ -275,8 +280,10 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
 
         Token value = null;
         if ((ctx.ASYGN() != null) && (ctx.expression() != null)) {
-            Object objectValue =  this.visit(ctx.expression());
-            value = validateAssing(type, value, objectValue);
+            String strType = (String) this.visit(ctx.expression());
+            if(!type.equals(strType)){
+                throw new AContextualException("Error, el tipo de dato " + strType + " no es posible asginarlo a un atributo tipo " + type);
+            }
         }
         VariableNode variable = new VariableNode(id, level, ctx, type, value, false);
 
@@ -316,8 +323,11 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
 
             Token value = null;
             if ((ctx.ASYGN() != null) && (ctx.expression() != null)) {
-                Object objectValue = (Object) this.visit(ctx.expression());
-                value = validateAssing(type, value, objectValue);
+                String strType = (String) this.visit(ctx.expression());
+
+                if(!type.equals(strType)){
+                    throw new AContextualException("Error, el tipo de dato " + strType + " no es posible asginarlo a una variable tipo " + type);
+                }
 
             }
             VariableNode variable = new VariableNode(id, level, ctx, type, value, isArray);
@@ -361,18 +371,58 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
     public Object visitAssignAST(InterpreteParser.AssignASTContext ctx) {
 
 
-        visit(ctx.expression());
+        String type = (String) visit(ctx.expression());
+        ClassNode cn = tablesSingleton.classTable.searchNode(ctx.ID(0).getText());
+        VariableNode vn = tablesSingleton.variableTable.searchNode(ctx.ID(0).getText());
 
-        return null;
+        if(cn != null ){
+            if(ctx.ID(1) != null && ctx.PUNTO() != null){
+                VariableNode attr = cn.search(ctx.ID(1).getText());
+                if(attr == null){
+                    throw  new AContextualException("No se puede acceder al atributo " + attr.getId().getText() + " debido a que no es un atributo de la clase " + cn.getId().getText());
+                }
+                if (!attr.getType().equals(type)) {
+                    throw  new AContextualException("Error, tipos incompatibles");
+                }
+                return null;
+            }
+            if(!cn.getId().getText().equals(type)){
+                throw  new AContextualException("Error, tipos incompatibles");
+            }
+            return null;
+        }else if(vn != null){
+            if (!vn.getType().equals(type)) {
+                throw  new AContextualException("Error, tipos incompatibles");
+            }
+            return null;
+        } else{
+            throw  new AContextualException("Esta variable o clase no existe en el programa");
+        }
+
     }
 
     @Override
     public Object visitArrayAssignAST(InterpreteParser.ArrayAssignASTContext ctx) {
+        VariableNode vn = tablesSingleton.variableTable.searchNode(ctx.ID().getText());
 
-        visit(ctx.expression(0));
+        if(vn == null){
+            throw new AContextualException("El array no existe en el programa");
+        }
+
+        if(!vn.getIsArray()){
+            throw new AContextualException("No se puede acceder a esa posicion, debido a que la variable " + vn.getId().getText() + " no es un array");
+        }
+
+        String positionType = (String) visit(ctx.expression(0));
+        if(!positionType.equals("INT")){
+            throw new AContextualException("Error, para poder  acceder a una posicion de un array se requiere que el valor sea entero");
+        }
 
         if (ctx.expression(1) != null) {
-            visit(ctx.expression(1));
+            String assign = (String) visit(ctx.expression(1));
+            if(!vn.getType().equals(assign)){
+                throw new AContextualException("Error, a un array de tipo " + vn.getType() + " no se le pueden asignar cosas del tipo " + assign);
+            }
         }
 
         return null;
@@ -408,16 +458,12 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
             Token relativeOP = (Token)visit(ctx.relacionalop(i - 1));
             String typeObj2 = (String) visit(ctx.simpleExpression(i));
             //52 equals, 57 dif, mayor 58, mi 59, menor 60, mei 61, and 68, and 2 69, or 70, 0r2 71
+
            switch (relativeOP.getType()){
                case 52:
+               case 57:
                    if(!typeObj.equals(typeObj2)){
                        throw new AContextualException("Los tipos de datos no son compatibles para saber si son iguales ");
-                   }
-                   typeObj = "BOOLEAN";
-                   break;
-               case 57:
-                   if(typeObj.equals(typeObj2)){
-                       throw new AContextualException("Los tipos de datos son iguales");
                    }
                    typeObj = "BOOLEAN";
                    break;
@@ -439,6 +485,7 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
            }
         }
 
+        System.out.println(typeObj);
         return (Object) typeObj;
     }
 
@@ -504,7 +551,7 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
         ClassNode cn = tablesSingleton.classTable.searchNode(ctx.ID(0).getText());
 
         VariableNode vn = tablesSingleton.variableTable.searchNode(ctx.ID(0).getText());
-        LinkedList<FunctionNode> table =  tablesSingleton.functionsTable.getTable();
+
         if(cn != null ){
             if(ctx.ID(1) != null && ctx.PUNTO() != null){
                 VariableNode attr = cn.search(ctx.ID(1).getText());
@@ -517,12 +564,7 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
         }else if(vn != null){
             return (Object) vn;
         } else{
-            for (FunctionNode fn: table) {
-               VariableNode parameter =  fn.searchParameters(ctx.ID(0).getText());
-               if(parameter != null){
-                   return (Object)  parameter;
-               }
-            }
+
             throw  new AContextualException("Esta variable o clase no existe en el programa");
         }
     }
@@ -554,7 +596,6 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
     public Object visitUnaryAST(InterpreteParser.UnaryASTContext ctx) {
 
         Token tokenOperator = null;
-
         if(ctx.ADMIRACION() != null){
             tokenOperator = ctx.ADMIRACION().getSymbol();
         } else if(ctx.SUM() != null){
@@ -632,6 +673,11 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
                 }
             } else {
                 throw new AContextualException("La cantidad de parametros enviados no corresponden a la cantiad de parametros esperados por la funcion " + fn.getId().getText());
+            }
+        }else{
+            if(fn.getParameterList().size() > 0){
+                throw new AContextualException("La cantidad de parametros enviados no corresponden a la cantiad de parametros esperados por la funcion " + fn.getId().getText());
+
             }
         }
         return (Object) fn;
@@ -788,29 +834,11 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
         return (Object) ctx.STRINGLITERAL().getSymbol();
     }
 
-    private Token validateAssing(String type, Token value, java.lang.Object objectValue) {
-        if (objectValue instanceof Token) {
-            value = (Token) objectValue;
-            switch (type) {
-                case "INT":
-                    if ( !(value.getType() == 87 ) && !(value.getType() == 88))
-                        throw new AContextualException(value.getText() +  " no es posible asignarlo a una variable tipo int ");
-                    break;
-                case "STRING":
-                case "CHAR":
-                    if (!(value.getType() == 90 ))
-                        throw new AContextualException(value.getText() +  " no es posible asignarlo a una variable tipo int ");
-                    break;
-                case "BOOLEAN":
-                    if (!(value.getType() == 89 ))
-                        throw new AContextualException(value.getText() +  " no es posible asignarlo a una variable tipo int ");
-                    break;
-                default:
-                    throw new AContextualException(value.getText() +" no correponde a ningun valor");
-            }
-        }
-        return value;
+    @Override
+    public Object visitCharLAST(InterpreteParser.CharLASTContext ctx) {
+        return (Object) ctx.CHARLITERAL().getSymbol();
     }
+
 
 
 }

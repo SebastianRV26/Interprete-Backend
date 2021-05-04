@@ -24,7 +24,7 @@ ifStatement         : IF PARENTESISIZQ expression PARENTESISDER block (ELSE bloc
 returnStatement     : RETURN expression                                             #returnAST;
 printStatement      : PRINT expression                                              #printAST;
 classDecl           : CLASS ID LLAVEIZQ (classVariableDecl)*  LLAVEDER              #classDeclAST;
-classVariableDecl   : simpleType ID (ASYGN expression)?                             #classVariableDeclAST;
+classVariableDecl   : simpleType ID (ASYGN expression)?  PyCOMA                     #classVariableDeclAST;
 variableDecl        : type ID (ASYGN expression)?                                   #variableDeclAST;
 type                : simpleType                                                    #typeAST
                     | arrayType                                                     #arrayTypeTAST
@@ -78,5 +78,6 @@ multiplicativeop    : MUL                                                       
 literal             : INTLITERAL                                                    #inLAST
                     | REALLITERAL                                                   #realLAST
                     | BOOLLITERAL                                                   #boolLAST
-                    | STRINGLITERAL                                                 #stringLAST;
+                    | STRINGLITERAL                                                 #stringLAST
+                    | CHARLITERAL                                                   #charLAST;
 

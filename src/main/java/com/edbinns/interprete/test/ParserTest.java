@@ -98,7 +98,8 @@ public class ParserTest {
 //            System.out.println(toJson(tree));
 
 
-
+            AnalisisContextualAST ac = new AnalisisContextualAST();
+            ac.visit(tree);
             System.out.println("Compilación Terminada!!\n");
             java.util.concurrent.Future<JFrame> treeGUI = org.antlr.v4.gui.Trees.inspect(tree, parser);
             treeGUI.get().setVisible(true);
