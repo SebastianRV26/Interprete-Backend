@@ -99,8 +99,8 @@ INTLITERAL: DIGIT DIGIT* ;
 REALLITERAL:DIGIT DIGIT* PUNTO DIGIT* | PUNTO DIGIT DIGIT*;
 BOOLLITERAL:TRUE|FALSE;
 STRINGLITERAL: DOBLECOMILLA (PRINTABLE)* DOBLECOMILLA;
-fragment PRINTABLE: DIGIT|LETTER;
-
+fragment PRINTABLE: '\\' ["\\] | ~["\\\r\n];
+//'"' ('\\' ["\\] | ~["\\\r\n])* '"'
 // COMENTARIOS
 BLOCK_COMMENT : '/*' .*? '*/' -> channel(HIDDEN);
 LINE_COMMENT :  ('//')(LETTER|DIGIT|[ \r\t\n]|'@#$%^&!_-+=.,><?/`"') -> skip;
