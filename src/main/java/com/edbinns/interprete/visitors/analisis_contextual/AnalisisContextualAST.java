@@ -8,6 +8,7 @@ import com.edbinns.interprete.visitors.analisis_contextual.models.Type;
 import com.edbinns.interprete.visitors.analisis_contextual.models.VariableNode;
 import com.edbinns.interprete.visitors.analisis_contextual.utils.UtilsAContextual;
 import org.antlr.v4.codegen.model.chunk.RulePropertyRef_ctx;
+import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 
 import java.util.ArrayList;
@@ -195,8 +196,10 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
     public Object visitWhileAST(InterpreteParser.WhileASTContext ctx) {
 
 
-        this.visit(ctx.expression());
-
+        String type = (String) this.visit(ctx.expression());
+        if(!type.equals("BOOLEAN")){
+            throw new AContextualException("Error, el while espera que la expression sea de tipo booleana");
+        }
         this.visit(ctx.block());
         return null;
     }
@@ -204,8 +207,11 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
     @Override
     public Object visitIfAST(InterpreteParser.IfASTContext ctx) {
 
-        this.visit(ctx.expression());
 
+        String type = (String)this.visit(ctx.expression());
+        if(!type.equals("BOOLEAN")){
+            throw new AContextualException("Error, el if espera que la expression sea de tipo booleana");
+        }
         this.visit(ctx.block(0));
 
         if ((ctx.ELSE() != null) && (ctx.block(1) != null)) {
@@ -219,7 +225,24 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
     @Override
     public Object visitReturnAST(InterpreteParser.ReturnASTContext ctx) {
 
-        this.visit(ctx.expression());
+        ParserRuleContext parent = ctx.getParent();
+        while(parent!=null){
+            if (parent instanceof InterpreteParser.FunctionDeclASTContext){
+                InterpreteParser.FunctionDeclASTContext function = ( InterpreteParser.FunctionDeclASTContext) parent;
+                FunctionNode fn = tablesSingleton.functionsTable.searchNode(function.ID().getText());
+                if(fn != null){
+                    String type = (String) this.visit(ctx.expression());
+                    if(!fn.getType().equals(type)){
+                        throw new AContextualException("Error, la funcion " + fn.getId().getText() + " no puede retornar valores de tipo " + type + ", ya que solo permite de tipo  " + fn.getType());
+                    }
+                }else{
+                    throw new AContextualException("Error, la funcion no existe" );
+
+                }
+                break;
+            }
+            parent = parent.getParent();
+        }
 
         return null;
     }
@@ -391,7 +414,23 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
             }
             return null;
         }else if(vn != null){
+            LinkedList<ClassNode> classNodes = tablesSingleton.classTable.getTable();
+            for (ClassNode node: classNodes) {
+                if(vn.getType().equals(node.getId().getText())){
+                    if(ctx.ID(1) != null && ctx.PUNTO() != null){
+                        VariableNode attr = node.search(ctx.ID(1).getText());
+                        if(attr == null){
+                            throw  new AContextualException("No se puede acceder al atributo " + attr.getId().getText() + " debido a que no es un atributo de la clase " + cn.getId().getText());
+                        }
+                        if (!attr.getType().equals(type)) {
+                            throw  new AContextualException("Error, tipos incompatibles");
+                        }
+                        return null;
+                    }
+                }
+            }
             if (!vn.getType().equals(type)) {
+                System.out.println(vn.getId().getText());
                 throw  new AContextualException("Error, tipos incompatibles");
             }
             return null;
@@ -449,6 +488,11 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
     }
 
     @Override
+    public Object visitRealTAST(InterpreteParser.RealTASTContext ctx) {
+        return  (Object) Type.REAL;
+    }
+
+    @Override
     public Object visitExpressionAST(InterpreteParser.ExpressionASTContext ctx) {
 
         String typeObj = (String) visit(ctx.simpleExpression(0));
@@ -462,7 +506,9 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
            switch (relativeOP.getType()){
                case 52:
                case 57:
-                   if(!typeObj.equals(typeObj2)){
+                   if (((typeObj.equals("REAL")) && (typeObj2.equals("INT")) ) || ((typeObj.equals("INT")) && (typeObj2.equals("REAL")) ) ){
+                       typeObj = "BOOLEAN";
+                   }else if(!typeObj.equals(typeObj2)){
                        throw new AContextualException("Los tipos de datos no son compatibles para saber si son iguales ");
                    }
                    typeObj = "BOOLEAN";
@@ -471,7 +517,15 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
                case 59:
                case 60:
                case 61:
-                   utils.validateOP(typeObj,typeObj2,"INT"," en las comparaciones");
+                   if ((typeObj.equals("REAL")) && (typeObj2.equals("REAL"))) {
+                       utils.validateOP(typeObj, typeObj2, "REAL", "en las comparaciones");
+                   } else if ((typeObj.equals("INT")) && (typeObj2.equals("INT"))) {
+                       utils.validateOP(typeObj, typeObj2, "INT", " en las comparaciones");
+                   } else if (((typeObj.equals("REAL")) && (typeObj2.equals("INT")) ) || ((typeObj.equals("INT")) && (typeObj2.equals("REAL")) ) ){
+                       typeObj = "BOOLEAN";
+                   }else {
+                       throw new AContextualException("Los tipos de datos no son compatibles en las comparaciones");
+                   }
                    typeObj = "BOOLEAN";
                    break;
                case 68:
@@ -503,11 +557,23 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
                     typeObj = utils.validateOP(typeObj, typeObj2, "STRING", "la suma");
                 } else if((typeObj.equals("INT")) && (typeObj2.equals("INT"))){
                     typeObj = utils.validateOP(typeObj, typeObj2, "INT", "la suma");
-                }else{
+                }else if ((typeObj.equals("REAL")) && (typeObj2.equals("REAL"))) {
+                    typeObj = utils.validateOP(typeObj, typeObj2, "REAL", "en las comparaciones");
+                }else if (((typeObj.equals("REAL")) && (typeObj2.equals("INT")) ) || ((typeObj.equals("INT")) && (typeObj2.equals("REAL")) ) ){
+                    typeObj = "REAL";
+                } else{
                     throw new AContextualException("Los tipos de datos no son compatibles en la suma" );
                 }
             } else if (additiveOP.getType() == 54) {
-                typeObj = utils.validateOP(typeObj, typeObj2, "INT", "una resta");
+                if ((typeObj.equals("REAL")) && (typeObj2.equals("REAL"))) {
+                    typeObj = utils.validateOP(typeObj, typeObj2, "REAL", "una resta");
+                } else if ((typeObj.equals("INT")) && (typeObj2.equals("INT"))) {
+                    typeObj = utils.validateOP(typeObj, typeObj2, "INT", " una resta");
+                } else if (((typeObj.equals("REAL")) && (typeObj2.equals("INT")) ) || ((typeObj.equals("INT")) && (typeObj2.equals("REAL")) ) ){
+                    typeObj = "REAL";
+                }else {
+                    throw new AContextualException("Los tipos de datos no son compatibles para realizar una resta");
+                }
             } else if (additiveOP.getType() == 68) {
                 typeObj = utils.validateOP(typeObj, typeObj2, "BOOLEAN", "el operador logico or");
             }
@@ -529,9 +595,25 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
             String typeObj2 = utils.validateObj(obj2);
             //55,56,68
             if (multiplicativeOP.getType() == 55) {
-                typeObj = utils.validateOP(typeObj, typeObj2, "INT", "una division");
+                if ((typeObj.equals("REAL")) && (typeObj2.equals("REAL"))) {
+                    typeObj = utils.validateOP(typeObj, typeObj2, "REAL", "una division");
+                } else if ((typeObj.equals("INT")) && (typeObj2.equals("INT"))) {
+                    typeObj = utils.validateOP(typeObj, typeObj2, "INT", " una division");
+                } else if (((typeObj.equals("REAL")) && (typeObj2.equals("INT")) ) || ((typeObj.equals("INT")) && (typeObj2.equals("REAL")) ) ){
+                    typeObj = "REAL";
+                }else {
+                    throw new AContextualException("Los tipos de datos no son compatibles para realizar una division");
+                }
             } else if (multiplicativeOP.getType() == 56) {
-                typeObj =utils.validateOP(typeObj, typeObj2, "INT", "una multiplicacion");
+                if ((typeObj.equals("REAL")) && (typeObj2.equals("REAL"))) {
+                    typeObj = utils.validateOP(typeObj, typeObj2, "REAL", "una multiplicacion");
+                } else if ((typeObj.equals("INT")) && (typeObj2.equals("INT"))) {
+                    typeObj = utils.validateOP(typeObj, typeObj2, "INT", "una multiplicacion");
+                } else if (((typeObj.equals("REAL")) && (typeObj2.equals("INT")) ) || ((typeObj.equals("INT")) && (typeObj2.equals("REAL")) ) ){
+                    typeObj = "REAL";
+                }else {
+                    throw new AContextualException("Los tipos de datos no son compatibles para realizar una multiplicacion");
+                }
             } else if (multiplicativeOP.getType() == 68) {
                 typeObj = utils.validateOP(typeObj, typeObj2, "BOOLEAN", "el operador logico and");
             }
@@ -608,8 +690,10 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
             String type = (String) visit(ctx.expression(i));
             //53 suma, 54 resta 62 admiracion
             if(tokenOperator.getType() == 53 || tokenOperator.getType() == 54  ){
-                if(type.equals("INT")){
+                if(type.equals("INT") ){
                     returnType = "INT";
+                }else if(type.equals("REAL")){
+                    returnType = "REAL";
                 }else{
                     throw new AContextualException("Error, esta operacion no se le puede aplicar a otros tipos de datos que no sean enteros");
                 }

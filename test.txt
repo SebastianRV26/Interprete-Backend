@@ -1,4 +1,26 @@
-boolean x = "hola !=" != "hola";
-char y = 'h';
+boolean d;
+char x = 'A';
+
+int[] f(boolean o, int g, boolean z)
 {
+    boolean b;
+    int x;
+    int [] a;
+    {
+      print("codigo de f");
+      d = false;
+      x = -9;
+      a = new int[x];
+    }
+    return a;
+}
+ int metodo()
+{
+    int x;
+    {
+      boolean y = true;
+      print("codigo" + "de metodo");
+
+    }
+    return true;
 }

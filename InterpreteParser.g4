@@ -32,11 +32,11 @@ type                : simpleType                                                
 arrayType           : simpleType BRACKETIZQ BRACKE5TDER                             #arrayTypeAST;
 assignment          : ID (PUNTO ID)? ASYGN expression                               #assignAST;
 arrayAssignment     : ID BRACKETIZQ expression BRACKE5TDER ASYGN expression         #arrayAssignAST;
-
 simpleType          : BOOLEAN                                                       #booleanTAST
                     | CHAR                                                          #charTAST
                     | INT                                                           #intTAST
-                    | STRING                                                        #stringTAST;
+                    | STRING                                                        #stringTAST
+                    | REAL                                                          #realTAST;
 expression          : simpleExpression (relacionalop simpleExpression)*             #expressionAST;
 simpleExpression    : term (additiveop term)*                                       #simpleExpressionAST;
 term                : factor (multiplicativeop factor)*                             #termAST;

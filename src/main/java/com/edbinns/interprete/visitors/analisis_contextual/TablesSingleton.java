@@ -23,4 +23,8 @@ public class TablesSingleton {
         this.variableTable = new IdentificationTable<>();
         this.functionsTable = new IdentificationTable<>();
     }
+
+    public void destroySingleton(){
+        instance = null;
+    }
 }

@@ -2,6 +2,7 @@ package com.edbinns.interprete.functions;
 
 import com.edbinns.interprete.generated.InterpreteParser;
 import com.edbinns.interprete.generated.InterpreteScanner;
+import com.edbinns.interprete.visitors.analisis_contextual.AnalisisContextualAST;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.antlr.v4.runtime.CharStream;
@@ -93,7 +94,10 @@ public class InterpreterFunctions {
             messages.add(errorListener.getMessageError());
             return  messages;
         }
-        System.out.println(toJson(tree));
+
+        AnalisisContextualAST ac = new AnalisisContextualAST();
+        ac.visit(tree);
+
         System.out.println("Compilación Terminada!!\n");
 
         messages.add("success");

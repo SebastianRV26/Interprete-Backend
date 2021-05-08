@@ -235,6 +235,13 @@ public interface InterpreteParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitStringTAST(InterpreteParser.StringTASTContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code realTAST}
+	 * labeled alternative in {@link InterpreteParser#simpleType}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRealTAST(InterpreteParser.RealTASTContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code expressionAST}
 	 * labeled alternative in {@link InterpreteParser#expression}.
 	 * @param ctx the parse tree

@@ -2,6 +2,7 @@ package com.edbinns.interprete.controller;
 
 import com.edbinns.interprete.functions.InterpreterFunctions;
 import com.edbinns.interprete.models.ResponseBody;
+import com.edbinns.interprete.visitors.analisis_contextual.TablesSingleton;
 import com.google.gson.Gson;
 import org.apache.tomcat.util.json.JSONParser;
 import org.json.JSONException;
@@ -34,13 +35,19 @@ public class InterpreterController {
         if((snippet == null) || (snippet.isEmpty()) || (snippet.isBlank()) ){
             return new ResponseBody<>(HttpStatus.NOT_FOUND.value(), "Failed", "El snippet esta vacio");
         }
-        snippet = snippet.replace("!!!", "+");
-        ArrayList<String> responses = interpreterFunctions.validateSnippet(snippet);
-
-        if(responses.get(0).equals("error")){
-            return new ResponseBody<>(HttpStatus.NOT_ACCEPTABLE.value(), "Failed", responses.get(1));
+        if(snippet.equals("cls")){
+            TablesSingleton ts = TablesSingleton.getInstance();
+            ts.destroySingleton();
+            return  new ResponseBody<>(HttpStatus.NOT_ACCEPTABLE.value(), "Failed", "Memoria limpia");
         }else{
-            return new ResponseBody<>(HttpStatus.OK.value(), "Success",responses.get(1)) ;
+            snippet = snippet.replace("!!!", "+");
+            ArrayList<String> responses = interpreterFunctions.validateSnippet(snippet);
+
+            if(responses.get(0).equals("error")){
+                return new ResponseBody<>(HttpStatus.NOT_ACCEPTABLE.value(), "Failed", responses.get(1));
+            }else{
+                return new ResponseBody<>(HttpStatus.OK.value(), "Success",responses.get(1)) ;
+            }
         }
     }
 }
