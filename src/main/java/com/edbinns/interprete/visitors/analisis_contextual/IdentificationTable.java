@@ -1,7 +1,5 @@
 package com.edbinns.interprete.visitors.analisis_contextual;
 
-import com.edbinns.interprete.functions.ErrorListener;
-import com.edbinns.interprete.visitors.analisis_contextual.models.FunctionNode;
 import com.edbinns.interprete.visitors.analisis_contextual.models.Node;
 import org.antlr.v4.runtime.Token;
 
@@ -72,6 +70,15 @@ public class IdentificationTable <T extends Node>{
             t.imprimir();
         }
         System.out.println("----- FIN TABLA ------");
+    }
+    public String showTable(String name){
+        String message = "";
+        message += "\n" + "----- Inicio de tabla " + name + " -----";
+        for (T t : table) {
+            message += "\n" + t.toString();
+        }
+        message += "\n" + "----- Fin de tabla " + name + " -----";
+        return message;
     }
 
 }

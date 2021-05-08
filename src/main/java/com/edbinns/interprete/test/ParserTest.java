@@ -1,10 +1,9 @@
 package com.edbinns.interprete.test;
 
-import com.edbinns.interprete.functions.ErrorListener;
+import com.edbinns.interprete.functions.ParserErrorListener;
 import com.edbinns.interprete.generated.InterpreteParser;
 import com.edbinns.interprete.generated.InterpreteScanner;
 import com.edbinns.interprete.visitors.analisis_contextual.AnalisisContextualAST;
-import com.edbinns.interprete.visitors.pretty_print.PrettyPrintAST;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.antlr.v4.runtime.CharStream;
@@ -78,16 +77,16 @@ public class ParserTest {
         ParseTree tree = null;
         CharStream input = null;
         CommonTokenStream tokens = null;
-        ErrorListener errorListener = ErrorListener.getInstance();
+        ParserErrorListener parserErrorListener = ParserErrorListener.getInstance();
         try {
             input = CharStreams.fromFileName("test.txt");
             inst = new InterpreteScanner(input);
 //            inst.getTokenType()
-            inst.addErrorListener(errorListener);
+            inst.addErrorListener(parserErrorListener);
             tokens = new CommonTokenStream(inst);
             parser = new InterpreteParser(tokens);
             parser.removeErrorListeners();
-            parser.addErrorListener(errorListener);
+            parser.addErrorListener(parserErrorListener);
             InterpreteParser parser2 = parser;
 
 

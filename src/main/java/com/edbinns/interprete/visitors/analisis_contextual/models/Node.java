@@ -38,8 +38,10 @@ public abstract class Node {
     }
 
     public abstract void imprimir();
+    public abstract String toString();
 
     public void setDeclCtx(ParserRuleContext declCtx) {
         this.declCtx = declCtx;
     }
+
 }

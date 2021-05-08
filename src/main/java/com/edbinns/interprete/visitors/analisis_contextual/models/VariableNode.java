@@ -44,21 +44,26 @@ public class VariableNode extends Node {
     }
     @Override
     public void imprimir() {
-        if(getIsArray()){
+        System.out.println(toString());
+    }
 
+    @Override
+    public String toString() {
+        String message = "";
+        if(getIsArray()){
             if(getValue() != null){
-                System.out.println("Nombre: " + getId().getText() + " - " + getLevel() + " - " + getType() + "[]" + " - " + getValue().getText());
+                message += "Nombre: " + getId().getText() + " - " + getLevel() + " - " + getType() + "[]" + " - " + getValue().getText();
             }else{
-                System.out.println("Nombre: " + getId().getText() + " - " + getLevel() + " - " + getType() + "[]" );
+                message +=  "Nombre: " + getId().getText() + " - " + getLevel() + " - " + getType() + "[]" ;
             }
         }else{
             if(getValue() != null){
-                System.out.println("Nombre: " + getId().getText() + " - " + getLevel() + " - " + getType() + " - " + getValue().getText());
+                message +=  "Nombre: " + getId().getText() + " - " + getLevel() + " - " + getType() + " - " + getValue().getText();
             }else{
-                System.out.println("Nombre: " + getId().getText() + " - " + getLevel() + " - " + getType() );
+                message +=  "Nombre: " + getId().getText() + " - " + getLevel() + " - " + getType() ;
             }
 
         }
-
+        return message;
     }
 }

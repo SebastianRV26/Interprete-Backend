@@ -45,12 +45,31 @@ public class FunctionNode extends Node {
 
     @Override
     public void imprimir() {
-        System.out.println("Nombre: " + getId().getText() + " - " + getLevel() + " - " + getType() + "-" + isReturnArray());
-        System.out.println("Parametros:");
-        for (VariableNode vn : getParameterList()) {
-            System.out.println("\t" + "Nombre: " + vn.getId().getText() + " - " + vn.getLevel() + " - " + vn.getType());
+        System.out.println(toString());
+    }
 
+    @Override
+    public String toString() {
+        String message = "";
+        if(isReturnArray()){
+            message += "Nombre: " + getId().getText() + " - " + getLevel() + " - " + getType() + "[]";
+            if(getParameterList().size() > 0){
+                message += "\n Parametros:";
+                for (VariableNode vn : getParameterList()) {
+                    message += "\n\t" + vn.toString();
+                }
+            }
+
+        }else{
+            message += "Nombre: " + getId().getText() + " - " + getLevel() + " - " + getType();
+            if(getParameterList().size() > 0){
+                message += "\n Parametros:";
+                for (VariableNode vn : getParameterList()) {
+                    message += "\n\t" + vn.toString();
+                }
+            }
         }
+        return message;
     }
 
     public VariableNode searchParameters(String id) {

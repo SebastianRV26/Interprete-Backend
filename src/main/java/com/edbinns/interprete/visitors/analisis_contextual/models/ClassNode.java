@@ -25,12 +25,22 @@ public class ClassNode extends  Node{
 
     @Override
     public void imprimir(){
-        System.out.println("Nombre: " + getId().getText() + " - " + getLevel() );
-        System.out.println("Atributos:");
-        for(VariableNode vn: getAttrList()){
-            System.out.println("\t"+ "Nombre: " + vn.getId().getText() + " - " + vn.getLevel() + " - " + vn.getType());
+        System.out.println(toString());
+    }
 
+    @Override
+    public String toString() {
+        String message = "";
+        message += "Nombre: " + getId().getText() + " - " + getLevel() ;
+        if(getAttrList().size() >0){
+            message += "\nAtributos:";
+            for(VariableNode vn: getAttrList()){
+                message += "\n\t"+ vn.toString();
+
+            }
         }
+
+        return message;
     }
 
     public VariableNode search(String id){

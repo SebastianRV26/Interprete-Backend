@@ -6,13 +6,13 @@ import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
 
-public class ErrorListener extends BaseErrorListener {
+public class ParserErrorListener extends BaseErrorListener{
 
-    public static ErrorListener instance = null;
+    public static ParserErrorListener instance = null;
 
-    public static ErrorListener getInstance() {
+    public static ParserErrorListener getInstance() {
         if (instance == null) {
-            instance = new ErrorListener();
+            instance = new ParserErrorListener();
         }
         return instance;
     }

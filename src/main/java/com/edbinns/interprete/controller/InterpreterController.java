@@ -41,6 +41,7 @@ public class InterpreterController {
             return  new ResponseBody<>(HttpStatus.NOT_ACCEPTABLE.value(), "Failed", "Memoria limpia");
         }else{
             snippet = snippet.replace("!!!", "+");
+            System.out.println(snippet);
             ArrayList<String> responses = interpreterFunctions.validateSnippet(snippet);
 
             if(responses.get(0).equals("error")){

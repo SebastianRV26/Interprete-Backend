@@ -3,6 +3,8 @@ package com.edbinns.interprete.functions;
 import com.edbinns.interprete.generated.InterpreteParser;
 import com.edbinns.interprete.generated.InterpreteScanner;
 import com.edbinns.interprete.visitors.analisis_contextual.AnalisisContextualAST;
+import com.edbinns.interprete.visitors.analisis_contextual.TablesSingleton;
+import com.edbinns.interprete.visitors.analisis_contextual.utils.AContextualErrorListener;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.antlr.v4.runtime.CharStream;
@@ -12,12 +14,10 @@ import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNodeImpl;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 public class InterpreterFunctions {
 
@@ -71,7 +71,7 @@ public class InterpreterFunctions {
         ParseTree tree = null;
         CharStream input = null;
         CommonTokenStream tokens = null;
-        ErrorListener errorListener = ErrorListener.getInstance();
+        ParserErrorListener parserErrorListener = ParserErrorListener.getInstance();
         input = CharStreams.fromString(snippet);
         inst = new InterpreteScanner(input);
 
@@ -79,29 +79,41 @@ public class InterpreterFunctions {
         parser = new InterpreteParser(tokens);
 
         inst.removeErrorListeners();
-        inst.addErrorListener(errorListener);
+        inst.addErrorListener(parserErrorListener);
 
         parser.removeErrorListeners();
-        parser.addErrorListener(errorListener);
+        parser.addErrorListener(parserErrorListener);
 
 
 
         tree = parser.program();
 
-        if(errorListener.getExistError()){
-            errorListener.setExistError(false);
+        if(parserErrorListener.getExistError()){
+            parserErrorListener.setExistError(false);
             messages.add("error");
-            messages.add(errorListener.getMessageError());
+            messages.add(parserErrorListener.getMessageError());
             return  messages;
         }
 
         AnalisisContextualAST ac = new AnalisisContextualAST();
         ac.visit(tree);
+        AContextualErrorListener aContextualErrorListener = AContextualErrorListener.getInstance();
+        if(aContextualErrorListener.getExistError()){
+            aContextualErrorListener.setExistError(false);
+            messages.add("error");
+            messages.add(aContextualErrorListener.getMessageError());
+            return  messages;
+        }
+
+        TablesSingleton tables = TablesSingleton.getInstance();
+        String finalMessage = tables.classTable.showTable("Clases");
+        finalMessage += "\n" + tables.functionsTable.showTable("Funciones");
+        finalMessage += "\n" +  tables.variableTable.showTable("Variables");
 
         System.out.println("Compilación Terminada!!\n");
 
         messages.add("success");
-        messages.add(toJson(tree));
+        messages.add(finalMessage);
         return  messages;
 
     }

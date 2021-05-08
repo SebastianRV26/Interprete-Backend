@@ -14,13 +14,3 @@ int[] f(boolean o, int g, boolean z)
     }
     return a;
 }
- int metodo()
-{
-    int x;
-    {
-      boolean y = true;
-      print("codigo" + "de metodo");
-
-    }
-    return true;
-}

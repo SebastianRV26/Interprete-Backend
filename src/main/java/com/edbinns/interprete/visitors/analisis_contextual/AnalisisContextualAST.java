@@ -6,10 +6,12 @@ import com.edbinns.interprete.visitors.analisis_contextual.models.ClassNode;
 import com.edbinns.interprete.visitors.analisis_contextual.models.FunctionNode;
 import com.edbinns.interprete.visitors.analisis_contextual.models.Type;
 import com.edbinns.interprete.visitors.analisis_contextual.models.VariableNode;
+import com.edbinns.interprete.visitors.analisis_contextual.utils.AContextualErrorListener;
+import com.edbinns.interprete.visitors.analisis_contextual.utils.AContextualException;
 import com.edbinns.interprete.visitors.analisis_contextual.utils.UtilsAContextual;
-import org.antlr.v4.codegen.model.chunk.RulePropertyRef_ctx;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -114,7 +116,7 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
             tablesSingleton.functionsTable.openScope();
             Object objectType = this.visit(ctx.type());
             String type = null;
-            Boolean isArray = false;
+            boolean isArray = false;
             if (objectType instanceof Type) {
                 type = ((Type) objectType).name();
                 isArray = false;
@@ -138,6 +140,21 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
                 throw   new AContextualException("Ya existe la funcion " + id.getText());
             }
 
+            boolean flag = false;
+            for ( ParseTree child: ctx.children) {
+                if(child instanceof  InterpreteParser.BlockASTContext){
+                    InterpreteParser.BlockASTContext blockChild = (InterpreteParser.BlockASTContext) child;
+                    for ( ParserRuleContext statement: blockChild.statement()) {
+                        if (statement instanceof InterpreteParser.ReturnSASTContext) {
+                            flag = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            if(!flag){
+                throw  new AContextualException("La funcion " + id.getText() + " deberia de contar con un return, pero no lo tiene" );
+            }
             FunctionNode fn = new FunctionNode(id, level, ctx, type, parametersList, isArray);
             tablesSingleton.functionsTable.enter(fn);
 
@@ -146,6 +163,8 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
             tablesSingleton.functionsTable.closeScope();
         }catch (AContextualException e){
             System.out.println(e.getMessage());
+            AContextualErrorListener errorListener = AContextualErrorListener.getInstance();
+            errorListener.sendError(e.getMessage());
         }
 
         return null;
@@ -194,30 +213,40 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
 
     @Override
     public Object visitWhileAST(InterpreteParser.WhileASTContext ctx) {
-
-
-        String type = (String) this.visit(ctx.expression());
-        if(!type.equals("BOOLEAN")){
-            throw new AContextualException("Error, el while espera que la expression sea de tipo booleana");
+        try {
+            String type = (String) this.visit(ctx.expression());
+            if(!type.equals("BOOLEAN")){
+                throw new AContextualException("Error, el while espera que la expression sea de tipo booleana");
+            }
+            this.visit(ctx.block());
+        }catch (    AContextualException e){
+            System.out.println(e.getMessage());
+            AContextualErrorListener errorListener = AContextualErrorListener.getInstance();
+            errorListener.sendError(e.getMessage());
         }
-        this.visit(ctx.block());
+
         return null;
     }
 
     @Override
     public Object visitIfAST(InterpreteParser.IfASTContext ctx) {
+        try{
+            String type = (String)this.visit(ctx.expression());
+            if(!type.equals("BOOLEAN")){
+                throw new AContextualException("Error, el if espera que la expression sea de tipo booleana");
+            }
+            this.visit(ctx.block(0));
 
+            if ((ctx.ELSE() != null) && (ctx.block(1) != null)) {
 
-        String type = (String)this.visit(ctx.expression());
-        if(!type.equals("BOOLEAN")){
-            throw new AContextualException("Error, el if espera que la expression sea de tipo booleana");
+                this.visit(ctx.block(1));
+            }
+        }catch (    AContextualException e){
+            System.out.println(e.getMessage());
+            AContextualErrorListener errorListener = AContextualErrorListener.getInstance();
+            errorListener.sendError(e.getMessage());
         }
-        this.visit(ctx.block(0));
 
-        if ((ctx.ELSE() != null) && (ctx.block(1) != null)) {
-
-            this.visit(ctx.block(1));
-        }
 
         return null;
     }
@@ -249,8 +278,14 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
 
     @Override
     public Object visitPrintAST(InterpreteParser.PrintASTContext ctx) {
+        try {
+            this.visit(ctx.expression());
+        }catch (    AContextualException e){
+            System.out.println(e.getMessage());
+            AContextualErrorListener errorListener = AContextualErrorListener.getInstance();
+            errorListener.sendError(e.getMessage());
+        }
 
-        this.visit(ctx.expression());
         return null;
     }
 
@@ -280,6 +315,8 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
             tablesSingleton.classTable.closeScope();
         }catch (AContextualException e){
             System.out.println(e.getMessage());
+            AContextualErrorListener errorListener = AContextualErrorListener.getInstance();
+            errorListener.sendError(e.getMessage());
         }
 
 
@@ -357,6 +394,8 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
             tablesSingleton.variableTable.enter(variable);
         } catch (AContextualException e) {
             System.out.println(e.getMessage());
+            AContextualErrorListener errorListener = AContextualErrorListener.getInstance();
+            errorListener.sendError(e.getMessage());
         }
 
         return null;
@@ -393,7 +432,7 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
     @Override
     public Object visitAssignAST(InterpreteParser.AssignASTContext ctx) {
 
-
+        try{
         String type = (String) visit(ctx.expression());
         ClassNode cn = tablesSingleton.classTable.searchNode(ctx.ID(0).getText());
         VariableNode vn = tablesSingleton.variableTable.searchNode(ctx.ID(0).getText());
@@ -437,31 +476,42 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
         } else{
             throw  new AContextualException("Esta variable o clase no existe en el programa");
         }
-
+        }catch (AContextualException e){
+            System.out.println(e.getMessage());
+            AContextualErrorListener errorListener = AContextualErrorListener.getInstance();
+            errorListener.sendError(e.getMessage());
+        }
+        return null;
     }
 
     @Override
     public Object visitArrayAssignAST(InterpreteParser.ArrayAssignASTContext ctx) {
-        VariableNode vn = tablesSingleton.variableTable.searchNode(ctx.ID().getText());
+        try {
+            VariableNode vn = tablesSingleton.variableTable.searchNode(ctx.ID().getText());
 
-        if(vn == null){
-            throw new AContextualException("El array no existe en el programa");
-        }
-
-        if(!vn.getIsArray()){
-            throw new AContextualException("No se puede acceder a esa posicion, debido a que la variable " + vn.getId().getText() + " no es un array");
-        }
-
-        String positionType = (String) visit(ctx.expression(0));
-        if(!positionType.equals("INT")){
-            throw new AContextualException("Error, para poder  acceder a una posicion de un array se requiere que el valor sea entero");
-        }
-
-        if (ctx.expression(1) != null) {
-            String assign = (String) visit(ctx.expression(1));
-            if(!vn.getType().equals(assign)){
-                throw new AContextualException("Error, a un array de tipo " + vn.getType() + " no se le pueden asignar cosas del tipo " + assign);
+            if (vn == null) {
+                throw new AContextualException("El array no existe en el programa");
             }
+
+            if (!vn.getIsArray()) {
+                throw new AContextualException("No se puede acceder a esa posicion, debido a que la variable " + vn.getId().getText() + " no es un array");
+            }
+
+            String positionType = (String) visit(ctx.expression(0));
+            if (!positionType.equals("INT")) {
+                throw new AContextualException("Error, para poder  acceder a una posicion de un array se requiere que el valor sea entero");
+            }
+
+            if (ctx.expression(1) != null) {
+                String assign = (String) visit(ctx.expression(1));
+                if (!vn.getType().equals(assign)) {
+                    throw new AContextualException("Error, a un array de tipo " + vn.getType() + " no se le pueden asignar cosas del tipo " + assign);
+                }
+            }
+        }catch (AContextualException e){
+            System.out.println(e.getMessage());
+            AContextualErrorListener errorListener = AContextualErrorListener.getInstance();
+            errorListener.sendError(e.getMessage());
         }
 
         return null;

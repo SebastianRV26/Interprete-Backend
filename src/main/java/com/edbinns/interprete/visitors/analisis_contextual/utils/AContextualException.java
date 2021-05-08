@@ -1,4 +1,4 @@
-package com.edbinns.interprete.visitors.analisis_contextual;
+package com.edbinns.interprete.visitors.analisis_contextual.utils;
 
 public class AContextualException extends RuntimeException {
 
