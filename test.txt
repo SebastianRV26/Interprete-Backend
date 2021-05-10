@@ -1,0 +1,16 @@
+boolean d;
+char x = 'A';
+
+int[] f(boolean o, int g, boolean z)
+{
+    boolean b;
+    int x;
+    int [] a;
+    {
+      print("codigo de f");
+      d = false;
+      x = -9;
+      a = new int[x];
+    }
+    return a;
+}
