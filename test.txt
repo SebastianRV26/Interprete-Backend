@@ -14,3 +14,15 @@ int[] f(boolean o, int g, boolean z)
     }
     return a;
 }
+int hola(){
+    class adios{
+        int x;
+        int y;
+    };
+    int x = 3;
+    return 0;
+}
+
+class xd{
+    int x =3;
+};
