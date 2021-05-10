@@ -1,0 +1,30 @@
+plugins {
+    id 'org.springframework.boot' version '2.4.5'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'java'
+    id 'antlr'
+}
+
+group = 'com.edbinns'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    antlr "org.antlr:antlr4:4.9.1"
+    implementation 'org.springframework.boot:spring-boot-starter:2.3.4.RELEASE'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test:2.3.4.RELEASE'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation 'org.json:json:20171018'
+    implementation 'com.google.code.gson:gson:2.8.6'
+}
+
+test {
+    useJUnitPlatform()
+}
