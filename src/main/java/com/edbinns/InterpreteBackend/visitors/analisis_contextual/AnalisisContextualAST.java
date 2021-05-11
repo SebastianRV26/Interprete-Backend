@@ -292,7 +292,8 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
     @Override
     public Object visitClassDeclAST(InterpreteParser.ClassDeclASTContext ctx) {
         try{
-            int level = tablesSingleton.classTable.getLevel();
+            int level = tablesSingleton.variableTable.getLevel();
+            tablesSingleton.variableTable.openScope();
             tablesSingleton.classTable.openScope();
             ArrayList<VariableNode> attrList = new ArrayList<>();
             for (int i = 0; i <= ctx.classVariableDecl().toArray().length - 1; i++) {
@@ -312,6 +313,7 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
             ClassNode cn = new ClassNode(id, level, ctx, attrList);
             tablesSingleton.classTable.enter(cn);
             tablesSingleton.classTable.imprimir();
+            tablesSingleton.variableTable.closeScope();
             tablesSingleton.classTable.closeScope();
         }catch (AContextualException e){
             System.out.println(e.getMessage());
@@ -335,7 +337,7 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
             throw new AContextualException("No es un tipo de dato valido para un atributo de una clase");
         }
 
-        int level = tablesSingleton.classTable.getLevel();
+        int level = tablesSingleton.variableTable.getLevel();
         Token id = ctx.ID().getSymbol();
 
         Token value = null;
