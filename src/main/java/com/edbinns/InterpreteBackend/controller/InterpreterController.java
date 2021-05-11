@@ -19,7 +19,7 @@ public class InterpreterController {
 
     @GetMapping("/")
     public String homePage(){
-        return "Home page";
+        return "Proyecto Compiladores";
     }
 
     @CrossOrigin(allowedHeaders =
