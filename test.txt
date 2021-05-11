@@ -1,12 +1,12 @@
-int hola(){
-    class adios{
-        int x;
-        int y;
-    };
+int hola(int chx){
+
+    int w = 0;
+    char c =  chr(w);
+    int sd = ord('d');
     int x = 3;
     return 0;
 }
-
+int x = hola(23);
 class xd{
     int x =3;
 };
