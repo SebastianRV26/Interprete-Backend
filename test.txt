@@ -7,6 +7,7 @@ int hola(int chx){
     return 0;
 }
 int x = hola(23);
+
 class xd{
     int x =3;
 };
