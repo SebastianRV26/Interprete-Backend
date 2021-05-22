@@ -9,20 +9,20 @@ import java.util.ArrayList;
 
 public class ArrayInterpreter extends Node {
 
-    private Type type;
-    private Object dataList[];;
+    private String type;
+    private Object[] dataList;
 
-    public ArrayInterpreter(Token id, int level, ParserRuleContext declCtx, Type type, Object[] dataList) {
+    public ArrayInterpreter(Token id, int level, ParserRuleContext declCtx, String type, Object[] dataList) {
         super(id, level, declCtx);
         this.type = type;
         this.dataList = dataList;
     }
 
-    public Type getType() {
+    public String getType() {
         return type;
     }
 
-    public void setType(Type type) {
+    public void setType(String type) {
         this.type = type;
     }
 

@@ -4,7 +4,11 @@ import com.edbinns.InterpreteBackend.generated.InterpreteParser;
 import com.edbinns.InterpreteBackend.generated.InterpreteParserBaseVisitor;
 import com.edbinns.InterpreteBackend.models.Type;
 import com.edbinns.InterpreteBackend.visitors.analisis_contextual.utils.AContextualException;
+import com.edbinns.InterpreteBackend.visitors.interprete.models.ArrayInterpreter;
+import com.edbinns.InterpreteBackend.visitors.interprete.models.VariableInterpreter;
 import org.antlr.v4.runtime.Token;
+
+import java.lang.reflect.Array;
 
 public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
 
@@ -184,22 +188,10 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
 
     @Override
     public Object visitClassDeclAST(InterpreteParser.ClassDeclASTContext ctx) {
-
-        for (int i = 0; i <= ctx.classVariableDecl().toArray().length - 1; i++) {
-            visit(ctx.classVariableDecl(i));
-
-        }
-        return null;
-    }
-
-    @Override
-    public Object visitClassVariableDeclAST(InterpreteParser.ClassVariableDeclASTContext ctx) {
-
         storesSingleton.variableStore.openScope();
         storesSingleton.classStore.openScope();
-        this.visit(ctx.simpleType());
-
-        if ((ctx.ASYGN() != null) && (ctx.expression() != null)) {
+        for (int i = 0; i <= ctx.classVariableDecl().toArray().length - 1; i++) {
+            visit(ctx.classVariableDecl(i));
 
         }
         storesSingleton.variableStore.closeScope();
@@ -207,17 +199,46 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
         return null;
     }
 
+    @Override
+    public Object visitClassVariableDeclAST(InterpreteParser.ClassVariableDeclASTContext ctx) {
+
+
+        this.visit(ctx.simpleType());
+
+        if ((ctx.ASYGN() != null) && (ctx.expression() != null)) {
+
+        }
+
+        return null;
+    }
+
 
     @Override
     public Object visitVariableDeclAST(InterpreteParser.VariableDeclASTContext ctx) {
 
-
-        this.visit(ctx.type());
-
+        String type = (String) this.visit(ctx.type());
+        Object value = null;
+        Token id = ctx.ID().getSymbol();
+        int level = storesSingleton.variableStore.getLevel();
         if ((ctx.ASYGN() != null) && (ctx.expression() != null)) {
-            this.visit(ctx.expression());
-
+            value = this.visit(ctx.expression());
         }
+        if(type.contains("[]")){
+            java.lang.Object[] array = null;
+            if (value instanceof Integer) {
+                int lenght = (Integer) value;
+                array = new java.lang.Object[lenght];
+            } else {
+                array = (java.lang.Object[]) value;
+            }
+            type = type.replace("[]","");
+            ArrayInterpreter variable = new ArrayInterpreter(id,level,ctx,type,array);
+            storesSingleton.arrayStore.enter(variable);
+        }else{
+            VariableInterpreter variable = new VariableInterpreter(id,level,ctx,value,type);
+            storesSingleton.variableStore.enter(variable);
+        }
+
         return null;
     }
 
@@ -234,16 +255,13 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
 
     @Override
     public Object visitIdAST(InterpreteParser.IdASTContext ctx) {
-
-        return null;
+        return  (Object) ctx.ID().getText();
     }
 
     @Override
     public Object visitArrayTypeAST(InterpreteParser.ArrayTypeASTContext ctx) {
-
-      this.visit(ctx.simpleType());
-
-        return null;
+        String type = (String) this.visit(ctx.simpleType());
+        return (Object) (type +"[]");
     }
 
     @Override
@@ -280,27 +298,27 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
 
     @Override
     public Object visitBooleanTAST(InterpreteParser.BooleanTASTContext ctx) {
-        return (Object) Type.BOOLEAN;
+        return (Object) Type.BOOLEAN.name();
     }
 
     @Override
     public Object visitCharTAST(InterpreteParser.CharTASTContext ctx) {
-        return (Object) Type.CHAR;
+        return (Object) Type.CHAR.name();
     }
 
     @Override
     public Object visitIntTAST(InterpreteParser.IntTASTContext ctx) {
-        return (Object) Type.INT;
+        return (Object) Type.INT.name();
     }
 
     @Override
     public Object visitStringTAST(InterpreteParser.StringTASTContext ctx) {
-        return (Object) Type.STRING;
+        return (Object) Type.STRING.name();
     }
 
     @Override
     public Object visitRealTAST(InterpreteParser.RealTASTContext ctx) {
-        return  (Object) Type.REAL;
+        return  (Object) Type.REAL.name();
     }
 
     @Override

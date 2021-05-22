@@ -12,7 +12,9 @@ public class StoreData<T extends Node> {
         this.level = 0;
     }
 
-
+    public int getLevel() {
+        return level;
+    }
     /**
      * Agrega un identificador a la Tabla
      */
