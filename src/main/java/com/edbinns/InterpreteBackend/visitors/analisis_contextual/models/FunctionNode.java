@@ -1,5 +1,6 @@
 package com.edbinns.InterpreteBackend.visitors.analisis_contextual.models;
 
+import com.edbinns.InterpreteBackend.models.Node;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 
@@ -70,6 +71,7 @@ public class FunctionNode extends Node {
         }
         return message;
     }
+
 
     public VariableNode searchParameters(String id) {
         for (VariableNode vn : getParameterList())

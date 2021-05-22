@@ -3,7 +3,9 @@ package com.edbinns.InterpreteBackend.test;
 import com.edbinns.InterpreteBackend.functions.ParserErrorListener;
 import com.edbinns.InterpreteBackend.generated.InterpreteParser;
 import com.edbinns.InterpreteBackend.generated.InterpreteScanner;
+import com.edbinns.InterpreteBackend.models.Type;
 import com.edbinns.InterpreteBackend.visitors.analisis_contextual.AnalisisContextualAST;
+import com.edbinns.InterpreteBackend.visitors.interprete.models.ArrayInterpreter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.antlr.v4.runtime.CharStream;
@@ -96,7 +98,9 @@ public class ParserTest {
 //            System.out.println((new Gson().toJson(pp.treeItem).toString()));
 //            System.out.println(toJson(tree));
 
-
+            Object[] array = new Object[10];
+            ArrayInterpreter ai = new ArrayInterpreter(null,0,null, Type.INT,array);
+            ai.imprimir();
             AnalisisContextualAST ac = new AnalisisContextualAST();
             ac.visit(tree);
             System.out.println("Compilación Terminada!!\n");

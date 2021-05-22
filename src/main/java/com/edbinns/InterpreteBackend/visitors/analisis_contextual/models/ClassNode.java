@@ -1,11 +1,12 @@
 package com.edbinns.InterpreteBackend.visitors.analisis_contextual.models;
 
+import com.edbinns.InterpreteBackend.models.Node;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 
 import java.util.ArrayList;
 
-public class ClassNode extends  Node{
+public class ClassNode extends Node {
 
     ArrayList<VariableNode> attrList;
 
@@ -41,6 +42,8 @@ public class ClassNode extends  Node{
 
         return message;
     }
+
+
 
     public VariableNode search(String id){
         for(VariableNode obj : getAttrList())

@@ -1,4 +1,4 @@
-package com.edbinns.InterpreteBackend.visitors.analisis_contextual.models;
+package com.edbinns.InterpreteBackend.models;
 
 /**
  * Tipos de datos.

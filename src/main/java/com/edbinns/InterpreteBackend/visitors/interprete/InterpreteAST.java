@@ -2,27 +2,17 @@ package com.edbinns.InterpreteBackend.visitors.interprete;
 
 import com.edbinns.InterpreteBackend.generated.InterpreteParser;
 import com.edbinns.InterpreteBackend.generated.InterpreteParserBaseVisitor;
-import com.edbinns.InterpreteBackend.visitors.analisis_contextual.TablesSingleton;
-import com.edbinns.InterpreteBackend.visitors.analisis_contextual.models.ClassNode;
-import com.edbinns.InterpreteBackend.visitors.analisis_contextual.models.FunctionNode;
-import com.edbinns.InterpreteBackend.visitors.analisis_contextual.models.Type;
-import com.edbinns.InterpreteBackend.visitors.analisis_contextual.models.VariableNode;
-import com.edbinns.InterpreteBackend.visitors.analisis_contextual.utils.AContextualErrorListener;
+import com.edbinns.InterpreteBackend.models.Type;
 import com.edbinns.InterpreteBackend.visitors.analisis_contextual.utils.AContextualException;
-import com.edbinns.InterpreteBackend.visitors.analisis_contextual.utils.UtilsAContextual;
-import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
-import org.antlr.v4.runtime.tree.ParseTree;
-
-import java.util.ArrayList;
-import java.util.LinkedList;
 
 public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
 
 
+    private StoresSingleton storesSingleton;
 
     public InterpreteAST() {
-
+        this.storesSingleton = StoresSingleton.getInstance();
     }
 
     @Override
@@ -100,32 +90,31 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
     @Override
     public Object visitBlockAST(InterpreteParser.BlockASTContext ctx) {
 
-
-
+        storesSingleton.arrayStore.openScope();
+        storesSingleton.variableStore.openScope();
         for (int i = 0; i < ctx.statement().size(); i++) {
             this.visit(ctx.statement(i));
         }
-
+        storesSingleton.arrayStore.closeScope();
+        storesSingleton.variableStore.closeScope();
         return null;
     }
 
     @Override
     public Object visitFunctionDeclAST(InterpreteParser.FunctionDeclASTContext ctx) {
 
-            this.visit(ctx.type());
+
+        storesSingleton.functionsStore.openScope();
+        this.visit(ctx.type());
 
 
-            if (ctx.formalParams() != null) {
+        if (ctx.formalParams() != null) {
             this.visit(ctx.formalParams());
-            }
+        }
 
+        this.visit(ctx.block());
 
-
-
-
-            this.visit(ctx.block());
-
-
+        storesSingleton.functionsStore.closeScope();
         return null;
     }
 
@@ -180,10 +169,7 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
 
     @Override
     public Object visitReturnAST(InterpreteParser.ReturnASTContext ctx) {
-
-
-                   this.visit(ctx.expression());
-
+        this.visit(ctx.expression());
 
         return null;
     }
@@ -199,49 +185,39 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
     @Override
     public Object visitClassDeclAST(InterpreteParser.ClassDeclASTContext ctx) {
 
-
-
         for (int i = 0; i <= ctx.classVariableDecl().toArray().length - 1; i++) {
             visit(ctx.classVariableDecl(i));
 
-
         }
-
-
         return null;
     }
 
     @Override
     public Object visitClassVariableDeclAST(InterpreteParser.ClassVariableDeclASTContext ctx) {
 
-
+        storesSingleton.variableStore.openScope();
+        storesSingleton.classStore.openScope();
         this.visit(ctx.simpleType());
-
-
-
-
 
         if ((ctx.ASYGN() != null) && (ctx.expression() != null)) {
 
         }
-
-
-
+        storesSingleton.variableStore.closeScope();
+        storesSingleton.classStore.closeScope();
         return null;
     }
-
 
 
     @Override
     public Object visitVariableDeclAST(InterpreteParser.VariableDeclASTContext ctx) {
 
 
-             this.visit(ctx.type());
+        this.visit(ctx.type());
 
-            if ((ctx.ASYGN() != null) && (ctx.expression() != null)) {
-                 this.visit(ctx.expression());
+        if ((ctx.ASYGN() != null) && (ctx.expression() != null)) {
+            this.visit(ctx.expression());
 
-            }
+        }
         return null;
     }
 

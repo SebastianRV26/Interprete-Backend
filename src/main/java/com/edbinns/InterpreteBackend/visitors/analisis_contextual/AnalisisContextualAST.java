@@ -4,7 +4,7 @@ import com.edbinns.InterpreteBackend.generated.InterpreteParser;
 import com.edbinns.InterpreteBackend.generated.InterpreteParserBaseVisitor;
 import com.edbinns.InterpreteBackend.visitors.analisis_contextual.models.ClassNode;
 import com.edbinns.InterpreteBackend.visitors.analisis_contextual.models.FunctionNode;
-import com.edbinns.InterpreteBackend.visitors.analisis_contextual.models.Type;
+import com.edbinns.InterpreteBackend.models.Type;
 import com.edbinns.InterpreteBackend.visitors.analisis_contextual.models.VariableNode;
 import com.edbinns.InterpreteBackend.visitors.analisis_contextual.utils.AContextualErrorListener;
 import com.edbinns.InterpreteBackend.visitors.analisis_contextual.utils.AContextualException;

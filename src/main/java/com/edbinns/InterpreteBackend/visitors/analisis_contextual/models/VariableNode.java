@@ -1,5 +1,6 @@
 package com.edbinns.InterpreteBackend.visitors.analisis_contextual.models;
 
+import com.edbinns.InterpreteBackend.models.Node;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 
@@ -32,6 +33,7 @@ public class VariableNode extends Node {
     public void setValue(Token value) {
         this.value = value;
     }
+
     public Boolean getIsArray() {
         return isArray;
     }
@@ -39,6 +41,7 @@ public class VariableNode extends Node {
     public void setiSArray(Boolean array) {
         isArray = array;
     }
+
     @Override
     public void imprimir() {
         System.out.println(toString());
@@ -47,17 +50,17 @@ public class VariableNode extends Node {
     @Override
     public String toString() {
         String message = "";
-        if(getIsArray()){
-            if(getValue() != null){
+        if (getIsArray()) {
+            if (getValue() != null) {
                 message += "Nombre: " + getId().getText() + " - " + getLevel() + " - " + getType() + "[]" + " - " + getValue().getText();
-            }else{
-                message +=  "Nombre: " + getId().getText() + " - " + getLevel() + " - " + getType() + "[]" ;
+            } else {
+                message += "Nombre: " + getId().getText() + " - " + getLevel() + " - " + getType() + "[]";
             }
-        }else{
-            if(getValue() != null){
-                message +=  "Nombre: " + getId().getText() + " - " + getLevel() + " - " + getType() + " - " + getValue().getText();
-            }else{
-                message +=  "Nombre: " + getId().getText() + " - " + getLevel() + " - " + getType() ;
+        } else {
+            if (getValue() != null) {
+                message += "Nombre: " + getId().getText() + " - " + getLevel() + " - " + getType() + " - " + getValue().getText();
+            } else {
+                message += "Nombre: " + getId().getText() + " - " + getLevel() + " - " + getType();
             }
 
         }

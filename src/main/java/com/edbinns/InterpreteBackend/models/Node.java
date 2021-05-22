@@ -1,4 +1,4 @@
-package com.edbinns.InterpreteBackend.visitors.analisis_contextual.models;
+package com.edbinns.InterpreteBackend.models;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
@@ -37,7 +37,6 @@ public abstract class Node {
 
     public abstract void imprimir();
     public abstract String toString();
-
     public void setDeclCtx(ParserRuleContext declCtx) {
         this.declCtx = declCtx;
     }
