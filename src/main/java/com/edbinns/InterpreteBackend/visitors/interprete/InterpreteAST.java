@@ -5,10 +5,13 @@ import com.edbinns.InterpreteBackend.generated.InterpreteParserBaseVisitor;
 import com.edbinns.InterpreteBackend.models.Type;
 import com.edbinns.InterpreteBackend.visitors.analisis_contextual.utils.AContextualException;
 import com.edbinns.InterpreteBackend.visitors.interprete.models.ArrayInterpreter;
+import com.edbinns.InterpreteBackend.visitors.interprete.models.ClassInterpreter;
 import com.edbinns.InterpreteBackend.visitors.interprete.models.VariableInterpreter;
+import com.edbinns.InterpreteBackend.visitors.interprete.utils.InterpreterUtils;
 import org.antlr.v4.runtime.Token;
 
 import java.lang.reflect.Array;
+import java.util.ArrayList;
 
 public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
 
@@ -147,9 +150,9 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
     @Override
     public Object visitWhileAST(InterpreteParser.WhileASTContext ctx) {
 
-            this.visit(ctx.expression());
+        this.visit(ctx.expression());
 
-            this.visit(ctx.block());
+        this.visit(ctx.block());
 
 
         return null;
@@ -181,19 +184,26 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
     @Override
     public Object visitPrintAST(InterpreteParser.PrintASTContext ctx) {
 
-            this.visit(ctx.expression());
+        this.visit(ctx.expression());
 
         return null;
     }
 
     @Override
     public Object visitClassDeclAST(InterpreteParser.ClassDeclASTContext ctx) {
+        int level = storesSingleton.variableStore.getLevel();
         storesSingleton.variableStore.openScope();
         storesSingleton.classStore.openScope();
-        for (int i = 0; i <= ctx.classVariableDecl().toArray().length - 1; i++) {
-            visit(ctx.classVariableDecl(i));
 
+        ArrayList<VariableInterpreter> attrList = new ArrayList<>();
+        for (int i = 0; i <= ctx.classVariableDecl().toArray().length - 1; i++) {
+            VariableInterpreter attr = (VariableInterpreter) visit(ctx.classVariableDecl(i));
+            attrList.add(attr);
         }
+
+        Token id = ctx.ID().getSymbol();
+        ClassInterpreter classInterpreter = new ClassInterpreter(id, level, ctx, attrList);
+        storesSingleton.classStore.enter(classInterpreter);
         storesSingleton.variableStore.closeScope();
         storesSingleton.classStore.closeScope();
         return null;
@@ -202,14 +212,15 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
     @Override
     public Object visitClassVariableDeclAST(InterpreteParser.ClassVariableDeclASTContext ctx) {
 
-
-        this.visit(ctx.simpleType());
-
+        String type = (String)this.visit(ctx.simpleType());
+        int level = storesSingleton.variableStore.getLevel();
+        Token id = ctx.ID().getSymbol();
+        Object value= null;
         if ((ctx.ASYGN() != null) && (ctx.expression() != null)) {
-
+           value = this.visit(ctx.expression());
         }
-
-        return null;
+        VariableInterpreter attr = new VariableInterpreter(id,level,ctx,value,type);
+        return (Object) attr;
     }
 
 
@@ -223,7 +234,7 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
         if ((ctx.ASYGN() != null) && (ctx.expression() != null)) {
             value = this.visit(ctx.expression());
         }
-        if(type.contains("[]")){
+        if (type.contains("[]")) {
             java.lang.Object[] array = null;
             if (value instanceof Integer) {
                 int lenght = (Integer) value;
@@ -231,11 +242,11 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
             } else {
                 array = (java.lang.Object[]) value;
             }
-            type = type.replace("[]","");
-            ArrayInterpreter variable = new ArrayInterpreter(id,level,ctx,type,array);
+            type = type.replace("[]", "");
+            ArrayInterpreter variable = new ArrayInterpreter(id, level, ctx, type, array);
             storesSingleton.arrayStore.enter(variable);
-        }else{
-            VariableInterpreter variable = new VariableInterpreter(id,level,ctx,value,type);
+        } else {
+            VariableInterpreter variable = new VariableInterpreter(id, level, ctx, value, type);
             storesSingleton.variableStore.enter(variable);
         }
 
@@ -255,13 +266,13 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
 
     @Override
     public Object visitIdAST(InterpreteParser.IdASTContext ctx) {
-        return  (Object) ctx.ID().getText();
+        return (Object) ctx.ID().getText();
     }
 
     @Override
     public Object visitArrayTypeAST(InterpreteParser.ArrayTypeASTContext ctx) {
         String type = (String) this.visit(ctx.simpleType());
-        return (Object) (type +"[]");
+        return (Object) (type + "[]");
     }
 
     @Override
@@ -276,7 +287,6 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
 
         }
 
-
         return null;
     }
 
@@ -284,13 +294,12 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
     public Object visitArrayAssignAST(InterpreteParser.ArrayAssignASTContext ctx) {
 
 
+        visit(ctx.expression(0));
 
-            visit(ctx.expression(0));
+        if (ctx.expression(1) != null) {
+            visit(ctx.expression(1));
 
-            if (ctx.expression(1) != null) {
-                 visit(ctx.expression(1));
-
-            }
+        }
 
 
         return null;
@@ -318,39 +327,122 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
 
     @Override
     public Object visitRealTAST(InterpreteParser.RealTASTContext ctx) {
-        return  (Object) Type.REAL.name();
+        return (Object) Type.REAL.name();
     }
 
     @Override
     public Object visitExpressionAST(InterpreteParser.ExpressionASTContext ctx) {
 
-        String typeObj = (String) visit(ctx.simpleExpression(0));
+        Object value = (Object) visit(ctx.simpleExpression(0));
         for (int i = 1; i <= ctx.simpleExpression().toArray().length - 1; i++) {
 
-            Token relativeOP = (Token)visit(ctx.relacionalop(i - 1));
-            visit(ctx.simpleExpression(i));
+            Token relativeOP = (Token) visit(ctx.relacionalop(i - 1));
+            Object secondValue = (Object)visit(ctx.simpleExpression(i));
             //52 equals, 57 dif, mayor 58, mi 59, menor 60, mei 61, and 68, and 2 69, or 70, 0r2 71
-
-            switch (relativeOP.getType()){
+            java.lang.Object obj = null;
+            switch (relativeOP.getType()) {
                 case 52:
+                    obj = (boolean) (value == secondValue);
+                    break;
                 case 57:
-
+                    obj = (boolean) (value != secondValue);
                     break;
                 case 58:
+                    if (value instanceof Integer && secondValue instanceof Integer) {
+                        int firstInt = (int) value;
+                        int secondInt = (int) secondValue;
+                        obj = (boolean) (firstInt > secondInt);
+                    } else if (value instanceof Double && secondValue instanceof Double) {
+                        double first = (double) value;
+                        double second = (double) secondValue;
+                        obj = (boolean) (first > second);
+                    } else  if ((value instanceof Integer && secondValue instanceof Double )) {
+                        int first = (int) value;
+                        double second = (double) secondValue;
+                        obj = (boolean) (first > second);
+                    } else if ( value instanceof Double && secondValue instanceof Integer)  {
+                        double first = (double) value;
+                        int second = (int) secondValue;
+                        obj = (boolean) (first > second);
+                    }
+                    break;
                 case 59:
+                    if (value instanceof Integer && secondValue instanceof Integer) {
+                        int firstInt = (int) value;
+                        int secondInt = (int) secondValue;
+                        obj = (boolean) (firstInt >= secondInt);
+                    } else if (value instanceof Double && secondValue instanceof Double) {
+                        double first = (double) value;
+                        double second = (double) secondValue;
+                        obj = (boolean) (first >= second);
+                    } else  if ((value instanceof Integer && secondValue instanceof Double )) {
+                        int first = (int) value;
+                        double second = (double) secondValue;
+                        obj = (boolean) (first >= second);
+                    } else if ( value instanceof Double && secondValue instanceof Integer)  {
+                        double first = (double) value;
+                        int second = (int) secondValue;
+                        obj = (boolean) (first >= second);
+                    }
+                    break;
                 case 60:
+                    if (value instanceof Integer && secondValue instanceof Integer) {
+                        int firstInt = (int) value;
+                        int secondInt = (int) secondValue;
+                        obj = (boolean) (firstInt < secondInt);
+                    } else if (value instanceof Double && secondValue instanceof Double) {
+                        double first = (double) value;
+                        double second = (double) secondValue;
+                        obj = (boolean) (first < second);
+                    } else  if ((value instanceof Integer && secondValue instanceof Double )) {
+                        int first = (int) value;
+                        double second = (double) secondValue;
+                        obj = (boolean) (first < second);
+                    } else if ( value instanceof Double && secondValue instanceof Integer)  {
+                        double first = (double) value;
+                        int second = (int) secondValue;
+                        obj = (boolean) (first < second);
+                    }
+                    break;
                 case 61:
-
+                    if (value instanceof Integer && secondValue instanceof Integer) {
+                        int firstInt = (int) value;
+                        int secondInt = (int) secondValue;
+                        obj = (boolean) (firstInt <= secondInt);
+                    } else if (value instanceof Double && secondValue instanceof Double) {
+                        double first = (double) value;
+                        double second = (double) secondValue;
+                        obj = (boolean) (first  <=  second);
+                    } else  if ((value instanceof Integer && secondValue instanceof Double )) {
+                        int first = (int) value;
+                        double second = (double) secondValue;
+                        obj = (boolean) (first  <=  second);
+                    } else if ( value instanceof Double && secondValue instanceof Integer)  {
+                        double first = (double) value;
+                        int second = (int) secondValue;
+                        obj = (boolean) (first  <=  second);
+                    }
                     break;
                 case 68:
                 case 69:
+                    boolean firstBool = (boolean) value;
+                    boolean secondBool = (boolean) secondValue;
+                    //Verificar luego si es cierto que siemopre es false
+                    System.out.println("Valor del and en expression " + (firstBool || secondBool));
+                    obj = (boolean) (firstBool || secondBool);
+                    break;
                 case 70:
                 case 71:
-
+                    boolean firstOr = (boolean) value;
+                    boolean secondOr = (boolean) secondValue;
+                    //Verificar luego si es cierto que siemopre es false
+                    System.out.println("Valor del or en expression " + (firstOr || secondOr));
+                    obj = (boolean) (firstOr || secondOr);
                     break;
                 default:
                     throw new AContextualException("Excepcion en el defaul de expression");
             }
+            return (Object) obj;
         }
 
         return null;
@@ -359,43 +451,129 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
     @Override
     public Object visitSimpleExpressionAST(InterpreteParser.SimpleExpressionASTContext ctx) {
 
-         visit(ctx.term(0));
+        Object value = visit(ctx.term(0));
         for (int i = 1; i <= ctx.term().toArray().length - 1; i++) {
             Token additiveOP = (Token) this.visit(ctx.additiveop(i - 1));
             //53 suma ,54 resta ,70 or
-            this.visit(ctx.term(i));
+            Object secondValue = this.visit(ctx.term(i));
+            java.lang.Object obj = null;
             if (additiveOP.getType() == 53) {
-
+                if (value instanceof Integer && secondValue instanceof Integer) {
+                    int firstInt = (int) value;
+                    int secondInt = (int) secondValue;
+                    obj = (int) firstInt + secondInt;
+                } else if (value instanceof Double && secondValue instanceof Double) {
+                    double first = (double) value;
+                    double second = (double) secondValue;
+                    obj = (double) first + second;
+                } else  if ((value instanceof Integer && secondValue instanceof Double )) {
+                    int first = (int) value;
+                    double second = (double) secondValue;
+                    obj = (double) first + second;
+                } else if ( value instanceof Double && secondValue instanceof Integer)  {
+                    double first = (double) value;
+                    int second = (int) secondValue;
+                    obj = (double) first + second;
+                }else if(value instanceof String && secondValue instanceof String){
+                    String first = (String) value;
+                    String second = (String) secondValue;
+                    obj = (String) first + second;
+                }
             } else if (additiveOP.getType() == 54) {
-
-            } else if (additiveOP.getType() == 68) {
-
+                //resta
+                if (value instanceof Integer && secondValue instanceof Integer) {
+                    int firstInt = (int) value;
+                    int secondInt = (int) secondValue;
+                    obj = (int) firstInt - secondInt;
+                } else if (value instanceof Double && secondValue instanceof Double) {
+                    double first = (double) value;
+                    double second = (double) secondValue;
+                    obj = (double) first - second;
+                } else  if ((value instanceof Integer && secondValue instanceof Double )) {
+                    int first = (int) value;
+                    double second = (double) secondValue;
+                    obj = (double) first - second;
+                } else if ( value instanceof Double && secondValue instanceof Integer)  {
+                    double first = (double) value;
+                    int second = (int) secondValue;
+                    obj = (double) first - second;
+                }
+            } else if (additiveOP.getType() == 70 || additiveOP.getType() == 71) {
+                boolean first = (boolean) value;
+                boolean second = (boolean) secondValue;
+                //Verificar luego si es cierto que siemopre es false
+                System.out.println("Valor del or en simpleexpression " + (first || second));
+                obj = (boolean) (first || second);
             }
+            return (Object) obj;
         }
 
-        return null;
+        return value;
     }
 
     @Override
     public Object visitTermAST(InterpreteParser.TermASTContext ctx) {
 
-        this.visit(ctx.factor(0));
+        Object value =this.visit(ctx.factor(0));
         for (int i = 1; i <= ctx.factor().toArray().length - 1; i++) {
 
+            InterpreterUtils utils = new InterpreterUtils();
             Token multiplicativeOP = (Token) this.visit(ctx.multiplicativeop(i - 1));
-            this.visit(ctx.factor(i));
-
+            Object secondValue = this.visit(ctx.factor(i));
             //55,56,68
+            java.lang.Object obj = null;
             if (multiplicativeOP.getType() == 55) {
-
+                //division
+                if (value instanceof Integer && secondValue instanceof Integer) {
+                    int firstInt = (int) value;
+                    int secondInt = (int) secondValue;
+                    utils.divisionBy0(secondInt);
+                    obj = (int) firstInt / secondInt;
+                } else if (value instanceof Double && secondValue instanceof Double) {
+                    double first = (double) value;
+                    double second = (double) secondValue;
+                    utils.divisionBy0(second);
+                    obj = (double) first / second;
+                } else  if ((value instanceof Integer && secondValue instanceof Double )) {
+                    int first = (int) value;
+                    double second = (double) secondValue;
+                    utils.divisionBy0(second);
+                    obj = (double) first / second;
+                } else if ( value instanceof Double && secondValue instanceof Integer)  {
+                    double first = (double) value;
+                    int second = (int) secondValue;
+                    utils.divisionBy0(second);
+                    obj = (double) first / second;
+                }
             } else if (multiplicativeOP.getType() == 56) {
-
-            } else if (multiplicativeOP.getType() == 68) {
-
+                if (value instanceof Integer && secondValue instanceof Integer) {
+                    int firstInt = (int) value;
+                    int secondInt = (int) secondValue;
+                    obj = (int) firstInt * secondInt;
+                } else if (value instanceof Double && secondValue instanceof Double) {
+                    double first = (double) value;
+                    double second = (double) secondValue;
+                    obj = (double) first * second;
+                } else  if ((value instanceof Integer && secondValue instanceof Double )) {
+                    int first = (int) value;
+                    double second = (double) secondValue;
+                    obj = (double) first * second;
+                } else if ( value instanceof Double && secondValue instanceof Integer)  {
+                    double first = (double) value;
+                    int second = (int) secondValue;
+                    obj = (double) first * second;
+                }
+            } else if (multiplicativeOP.getType() == 68 || multiplicativeOP.getType() == 69) {
+                //and
+                boolean first = (boolean) value;
+                boolean second = (boolean) secondValue;
+                //Verificar luego si es cierto que siemopre es false
+                System.out.println("Valor del and en term " + (first && second));
+                obj = (boolean) (first && second);
             }
+            return (Object) obj;
         }
-
-        return null;
+        return value;
     }
 
     @Override
@@ -405,13 +583,19 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
 
     @Override
     public Object visitIdFAST(InterpreteParser.IdFASTContext ctx) {
+        VariableInterpreter var = storesSingleton.variableStore.searchNode( ctx.ID(0).getText());
+//        ClassInterpreter classNode = storesSingleton.classStore.searchNode(var.getType());
 
-        //acceder a la posicion sub 0 del ID
-
-            if(ctx.ID(1) != null && ctx.PUNTO() != null){
-
+        if (ctx.ID(1) != null && ctx.PUNTO() != null) {
+            ClassInterpreter classNode = (ClassInterpreter) var.getValue();
+            VariableInterpreter attr = classNode.searchAttr(ctx.ID(1).getText());
+            if(attr != null){
+                return (Object) attr.getValue();
+            }else{
+                throw new AContextualException("Este atributo no existe");
             }
-            return null;
+        }
+        return (Object)  var.getValue();
 
     }
 
@@ -419,44 +603,57 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
     public Object visitFunctionCallFAST(InterpreteParser.FunctionCallFASTContext ctx) { return this.visit(ctx.functionCall()); }
 
     @Override
-    public Object visitArrayLookupFAST(InterpreteParser.ArrayLookupFASTContext ctx) { return this.visit(ctx.arrayLookup()); }
+    public Object visitArrayLookupFAST(InterpreteParser.ArrayLookupFASTContext ctx) {return this.visit(ctx.arrayLookup()); }
 
     @Override
-    public Object visitArrayLenghtFAST(InterpreteParser.ArrayLenghtFASTContext ctx) { return this.visit(ctx.arrayLenght()); }
+    public Object visitArrayLenghtFAST(InterpreteParser.ArrayLenghtFASTContext ctx) {return this.visit(ctx.arrayLenght()); }
 
     @Override
-    public Object visitSubEspressionFAST(InterpreteParser.SubEspressionFASTContext ctx) { return  this.visit(ctx.subEspression()); }
+    public Object visitSubEspressionFAST(InterpreteParser.SubEspressionFASTContext ctx) {return this.visit(ctx.subEspression()); }
 
     @Override
-    public Object visitArrayAllocationEspressionFAST(InterpreteParser.ArrayAllocationEspressionFASTContext ctx) { return   this.visit(ctx.arrayAllocationEspression()); }
+    public Object visitArrayAllocationEspressionFAST(InterpreteParser.ArrayAllocationEspressionFASTContext ctx) {return this.visit(ctx.arrayAllocationEspression()); }
 
     @Override
-    public Object visitAllocationExpressionFAST(InterpreteParser.AllocationExpressionFASTContext ctx) { return   this.visit(ctx.allocationExpression()); }
+    public Object visitAllocationExpressionFAST(InterpreteParser.AllocationExpressionFASTContext ctx) { return this.visit(ctx.allocationExpression()); }
 
     @Override
-    public Object visitUnaryFAST(InterpreteParser.UnaryFASTContext ctx) {
-        return this.visit(ctx.unary());
-    }
+    public Object visitUnaryFAST(InterpreteParser.UnaryFASTContext ctx) { return this.visit(ctx.unary()); }
 
     @Override
     public Object visitUnaryAST(InterpreteParser.UnaryASTContext ctx) {
 
         Token tokenOperator = null;
-        if(ctx.ADMIRACION() != null){
+        if (ctx.ADMIRACION() != null) {
             tokenOperator = ctx.ADMIRACION().getSymbol();
-        } else if(ctx.SUM() != null){
+        } else if (ctx.SUM() != null) {
             tokenOperator = ctx.SUM().getSymbol();
-        } else if(ctx.RES() != null){
+        } else if (ctx.RES() != null) {
             tokenOperator = ctx.RES().getSymbol();
         }
 
         for (int i = 0; i <= ctx.expression().toArray().length - 1; i++) {
-            visit(ctx.expression(i));
-            if(tokenOperator.getType() == 53 || tokenOperator.getType() == 54  ){
-
+            Object value = visit(ctx.expression(i));
+            if (tokenOperator.getType() == 53 ) {
+                //suma
+                return value;
             }
-            if(tokenOperator.getType() == 62 ){
-
+            if( tokenOperator.getType() == 54){
+                //resta
+                if (value instanceof Integer){
+                    int intValue = (int) value;
+                    java.lang.Object obj = (int)(intValue*-1);
+                    return (Object) obj;
+                }else{
+                    double doubleValue = (double) value;
+                    java.lang.Object obj = (double)(doubleValue*-1);
+                    return (Object) obj;
+                }
+            }
+            if (tokenOperator.getType() == 62) {
+                boolean booleanValue = !((boolean) value);
+                java.lang.Object objValue = (boolean) booleanValue;
+                return (Object) objValue;
             }
         }
 
@@ -465,30 +662,25 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
 
     @Override
     public Object visitAllocationExpressionAST(InterpreteParser.AllocationExpressionASTContext ctx) {
-
-        return null;
+        ClassInterpreter classInterpreter = storesSingleton.classStore.searchNode(ctx.ID().getText());
+        return (Object) classInterpreter;
     }
 
     @Override
     public Object visitArrayAllocationEspressionAST(InterpreteParser.ArrayAllocationEspressionASTContext ctx) {
-
-        ///Falta validar que la expresion sea siempre un entero
-        this.visit(ctx.simpleType());
-        this.visit(ctx.expression());
-
-        return null;
+        int lenght = (int)this.visit(ctx.expression());
+        java.lang.Object[] array =  new java.lang.Object[lenght];;
+        return (Object) array;
     }
 
     @Override
-    public Object visitSubEspressionAST(InterpreteParser.SubEspressionASTContext ctx) {
-        return  this.visit(ctx.expression());
-    }
+    public Object visitSubEspressionAST(InterpreteParser.SubEspressionASTContext ctx) {return this.visit(ctx.expression());}
 
     @Override
     public Object visitFunctionCallAST(InterpreteParser.FunctionCallASTContext ctx) {
 
         if (ctx.actualParams() != null) {
-          this.visit(ctx.actualParams());
+            this.visit(ctx.actualParams());
 
         }
         return null;
@@ -498,8 +690,7 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
     public Object visitActualParamsAST(InterpreteParser.ActualParamsASTContext ctx) {
 
 
-
-       visit(ctx.expression(0));
+        visit(ctx.expression(0));
 
         for (int i = 1; i <= ctx.expression().toArray().length - 1; i++) {
             visit(ctx.expression(i));
@@ -509,16 +700,21 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
 
     @Override
     public Object visitArrayLookupAST(InterpreteParser.ArrayLookupASTContext ctx) {
-
-        this.visit(ctx.expression());
-
-        return null;
+        ArrayInterpreter arrayNode =  storesSingleton.arrayStore.searchNode(ctx.ID().getText());
+        int position = (int) this.visit(ctx.expression());
+        if(position <= arrayNode.getDataList().length){
+            return (Object) arrayNode.getDataList()[position];
+        }else{
+            throw new AContextualException("posicion fuera de rango");
+        }
     }
 
     @Override
     public Object visitArrayLenghtAST(InterpreteParser.ArrayLenghtASTContext ctx) {
-
-        return (Object) ctx.LENGHT();
+        ArrayInterpreter arrayNode =  storesSingleton.arrayStore.searchNode(ctx.ID().getText());
+        int lenght = arrayNode.getDataList().length;
+        java.lang.Object objValue = (int) lenght;
+        return (Object) objValue;
     }
 
     @Override
@@ -527,9 +723,7 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
     }
 
     @Override
-    public Object visitMayorIgualRAST(InterpreteParser.MayorIgualRASTContext ctx) {
-        return (Object) ctx.MAYORIGUAL().getSymbol();
-    }
+    public Object visitMayorIgualRAST(InterpreteParser.MayorIgualRASTContext ctx) {return (Object) ctx.MAYORIGUAL().getSymbol(); }
 
     @Override
     public Object visitMenorRAST(InterpreteParser.MenorRASTContext ctx) {
@@ -537,9 +731,7 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
     }
 
     @Override
-    public Object visitMenorIgualRAST(InterpreteParser.MenorIgualRASTContext ctx) {
-        return (Object) ctx.MENORIGUAL().getSymbol();
-    }
+    public Object visitMenorIgualRAST(InterpreteParser.MenorIgualRASTContext ctx) {return (Object) ctx.MENORIGUAL().getSymbol(); }
 
     @Override
     public Object visitEqualsRAST(InterpreteParser.EqualsRASTContext ctx) {
@@ -584,7 +776,6 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
 
     @Override
     public Object visitOrAST(InterpreteParser.OrASTContext ctx) {
-
         return (Object) ctx.OR().getSymbol();
     }
 
@@ -595,43 +786,48 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
 
     @Override
     public Object visitDivAST(InterpreteParser.DivASTContext ctx) {
-
         return (Object) ctx.DIV().getSymbol();
     }
 
     @Override
     public Object visitAndAST(InterpreteParser.AndASTContext ctx) {
-
         return (Object) ctx.AND().getSymbol();
     }
 
     @Override
     public Object visitInLAST(InterpreteParser.InLASTContext ctx) {
-
-        return (Object) ctx.INTLITERAL().getSymbol();
+        int value = Integer.parseInt(ctx.INTLITERAL().getText());
+        java.lang.Object objValue = (int) value;
+        return (Object) objValue;
     }
 
     @Override
     public Object visitRealLAST(InterpreteParser.RealLASTContext ctx) {
 
-        return (Object) ctx.REALLITERAL().getSymbol();
+        double value = Double.parseDouble(ctx.REALLITERAL().getText());
+        java.lang.Object objValue = (double) value;
+        return (Object) objValue;
     }
 
     @Override
     public Object visitBoolLAST(InterpreteParser.BoolLASTContext ctx) {
 
-        return (Object) ctx.BOOLLITERAL().getSymbol();
+        boolean value = Boolean.parseBoolean(ctx.BOOLLITERAL().getText());
+        java.lang.Object objValue = (boolean) value;
+        return (Object) objValue;
 
     }
 
     @Override
     public Object visitStringLAST(InterpreteParser.StringLASTContext ctx) {
-        return (Object) ctx.STRINGLITERAL().getSymbol();
+        return (Object) ctx.STRINGLITERAL().getText();
     }
 
     @Override
     public Object visitCharLAST(InterpreteParser.CharLASTContext ctx) {
-        return (Object) ctx.CHARLITERAL().getSymbol();
+        char value = ctx.CHARLITERAL().getText().charAt(0);
+        java.lang.Object objValue = (char) value;
+        return (Object) objValue;
     }
 
 

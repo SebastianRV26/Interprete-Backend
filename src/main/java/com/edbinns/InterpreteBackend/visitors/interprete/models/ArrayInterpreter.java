@@ -2,6 +2,7 @@ package com.edbinns.InterpreteBackend.visitors.interprete.models;
 
 import com.edbinns.InterpreteBackend.models.Node;
 import com.edbinns.InterpreteBackend.models.Type;
+import com.edbinns.InterpreteBackend.visitors.analisis_contextual.utils.AContextualException;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 
@@ -50,7 +51,7 @@ public class ArrayInterpreter extends Node {
         if(position <= getDataList().length){
             getDataList()[position] = newValue;
         }else{
-            System.out.println("Mostrar error del tamaño de los arreglos");
+            throw new AContextualException("posicion fuera de rango");
         }
     }
 

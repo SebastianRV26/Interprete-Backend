@@ -39,4 +39,12 @@ public class ClassInterpreter extends Node {
                 parameter.updateValue(value);
         }
     }
+
+    public VariableInterpreter searchAttr(String id){
+        for (VariableInterpreter parameter: getAttrList()){
+            if(parameter.getId().getText().equals(id))
+                return parameter;
+        }
+        return null;
+    }
 }

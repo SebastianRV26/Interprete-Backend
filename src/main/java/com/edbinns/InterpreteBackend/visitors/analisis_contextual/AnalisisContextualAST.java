@@ -301,7 +301,6 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
                 for (VariableNode attr : attrList) {
                     if (attr.getId().getText().equals(vn.getId().getText()))
                         throw new AContextualException("Error, no se pueden repetir atributos en una clase");
-
                 }
                 attrList.add(vn);
             }
@@ -950,6 +949,7 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
     @Override
     public Object visitInLAST(InterpreteParser.InLASTContext ctx) {
 
+        System.out.println("Hola XD" +  ctx.INTLITERAL().getText() );
         return (Object) ctx.INTLITERAL().getSymbol();
     }
 
