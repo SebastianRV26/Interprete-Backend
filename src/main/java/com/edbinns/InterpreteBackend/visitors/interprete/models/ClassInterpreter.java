@@ -1,6 +1,7 @@
 package com.edbinns.InterpreteBackend.visitors.interprete.models;
 
 import com.edbinns.InterpreteBackend.models.Node;
+import com.edbinns.InterpreteBackend.visitors.analisis_contextual.models.VariableNode;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 
@@ -25,19 +26,27 @@ public class ClassInterpreter extends Node {
 
     @Override
     public void imprimir() {
-
+        System.out.println(toString());
     }
 
     @Override
     public String toString() {
-        return null;
+        String message = "";
+        message += "Nombre: " + getId().getText() + " - " + getLevel() ;
+        if(getAttrList().size() >0){
+            message += "\nAtributos:";
+            for(VariableInterpreter vn: getAttrList()){
+                message += "\n\t"+ vn.toString();
+
+            }
+        }
+
+        return message;
     }
 
     public void updateValue(String id, Object value){
-        for (VariableInterpreter parameter: getAttrList()){
-            if(parameter.getId().getText().equals(id))
-                parameter.updateValue(value);
-        }
+        VariableInterpreter parameter = searchAttr(id);
+        parameter.updateValue(value);
     }
 
     public VariableInterpreter searchAttr(String id){

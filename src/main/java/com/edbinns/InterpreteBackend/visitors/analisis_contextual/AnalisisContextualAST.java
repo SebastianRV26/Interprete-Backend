@@ -948,8 +948,6 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
 
     @Override
     public Object visitInLAST(InterpreteParser.InLASTContext ctx) {
-
-        System.out.println("Hola XD" +  ctx.INTLITERAL().getText() );
         return (Object) ctx.INTLITERAL().getSymbol();
     }
 

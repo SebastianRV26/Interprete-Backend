@@ -39,19 +39,39 @@ public class ArrayInterpreter extends Node {
 
     @Override
     public void imprimir() {
-
+        System.out.println(toString());
     }
 
     @Override
     public String toString() {
-        return null;
+        String message = "";
+
+        String values = "";
+        for (int i = 0; i < getDataList().length; i++) {
+            if(i == 0){
+                if (getDataList()[i] != null){
+                    values = values + "" + getDataList()[i].toString();
+                }else{
+                    values = values + "null";
+                }
+            }else{
+                if (getDataList()[i] != null){
+                    values = values + ", " + getDataList()[i].toString();
+                }else{
+                    values = values + ", null";
+                }
+            }
+
+        }
+        message += "Nombre: " + getId().getText() + " - " + getLevel() + " - " + getType() + " {" + values + "}";
+        return message;
     }
 
     public void updateValue(int position, Object newValue){
-        if(position <= getDataList().length){
+        if(position <= getDataList().length && position > -1){
             getDataList()[position] = newValue;
         }else{
-            throw new AContextualException("posicion fuera de rango");
+            throw new AContextualException("Error, posicion fuera de rango");
         }
     }
 

@@ -46,12 +46,22 @@ public class FunctionInterpreter extends Node {
 
     @Override
     public void imprimir() {
-
+        System.out.println(toString());
     }
 
     @Override
     public String toString() {
-        return null;
+        String message = "";
+
+        message += "Nombre: " + getId().getText() + " - " + getLevel() + " - " + getType();
+        if (getParameterList().size() > 0) {
+            message += "\n Parametros:";
+            for (VariableInterpreter vn : getParameterList()) {
+                message += "\n\t" + vn.toString();
+            }
+        }
+
+        return message;
     }
 
     public void updateValue(String id, Object value){

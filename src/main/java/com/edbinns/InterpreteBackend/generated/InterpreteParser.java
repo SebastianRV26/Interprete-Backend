@@ -30,8 +30,8 @@ public class InterpreteParser extends Parser {
 		PARENTESISDER=73, COMA=74, PUNTO=75, DOSPUNTOS=76, AROBA=77, BRACKETIZQ=78, 
 		BRACKE5TDER=79, SLASH=80, ELEVADO=81, GUIONBAJO=82, TILDEALREVES=83, LLAVEIZQ=84, 
 		LLAVEDER=85, RABO=86, INTLITERAL=87, REALLITERAL=88, BOOLLITERAL=89, STRINGLITERAL=90, 
-		BLOCK_COMMENT=91, LINE_COMMENT=92, WS=93, ID=94, NUM=95, COMILLASIMPLE=96, 
-		CHARLITERAL=97, REAL=98;
+		BLOCK_COMMENT=91, LINE_COMMENT=92, WS=93, REAL=94, ID=95, NUM=96, COMILLASIMPLE=97, 
+		CHARLITERAL=98;
 	public static final int
 		RULE_program = 0, RULE_statement = 1, RULE_block = 2, RULE_functionDecl = 3, 
 		RULE_formalParams = 4, RULE_formalParam = 5, RULE_whileStatement = 6, 
@@ -71,7 +71,7 @@ public class InterpreteParser extends Parser {
 			"'?'", "'\"'", "'#'", "'$'", "'%'", "'&'", "'&&'", "'|'", "'||'", "'('", 
 			"')'", "','", "'.'", "':'", "'@'", "'['", "']'", "'\\'", "'^'", "'_'", 
 			"'`'", "'{'", "'}'", "'~'", null, null, null, null, null, null, null, 
-			null, null, "'''", null, "'real'"
+			"'real'", null, null, "'''"
 		};
 	}
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
@@ -90,7 +90,7 @@ public class InterpreteParser extends Parser {
 			"PUNTO", "DOSPUNTOS", "AROBA", "BRACKETIZQ", "BRACKE5TDER", "SLASH", 
 			"ELEVADO", "GUIONBAJO", "TILDEALREVES", "LLAVEIZQ", "LLAVEDER", "RABO", 
 			"INTLITERAL", "REALLITERAL", "BOOLLITERAL", "STRINGLITERAL", "BLOCK_COMMENT", 
-			"LINE_COMMENT", "WS", "ID", "NUM", "COMILLASIMPLE", "CHARLITERAL", "REAL"
+			"LINE_COMMENT", "WS", "REAL", "ID", "NUM", "COMILLASIMPLE", "CHARLITERAL"
 		};
 	}
 	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
@@ -181,7 +181,7 @@ public class InterpreteParser extends Parser {
 			setState(71);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << IF) | (1L << WHILE) | (1L << RETURN) | (1L << PRINT) | (1L << CLASS) | (1L << STRING) | (1L << BOOLEAN) | (1L << CHAR) | (1L << INT))) != 0) || ((((_la - 84)) & ~0x3f) == 0 && ((1L << (_la - 84)) & ((1L << (LLAVEIZQ - 84)) | (1L << (ID - 84)) | (1L << (REAL - 84)))) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << IF) | (1L << WHILE) | (1L << RETURN) | (1L << PRINT) | (1L << CLASS) | (1L << STRING) | (1L << BOOLEAN) | (1L << CHAR) | (1L << INT))) != 0) || ((((_la - 84)) & ~0x3f) == 0 && ((1L << (_la - 84)) & ((1L << (LLAVEIZQ - 84)) | (1L << (REAL - 84)) | (1L << (ID - 84)))) != 0)) {
 				{
 				{
 				setState(68);
@@ -486,7 +486,7 @@ public class InterpreteParser extends Parser {
 			setState(102);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << IF) | (1L << WHILE) | (1L << RETURN) | (1L << PRINT) | (1L << CLASS) | (1L << STRING) | (1L << BOOLEAN) | (1L << CHAR) | (1L << INT))) != 0) || ((((_la - 84)) & ~0x3f) == 0 && ((1L << (_la - 84)) & ((1L << (LLAVEIZQ - 84)) | (1L << (ID - 84)) | (1L << (REAL - 84)))) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << IF) | (1L << WHILE) | (1L << RETURN) | (1L << PRINT) | (1L << CLASS) | (1L << STRING) | (1L << BOOLEAN) | (1L << CHAR) | (1L << INT))) != 0) || ((((_la - 84)) & ~0x3f) == 0 && ((1L << (_la - 84)) & ((1L << (LLAVEIZQ - 84)) | (1L << (REAL - 84)) | (1L << (ID - 84)))) != 0)) {
 				{
 				{
 				setState(99);
@@ -561,7 +561,7 @@ public class InterpreteParser extends Parser {
 			setState(111);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if (((((_la - 41)) & ~0x3f) == 0 && ((1L << (_la - 41)) & ((1L << (STRING - 41)) | (1L << (BOOLEAN - 41)) | (1L << (CHAR - 41)) | (1L << (INT - 41)) | (1L << (ID - 41)) | (1L << (REAL - 41)))) != 0)) {
+			if (((((_la - 41)) & ~0x3f) == 0 && ((1L << (_la - 41)) & ((1L << (STRING - 41)) | (1L << (BOOLEAN - 41)) | (1L << (CHAR - 41)) | (1L << (INT - 41)) | (1L << (REAL - 41)) | (1L << (ID - 41)))) != 0)) {
 				{
 				setState(110);
 				formalParams();
@@ -2971,32 +2971,32 @@ public class InterpreteParser extends Parser {
 		"\2\2\2bR\3\2\2\2bU\3\2\2\2bX\3\2\2\2b[\3\2\2\2b\\\3\2\2\2b]\3\2\2\2b`"+
 		"\3\2\2\2ba\3\2\2\2c\5\3\2\2\2dh\7V\2\2eg\5\4\3\2fe\3\2\2\2gj\3\2\2\2h"+
 		"f\3\2\2\2hi\3\2\2\2ik\3\2\2\2jh\3\2\2\2kl\7W\2\2l\7\3\2\2\2mn\5\34\17"+
-		"\2no\7`\2\2oq\7J\2\2pr\5\n\6\2qp\3\2\2\2qr\3\2\2\2rs\3\2\2\2st\7K\2\2"+
+		"\2no\7a\2\2oq\7J\2\2pr\5\n\6\2qp\3\2\2\2qr\3\2\2\2rs\3\2\2\2st\7K\2\2"+
 		"tu\5\6\4\2u\t\3\2\2\2v{\5\f\7\2wx\7L\2\2xz\5\f\7\2yw\3\2\2\2z}\3\2\2\2"+
 		"{y\3\2\2\2{|\3\2\2\2|\13\3\2\2\2}{\3\2\2\2~\177\5\34\17\2\177\u0080\7"+
-		"`\2\2\u0080\r\3\2\2\2\u0081\u0082\7\t\2\2\u0082\u0083\7J\2\2\u0083\u0084"+
+		"a\2\2\u0080\r\3\2\2\2\u0081\u0082\7\t\2\2\u0082\u0083\7J\2\2\u0083\u0084"+
 		"\5&\24\2\u0084\u0085\7K\2\2\u0085\u0086\5\6\4\2\u0086\17\3\2\2\2\u0087"+
 		"\u0088\7\3\2\2\u0088\u0089\7J\2\2\u0089\u008a\5&\24\2\u008a\u008b\7K\2"+
 		"\2\u008b\u008e\5\6\4\2\u008c\u008d\7\4\2\2\u008d\u008f\5\6\4\2\u008e\u008c"+
 		"\3\2\2\2\u008e\u008f\3\2\2\2\u008f\21\3\2\2\2\u0090\u0091\7\16\2\2\u0091"+
 		"\u0092\5&\24\2\u0092\23\3\2\2\2\u0093\u0094\7\17\2\2\u0094\u0095\5&\24"+
-		"\2\u0095\25\3\2\2\2\u0096\u0097\7\24\2\2\u0097\u0098\7`\2\2\u0098\u009c"+
+		"\2\u0095\25\3\2\2\2\u0096\u0097\7\24\2\2\u0097\u0098\7a\2\2\u0098\u009c"+
 		"\7V\2\2\u0099\u009b\5\30\r\2\u009a\u0099\3\2\2\2\u009b\u009e\3\2\2\2\u009c"+
 		"\u009a\3\2\2\2\u009c\u009d\3\2\2\2\u009d\u009f\3\2\2\2\u009e\u009c\3\2"+
 		"\2\2\u009f\u00a0\7W\2\2\u00a0\27\3\2\2\2\u00a1\u00a2\5$\23\2\u00a2\u00a5"+
-		"\7`\2\2\u00a3\u00a4\7\65\2\2\u00a4\u00a6\5&\24\2\u00a5\u00a3\3\2\2\2\u00a5"+
+		"\7a\2\2\u00a3\u00a4\7\65\2\2\u00a4\u00a6\5&\24\2\u00a5\u00a3\3\2\2\2\u00a5"+
 		"\u00a6\3\2\2\2\u00a6\u00a7\3\2\2\2\u00a7\u00a8\7\64\2\2\u00a8\31\3\2\2"+
-		"\2\u00a9\u00aa\5\34\17\2\u00aa\u00ad\7`\2\2\u00ab\u00ac\7\65\2\2\u00ac"+
+		"\2\u00a9\u00aa\5\34\17\2\u00aa\u00ad\7a\2\2\u00ab\u00ac\7\65\2\2\u00ac"+
 		"\u00ae\5&\24\2\u00ad\u00ab\3\2\2\2\u00ad\u00ae\3\2\2\2\u00ae\33\3\2\2"+
-		"\2\u00af\u00b3\5$\23\2\u00b0\u00b3\5\36\20\2\u00b1\u00b3\7`\2\2\u00b2"+
+		"\2\u00af\u00b3\5$\23\2\u00b0\u00b3\5\36\20\2\u00b1\u00b3\7a\2\2\u00b2"+
 		"\u00af\3\2\2\2\u00b2\u00b0\3\2\2\2\u00b2\u00b1\3\2\2\2\u00b3\35\3\2\2"+
 		"\2\u00b4\u00b5\5$\23\2\u00b5\u00b6\7P\2\2\u00b6\u00b7\7Q\2\2\u00b7\37"+
-		"\3\2\2\2\u00b8\u00bb\7`\2\2\u00b9\u00ba\7M\2\2\u00ba\u00bc\7`\2\2\u00bb"+
+		"\3\2\2\2\u00b8\u00bb\7a\2\2\u00b9\u00ba\7M\2\2\u00ba\u00bc\7a\2\2\u00bb"+
 		"\u00b9\3\2\2\2\u00bb\u00bc\3\2\2\2\u00bc\u00bd\3\2\2\2\u00bd\u00be\7\65"+
-		"\2\2\u00be\u00bf\5&\24\2\u00bf!\3\2\2\2\u00c0\u00c1\7`\2\2\u00c1\u00c2"+
+		"\2\2\u00be\u00bf\5&\24\2\u00bf!\3\2\2\2\u00c0\u00c1\7a\2\2\u00c1\u00c2"+
 		"\7P\2\2\u00c2\u00c3\5&\24\2\u00c3\u00c4\7Q\2\2\u00c4\u00c5\7\65\2\2\u00c5"+
 		"\u00c6\5&\24\2\u00c6#\3\2\2\2\u00c7\u00cd\7,\2\2\u00c8\u00cd\7.\2\2\u00c9"+
-		"\u00cd\7\61\2\2\u00ca\u00cd\7+\2\2\u00cb\u00cd\7d\2\2\u00cc\u00c7\3\2"+
+		"\u00cd\7\61\2\2\u00ca\u00cd\7+\2\2\u00cb\u00cd\7`\2\2\u00cc\u00c7\3\2"+
 		"\2\2\u00cc\u00c8\3\2\2\2\u00cc\u00c9\3\2\2\2\u00cc\u00ca\3\2\2\2\u00cc"+
 		"\u00cb\3\2\2\2\u00cd%\3\2\2\2\u00ce\u00d4\5(\25\2\u00cf\u00d0\5> \2\u00d0"+
 		"\u00d1\5(\25\2\u00d1\u00d3\3\2\2\2\u00d2\u00cf\3\2\2\2\u00d3\u00d6\3\2"+
@@ -3007,7 +3007,7 @@ public class InterpreteParser extends Parser {
 		"\5,\27\2\u00e1\u00e2\5B\"\2\u00e2\u00e3\5,\27\2\u00e3\u00e5\3\2\2\2\u00e4"+
 		"\u00e1\3\2\2\2\u00e5\u00e8\3\2\2\2\u00e6\u00e4\3\2\2\2\u00e6\u00e7\3\2"+
 		"\2\2\u00e7+\3\2\2\2\u00e8\u00e6\3\2\2\2\u00e9\u00f7\5D#\2\u00ea\u00ed"+
-		"\7`\2\2\u00eb\u00ec\7M\2\2\u00ec\u00ee\7`\2\2\u00ed\u00eb\3\2\2\2\u00ed"+
+		"\7a\2\2\u00eb\u00ec\7M\2\2\u00ec\u00ee\7a\2\2\u00ed\u00eb\3\2\2\2\u00ed"+
 		"\u00ee\3\2\2\2\u00ee\u00f7\3\2\2\2\u00ef\u00f7\5\66\34\2\u00f0\u00f7\5"+
 		":\36\2\u00f1\u00f7\5<\37\2\u00f2\u00f7\5\64\33\2\u00f3\u00f7\5\62\32\2"+
 		"\u00f4\u00f7\5\60\31\2\u00f5\u00f7\5.\30\2\u00f6\u00e9\3\2\2\2\u00f6\u00ea"+
@@ -3015,17 +3015,17 @@ public class InterpreteParser extends Parser {
 		"\u00f2\3\2\2\2\u00f6\u00f3\3\2\2\2\u00f6\u00f4\3\2\2\2\u00f6\u00f5\3\2"+
 		"\2\2\u00f7-\3\2\2\2\u00f8\u00fc\t\2\2\2\u00f9\u00fb\5&\24\2\u00fa\u00f9"+
 		"\3\2\2\2\u00fb\u00fe\3\2\2\2\u00fc\u00fa\3\2\2\2\u00fc\u00fd\3\2\2\2\u00fd"+
-		"/\3\2\2\2\u00fe\u00fc\3\2\2\2\u00ff\u0100\7\31\2\2\u0100\u0101\7`\2\2"+
+		"/\3\2\2\2\u00fe\u00fc\3\2\2\2\u00ff\u0100\7\31\2\2\u0100\u0101\7a\2\2"+
 		"\u0101\u0102\7J\2\2\u0102\u0103\7K\2\2\u0103\61\3\2\2\2\u0104\u0105\7"+
 		"\31\2\2\u0105\u0106\5$\23\2\u0106\u0107\7P\2\2\u0107\u0108\5&\24\2\u0108"+
 		"\u0109\7Q\2\2\u0109\63\3\2\2\2\u010a\u010b\7J\2\2\u010b\u010c\5&\24\2"+
-		"\u010c\u010d\7K\2\2\u010d\65\3\2\2\2\u010e\u010f\7`\2\2\u010f\u0111\7"+
+		"\u010c\u010d\7K\2\2\u010d\65\3\2\2\2\u010e\u010f\7a\2\2\u010f\u0111\7"+
 		"J\2\2\u0110\u0112\58\35\2\u0111\u0110\3\2\2\2\u0111\u0112\3\2\2\2\u0112"+
 		"\u0113\3\2\2\2\u0113\u0114\7K\2\2\u0114\67\3\2\2\2\u0115\u011a\5&\24\2"+
 		"\u0116\u0117\7L\2\2\u0117\u0119\5&\24\2\u0118\u0116\3\2\2\2\u0119\u011c"+
 		"\3\2\2\2\u011a\u0118\3\2\2\2\u011a\u011b\3\2\2\2\u011b9\3\2\2\2\u011c"+
-		"\u011a\3\2\2\2\u011d\u011e\7`\2\2\u011e\u011f\7P\2\2\u011f\u0120\5&\24"+
-		"\2\u0120\u0121\7Q\2\2\u0121;\3\2\2\2\u0122\u0123\7`\2\2\u0123\u0124\7"+
+		"\u011a\3\2\2\2\u011d\u011e\7a\2\2\u011e\u011f\7P\2\2\u011f\u0120\5&\24"+
+		"\2\u0120\u0121\7Q\2\2\u0121;\3\2\2\2\u0122\u0123\7a\2\2\u0123\u0124\7"+
 		"M\2\2\u0124\u0125\7*\2\2\u0125=\3\2\2\2\u0126\u0131\7<\2\2\u0127\u0131"+
 		"\7=\2\2\u0128\u0131\7>\2\2\u0129\u0131\7?\2\2\u012a\u0131\7\66\2\2\u012b"+
 		"\u0131\7;\2\2\u012c\u0131\7H\2\2\u012d\u0131\7I\2\2\u012e\u0131\7F\2\2"+
@@ -3037,7 +3037,7 @@ public class InterpreteParser extends Parser {
 		"A\3\2\2\2\u0137\u013b\7:\2\2\u0138\u013b\79\2\2\u0139\u013b\7F\2\2\u013a"+
 		"\u0137\3\2\2\2\u013a\u0138\3\2\2\2\u013a\u0139\3\2\2\2\u013bC\3\2\2\2"+
 		"\u013c\u0142\7Y\2\2\u013d\u0142\7Z\2\2\u013e\u0142\7[\2\2\u013f\u0142"+
-		"\7\\\2\2\u0140\u0142\7c\2\2\u0141\u013c\3\2\2\2\u0141\u013d\3\2\2\2\u0141"+
+		"\7\\\2\2\u0140\u0142\7d\2\2\u0141\u013c\3\2\2\2\u0141\u013d\3\2\2\2\u0141"+
 		"\u013e\3\2\2\2\u0141\u013f\3\2\2\2\u0141\u0140\3\2\2\2\u0142E\3\2\2\2"+
 		"\32Ibhq{\u008e\u009c\u00a5\u00ad\u00b2\u00bb\u00cc\u00d4\u00dd\u00e6\u00ed"+
 		"\u00f6\u00fc\u0111\u011a\u0130\u0135\u013a\u0141";

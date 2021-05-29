@@ -45,5 +45,11 @@ public class StoreData<T extends Node> {
         level--;
     }
 
-
+    public void imprimir() {
+        System.out.println("----- INICIO ALMACEN ------");
+        for (T t : store) {
+            t.imprimir();
+        }
+        System.out.println("----- FIN ALMACEN ------");
+    }
 }

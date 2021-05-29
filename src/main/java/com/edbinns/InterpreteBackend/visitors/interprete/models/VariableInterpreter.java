@@ -36,12 +36,19 @@ public class VariableInterpreter extends Node {
 
     @Override
     public void imprimir() {
-
+        System.out.println(toString());
     }
 
     @Override
     public String toString() {
-        return null;
+        String message = "";
+
+        if (getValue() != null) {
+            message += "Nombre: " + getId().getText() + " - " + getLevel() + " - " + getType() + " - " + getValue().toString();
+        } else {
+            message += "Nombre: " + getId().getText() + " - " + getLevel() + " - " + getType();
+        }
+       return message;
     }
 
 }

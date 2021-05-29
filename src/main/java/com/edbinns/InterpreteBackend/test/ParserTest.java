@@ -5,6 +5,7 @@ import com.edbinns.InterpreteBackend.generated.InterpreteParser;
 import com.edbinns.InterpreteBackend.generated.InterpreteScanner;
 import com.edbinns.InterpreteBackend.models.Type;
 import com.edbinns.InterpreteBackend.visitors.analisis_contextual.AnalisisContextualAST;
+import com.edbinns.InterpreteBackend.visitors.interprete.InterpreteAST;
 import com.edbinns.InterpreteBackend.visitors.interprete.models.ArrayInterpreter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -101,6 +102,10 @@ public class ParserTest {
 
             AnalisisContextualAST ac = new AnalisisContextualAST();
             ac.visit(tree);
+
+            InterpreteAST interpreteAST = new InterpreteAST();
+            interpreteAST.visit(tree);
+
             System.out.println("Compilación Terminada!!\n");
             java.util.concurrent.Future<JFrame> treeGUI = org.antlr.v4.gui.Trees.inspect(tree, parser);
             treeGUI.get().setVisible(true);

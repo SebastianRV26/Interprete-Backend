@@ -30,8 +30,8 @@ public class InterpreteScanner extends Lexer {
 		PARENTESISDER=73, COMA=74, PUNTO=75, DOSPUNTOS=76, AROBA=77, BRACKETIZQ=78, 
 		BRACKE5TDER=79, SLASH=80, ELEVADO=81, GUIONBAJO=82, TILDEALREVES=83, LLAVEIZQ=84, 
 		LLAVEDER=85, RABO=86, INTLITERAL=87, REALLITERAL=88, BOOLLITERAL=89, STRINGLITERAL=90, 
-		BLOCK_COMMENT=91, LINE_COMMENT=92, WS=93, ID=94, NUM=95, COMILLASIMPLE=96, 
-		CHARLITERAL=97, REAL=98;
+		BLOCK_COMMENT=91, LINE_COMMENT=92, WS=93, REAL=94, ID=95, NUM=96, COMILLASIMPLE=97, 
+		CHARLITERAL=98;
 	public static String[] channelNames = {
 		"DEFAULT_TOKEN_CHANNEL", "HIDDEN"
 	};
@@ -55,8 +55,8 @@ public class InterpreteScanner extends Lexer {
 			"COMA", "PUNTO", "DOSPUNTOS", "AROBA", "BRACKETIZQ", "BRACKE5TDER", "SLASH", 
 			"ELEVADO", "GUIONBAJO", "TILDEALREVES", "LLAVEIZQ", "LLAVEDER", "RABO", 
 			"INTLITERAL", "REALLITERAL", "BOOLLITERAL", "STRINGLITERAL", "PRINTABLE", 
-			"BLOCK_COMMENT", "LINE_COMMENT", "WS", "NUMBER", "LETTER", "DIGIT", "ID", 
-			"NUM", "COMILLASIMPLE", "CHARLITERAL", "REAL"
+			"BLOCK_COMMENT", "LINE_COMMENT", "WS", "NUMBER", "LETTER", "DIGIT", "REAL", 
+			"ID", "NUM", "COMILLASIMPLE", "CHARLITERAL"
 		};
 	}
 	public static final String[] ruleNames = makeRuleNames();
@@ -75,7 +75,7 @@ public class InterpreteScanner extends Lexer {
 			"'?'", "'\"'", "'#'", "'$'", "'%'", "'&'", "'&&'", "'|'", "'||'", "'('", 
 			"')'", "','", "'.'", "':'", "'@'", "'['", "']'", "'\\'", "'^'", "'_'", 
 			"'`'", "'{'", "'}'", "'~'", null, null, null, null, null, null, null, 
-			null, null, "'''", null, "'real'"
+			"'real'", null, null, "'''"
 		};
 	}
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
@@ -94,7 +94,7 @@ public class InterpreteScanner extends Lexer {
 			"PUNTO", "DOSPUNTOS", "AROBA", "BRACKETIZQ", "BRACKE5TDER", "SLASH", 
 			"ELEVADO", "GUIONBAJO", "TILDEALREVES", "LLAVEIZQ", "LLAVEDER", "RABO", 
 			"INTLITERAL", "REALLITERAL", "BOOLLITERAL", "STRINGLITERAL", "BLOCK_COMMENT", 
-			"LINE_COMMENT", "WS", "ID", "NUM", "COMILLASIMPLE", "CHARLITERAL", "REAL"
+			"LINE_COMMENT", "WS", "REAL", "ID", "NUM", "COMILLASIMPLE", "CHARLITERAL"
 		};
 	}
 	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
@@ -198,9 +198,9 @@ public class InterpreteScanner extends Lexer {
 		"]\3]\3^\3^\3^\5^\u02a4\n^\3_\3_\3_\3_\7_\u02aa\n_\f_\16_\u02ad\13_\3_"+
 		"\3_\3_\3_\3_\3`\3`\3`\3`\3`\3`\3`\3`\3`\3`\3`\3`\3`\3`\3`\3`\3`\3`\3`"+
 		"\3`\3`\3`\3`\3`\3`\5`\u02cd\n`\3`\3`\3a\6a\u02d2\na\ra\16a\u02d3\3a\3"+
-		"a\3b\3b\7b\u02da\nb\fb\16b\u02dd\13b\3c\3c\3d\3d\3e\3e\5e\u02e5\ne\3e"+
-		"\3e\3e\7e\u02ea\ne\fe\16e\u02ed\13e\3f\3f\7f\u02f1\nf\ff\16f\u02f4\13"+
-		"f\3g\3g\3h\3h\3h\3h\3i\3i\3i\3i\3i\3\u02ab\2j\3\3\5\4\7\5\t\6\13\7\r\b"+
+		"a\3b\3b\7b\u02da\nb\fb\16b\u02dd\13b\3c\3c\3d\3d\3e\3e\3e\3e\3e\3f\3f"+
+		"\5f\u02ea\nf\3f\3f\3f\7f\u02ef\nf\ff\16f\u02f2\13f\3g\3g\7g\u02f6\ng\f"+
+		"g\16g\u02f9\13g\3h\3h\3i\3i\3i\3i\3\u02ab\2j\3\3\5\4\7\5\t\6\13\7\r\b"+
 		"\17\t\21\n\23\13\25\f\27\r\31\16\33\17\35\20\37\21!\22#\23%\24\'\25)\26"+
 		"+\27-\30/\31\61\32\63\33\65\34\67\359\36;\37= ?!A\"C#E$G%I&K\'M(O)Q*S"+
 		"+U,W-Y.[/]\60_\61a\62c\63e\2g\2i\64k\65m\66o\67q8s9u:w;y<{=}>\177?\u0081"+
@@ -251,8 +251,8 @@ public class InterpreteScanner extends Lexer {
 		"\u0270\3\2\2\2\u00b1\u0272\3\2\2\2\u00b3\u0274\3\2\2\2\u00b5\u0291\3\2"+
 		"\2\2\u00b7\u0295\3\2\2\2\u00b9\u0297\3\2\2\2\u00bb\u02a3\3\2\2\2\u00bd"+
 		"\u02a5\3\2\2\2\u00bf\u02b3\3\2\2\2\u00c1\u02d1\3\2\2\2\u00c3\u02db\3\2"+
-		"\2\2\u00c5\u02de\3\2\2\2\u00c7\u02e0\3\2\2\2\u00c9\u02e4\3\2\2\2\u00cb"+
-		"\u02ee\3\2\2\2\u00cd\u02f5\3\2\2\2\u00cf\u02f7\3\2\2\2\u00d1\u02fb\3\2"+
+		"\2\2\u00c5\u02de\3\2\2\2\u00c7\u02e0\3\2\2\2\u00c9\u02e2\3\2\2\2\u00cb"+
+		"\u02e9\3\2\2\2\u00cd\u02f3\3\2\2\2\u00cf\u02fa\3\2\2\2\u00d1\u02fc\3\2"+
 		"\2\2\u00d3\u00d4\7k\2\2\u00d4\u00d5\7h\2\2\u00d5\4\3\2\2\2\u00d6\u00d7"+
 		"\7g\2\2\u00d7\u00d8\7n\2\2\u00d8\u00d9\7u\2\2\u00d9\u00da\7g\2\2\u00da"+
 		"\6\3\2\2\2\u00db\u00dc\7u\2\2\u00dc\u00dd\7y\2\2\u00dd\u00de\7k\2\2\u00de"+
@@ -398,18 +398,18 @@ public class InterpreteScanner extends Lexer {
 		"\3\2\2\2\u02d9\u02d8\3\2\2\2\u02da\u02dd\3\2\2\2\u02db\u02d9\3\2\2\2\u02db"+
 		"\u02dc\3\2\2\2\u02dc\u00c4\3\2\2\2\u02dd\u02db\3\2\2\2\u02de\u02df\t\5"+
 		"\2\2\u02df\u00c6\3\2\2\2\u02e0\u02e1\4\62;\2\u02e1\u00c8\3\2\2\2\u02e2"+
-		"\u02e5\5\u00a9U\2\u02e3\u02e5\5\u00c5c\2\u02e4\u02e2\3\2\2\2\u02e4\u02e3"+
-		"\3\2\2\2\u02e5\u02eb\3\2\2\2\u02e6\u02ea\5\u00a9U\2\u02e7\u02ea\5\u00c5"+
-		"c\2\u02e8\u02ea\5\u00c7d\2\u02e9\u02e6\3\2\2\2\u02e9\u02e7\3\2\2\2\u02e9"+
-		"\u02e8\3\2\2\2\u02ea\u02ed\3\2\2\2\u02eb\u02e9\3\2\2\2\u02eb\u02ec\3\2"+
-		"\2\2\u02ec\u00ca\3\2\2\2\u02ed\u02eb\3\2\2\2\u02ee\u02f2\5\u00c7d\2\u02ef"+
-		"\u02f1\5\u00c7d\2\u02f0\u02ef\3\2\2\2\u02f1\u02f4\3\2\2\2\u02f2\u02f0"+
-		"\3\2\2\2\u02f2\u02f3\3\2\2\2\u02f3\u00cc\3\2\2\2\u02f4\u02f2\3\2\2\2\u02f5"+
-		"\u02f6\7)\2\2\u02f6\u00ce\3\2\2\2\u02f7\u02f8\5\u00cdg\2\u02f8\u02f9\5"+
-		"\u00bb^\2\u02f9\u02fa\5\u00cdg\2\u02fa\u00d0\3\2\2\2\u02fb\u02fc\7t\2"+
-		"\2\u02fc\u02fd\7g\2\2\u02fd\u02fe\7c\2\2\u02fe\u02ff\7n\2\2\u02ff\u00d2"+
-		"\3\2\2\2\24\2\u0278\u027f\u0286\u028e\u0291\u0295\u029b\u02a3\u02ab\u02cc"+
-		"\u02d3\u02d9\u02db\u02e4\u02e9\u02eb\u02f2\4\2\3\2\b\2\2";
+		"\u02e3\7t\2\2\u02e3\u02e4\7g\2\2\u02e4\u02e5\7c\2\2\u02e5\u02e6\7n\2\2"+
+		"\u02e6\u00ca\3\2\2\2\u02e7\u02ea\5\u00a9U\2\u02e8\u02ea\5\u00c5c\2\u02e9"+
+		"\u02e7\3\2\2\2\u02e9\u02e8\3\2\2\2\u02ea\u02f0\3\2\2\2\u02eb\u02ef\5\u00a9"+
+		"U\2\u02ec\u02ef\5\u00c5c\2\u02ed\u02ef\5\u00c7d\2\u02ee\u02eb\3\2\2\2"+
+		"\u02ee\u02ec\3\2\2\2\u02ee\u02ed\3\2\2\2\u02ef\u02f2\3\2\2\2\u02f0\u02ee"+
+		"\3\2\2\2\u02f0\u02f1\3\2\2\2\u02f1\u00cc\3\2\2\2\u02f2\u02f0\3\2\2\2\u02f3"+
+		"\u02f7\5\u00c7d\2\u02f4\u02f6\5\u00c7d\2\u02f5\u02f4\3\2\2\2\u02f6\u02f9"+
+		"\3\2\2\2\u02f7\u02f5\3\2\2\2\u02f7\u02f8\3\2\2\2\u02f8\u00ce\3\2\2\2\u02f9"+
+		"\u02f7\3\2\2\2\u02fa\u02fb\7)\2\2\u02fb\u00d0\3\2\2\2\u02fc\u02fd\5\u00cf"+
+		"h\2\u02fd\u02fe\5\u00bb^\2\u02fe\u02ff\5\u00cfh\2\u02ff\u00d2\3\2\2\2"+
+		"\24\2\u0278\u027f\u0286\u028e\u0291\u0295\u029b\u02a3\u02ab\u02cc\u02d3"+
+		"\u02d9\u02db\u02e9\u02ee\u02f0\u02f7\4\2\3\2\b\2\2";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

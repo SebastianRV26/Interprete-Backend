@@ -24,23 +24,26 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
 
     @Override
     public Object visitProgramAST(InterpreteParser.ProgramASTContext ctx) {
-        for (int i = 0; i <= ctx.statement().toArray().length - 1; i++) {
-            this.visit(ctx.statement(i));
+        try {
+            for (int i = 0; i <= ctx.statement().toArray().length - 1; i++) {
+                this.visit(ctx.statement(i));
+            }
+        }catch (AContextualException e){
+            System.out.println(e.getMessage());
         }
+
         return null;
     }
 
     @Override
     public Object visitVariableDeclSAST(InterpreteParser.VariableDeclSASTContext ctx) {
         this.visit(ctx.variableDecl());
-
         return null;
     }
 
     @Override
     public Object visitClassDeclSAST(InterpreteParser.ClassDeclSASTContext ctx) {
         this.visit(ctx.classDecl());
-
         return null;
     }
 
@@ -83,9 +86,7 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
     @Override
     public Object visitFunctionDeclSAST(InterpreteParser.FunctionDeclSASTContext ctx) {
         this.visit(ctx.functionDecl());
-
         return null;
-
     }
 
     @Override
@@ -96,12 +97,13 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
 
     @Override
     public Object visitBlockAST(InterpreteParser.BlockASTContext ctx) {
-
         storesSingleton.arrayStore.openScope();
         storesSingleton.variableStore.openScope();
         for (int i = 0; i < ctx.statement().size(); i++) {
             this.visit(ctx.statement(i));
         }
+        storesSingleton.variableStore.imprimir();
+        storesSingleton.arrayStore.imprimir();
         storesSingleton.arrayStore.closeScope();
         storesSingleton.variableStore.closeScope();
         return null;
@@ -109,7 +111,6 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
 
     @Override
     public Object visitFunctionDeclAST(InterpreteParser.FunctionDeclASTContext ctx) {
-
 
         storesSingleton.functionsStore.openScope();
         this.visit(ctx.type());
@@ -132,45 +133,39 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
         for (int i = 1; i <= ctx.formalParam().toArray().length - 1; i++) {
             visit(ctx.COMA(i - 1));
             visit(ctx.formalParam(i));
-
-
         }
         return null;
     }
 
     @Override
     public Object visitFormalParamAST(InterpreteParser.FormalParamASTContext ctx) {
-
         this.visit(ctx.type());
-
-
         return null;
     }
 
     @Override
     public Object visitWhileAST(InterpreteParser.WhileASTContext ctx) {
 
-        this.visit(ctx.expression());
-
-        this.visit(ctx.block());
-
-
+        boolean value = (boolean)this.visit(ctx.expression());
+        while (value){
+            this.visit(ctx.block());
+            value = (boolean)this.visit(ctx.expression());
+        }
         return null;
     }
 
     @Override
     public Object visitIfAST(InterpreteParser.IfASTContext ctx) {
 
-        this.visit(ctx.expression());
+        boolean value = (boolean)this.visit(ctx.expression());
 
-        this.visit(ctx.block(0));
-
-        if ((ctx.ELSE() != null) && (ctx.block(1) != null)) {
-
-            this.visit(ctx.block(1));
+        if(value){
+            this.visit(ctx.block(0));
+        }else{
+            if ((ctx.ELSE() != null) && (ctx.block(1) != null)) {
+                this.visit(ctx.block(1));
+            }
         }
-
-
         return null;
     }
 
@@ -184,8 +179,8 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
     @Override
     public Object visitPrintAST(InterpreteParser.PrintASTContext ctx) {
 
-        this.visit(ctx.expression());
 
+        System.out.println(        this.visit(ctx.expression()));
         return null;
     }
 
@@ -204,6 +199,7 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
         Token id = ctx.ID().getSymbol();
         ClassInterpreter classInterpreter = new ClassInterpreter(id, level, ctx, attrList);
         storesSingleton.classStore.enter(classInterpreter);
+        storesSingleton.classStore.imprimir();
         storesSingleton.variableStore.closeScope();
         storesSingleton.classStore.closeScope();
         return null;
@@ -234,11 +230,17 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
         if ((ctx.ASYGN() != null) && (ctx.expression() != null)) {
             value = this.visit(ctx.expression());
         }
+
         if (type.contains("[]")) {
             java.lang.Object[] array = null;
             if (value instanceof Integer) {
                 int lenght = (Integer) value;
-                array = new java.lang.Object[lenght];
+                if( lenght > -1){
+                    array = new java.lang.Object[lenght];
+                }else{
+                    throw new AContextualException("Error, fuera de rango, no se aceptan valores negativos");
+                }
+
             } else {
                 array = (java.lang.Object[]) value;
             }
@@ -246,7 +248,20 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
             ArrayInterpreter variable = new ArrayInterpreter(id, level, ctx, type, array);
             storesSingleton.arrayStore.enter(variable);
         } else {
-            VariableInterpreter variable = new VariableInterpreter(id, level, ctx, value, type);
+            VariableInterpreter variable  = null;
+            if(value == null){
+                if(type.equals("INT") ||type.equals("REAL") ) {
+                    variable  = new VariableInterpreter(id, level, ctx, 0, type);
+                }else if(type.equals("STRING")){
+                    variable  = new VariableInterpreter(id, level, ctx, "", type);
+                }else if(type.equals("CHAR")){
+                    variable  = new VariableInterpreter(id, level, ctx, '\0', type);
+                }else if(type.equals("BOOLEAN")){
+                    variable  = new VariableInterpreter(id, level, ctx, false, type);
+                }
+            }else {
+                variable  = new VariableInterpreter(id, level, ctx, value, type);
+            }
             storesSingleton.variableStore.enter(variable);
         }
 
@@ -278,28 +293,26 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
     @Override
     public Object visitAssignAST(InterpreteParser.AssignASTContext ctx) {
 
-
-        visit(ctx.expression());
-
+        VariableInterpreter var = storesSingleton.variableStore.searchNode(ctx.ID(0).getText());
+        Object value = this.visit(ctx.expression());
 
         if (ctx.ID(1) != null && ctx.PUNTO() != null) {
-
-
+            ClassInterpreter classInter = (ClassInterpreter) var.getValue() ;
+            classInter.updateValue(ctx.ID(1).getText(), value);
+            return null;
         }
-
+        var.updateValue(value);
         return null;
     }
 
     @Override
     public Object visitArrayAssignAST(InterpreteParser.ArrayAssignASTContext ctx) {
 
+        ArrayInterpreter array = storesSingleton.arrayStore.searchNode(ctx.ID().getText());
+        int position = (int) visit(ctx.expression(0));
+        Object value = this.visit(ctx.expression(1));
 
-        visit(ctx.expression(0));
-
-        if (ctx.expression(1) != null) {
-            visit(ctx.expression(1));
-
-        }
+        array.updateValue(position,value);
 
 
         return null;
@@ -428,8 +441,8 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
                     boolean firstBool = (boolean) value;
                     boolean secondBool = (boolean) secondValue;
                     //Verificar luego si es cierto que siemopre es false
-                    System.out.println("Valor del and en expression " + (firstBool || secondBool));
-                    obj = (boolean) (firstBool || secondBool);
+                    System.out.println("Valor del and en expression " + (firstBool && secondBool));
+                    obj = (boolean) (firstBool && secondBool);
                     break;
                 case 70:
                 case 71:
@@ -445,7 +458,7 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
             return (Object) obj;
         }
 
-        return null;
+        return value;
     }
 
     @Override
@@ -507,7 +520,6 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
             }
             return (Object) obj;
         }
-
         return value;
     }
 
@@ -669,8 +681,13 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
     @Override
     public Object visitArrayAllocationEspressionAST(InterpreteParser.ArrayAllocationEspressionASTContext ctx) {
         int lenght = (int)this.visit(ctx.expression());
-        java.lang.Object[] array =  new java.lang.Object[lenght];;
-        return (Object) array;
+        if(lenght > -1){
+            java.lang.Object[] array =  new java.lang.Object[lenght];;
+            return (Object) array;
+        }else{
+            throw new AContextualException("Error, fuera de rango, no se aceptan valores negativos");
+        }
+
     }
 
     @Override
@@ -702,10 +719,10 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
     public Object visitArrayLookupAST(InterpreteParser.ArrayLookupASTContext ctx) {
         ArrayInterpreter arrayNode =  storesSingleton.arrayStore.searchNode(ctx.ID().getText());
         int position = (int) this.visit(ctx.expression());
-        if(position <= arrayNode.getDataList().length){
+        if(position <= arrayNode.getDataList().length && position > -1){
             return (Object) arrayNode.getDataList()[position];
         }else{
-            throw new AContextualException("posicion fuera de rango");
+            throw new AContextualException("Error, posicion fuera de rango");
         }
     }
 
@@ -820,12 +837,14 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
 
     @Override
     public Object visitStringLAST(InterpreteParser.StringLASTContext ctx) {
-        return (Object) ctx.STRINGLITERAL().getText();
+        String value =ctx.STRINGLITERAL().getText();
+        value = value.replace("\"","");
+        return (Object) value;
     }
 
     @Override
     public Object visitCharLAST(InterpreteParser.CharLASTContext ctx) {
-        char value = ctx.CHARLITERAL().getText().charAt(0);
+        char value = ctx.CHARLITERAL().getText().charAt(1);
         java.lang.Object objValue = (char) value;
         return (Object) objValue;
     }
