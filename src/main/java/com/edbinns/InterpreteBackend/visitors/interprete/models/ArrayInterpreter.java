@@ -46,24 +46,30 @@ public class ArrayInterpreter extends Node {
     public String toString() {
         String message = "";
 
-        String values = "";
-        for (int i = 0; i < getDataList().length; i++) {
-            if(i == 0){
-                if (getDataList()[i] != null){
-                    values = values + "" + getDataList()[i].toString();
+        String values = " -";
+        if(getDataList() != null){
+            values += " {";
+            for (int i = 0; i < getDataList().length; i++) {
+                if(i == 0){
+                    if (getDataList()[i] != null){
+                        values = values + "" + getDataList()[i].toString();
+                    }else{
+                        values = values + "null";
+                    }
                 }else{
-                    values = values + "null";
-                }
-            }else{
-                if (getDataList()[i] != null){
-                    values = values + ", " + getDataList()[i].toString();
-                }else{
-                    values = values + ", null";
+                    if (getDataList()[i] != null){
+                        values = values + ", " + getDataList()[i].toString();
+                    }else{
+                        values = values + ", null";
+                    }
                 }
             }
-
+            values += "}";
+        }else{
+            values += " null";
         }
-        message += "Nombre: " + getId().getText() + " - " + getLevel() + " - " + getType() + " {" + values + "}";
+
+        message += "Nombre: " + getId().getText() + " - " + getLevel() + " - " + getType() + values ;
         return message;
     }
 

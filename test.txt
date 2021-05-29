@@ -1,4 +1,7 @@
-String x;
-
+String x(int[] y){
+    return "";
+}
+int[] f = new int[10];
+String d = x(f);
 {
 }

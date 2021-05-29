@@ -9,11 +9,11 @@ import java.util.ArrayList;
 
 public class FunctionInterpreter extends Node {
 
-    private ArrayList<VariableInterpreter> parameterList;
+    private ArrayList<Object> parameterList;
     private Object returnValue;
     private String type;
 
-    public FunctionInterpreter(Token id, int level, ParserRuleContext declCtx, ArrayList<VariableInterpreter> parameterList, Object returnValue, String type) {
+    public FunctionInterpreter(Token id, int level, ParserRuleContext declCtx, ArrayList<Object> parameterList, Object returnValue, String type) {
         super(id, level, declCtx);
         this.parameterList = parameterList;
         this.returnValue = returnValue;
@@ -36,11 +36,11 @@ public class FunctionInterpreter extends Node {
         this.type = type;
     }
 
-    public ArrayList<VariableInterpreter> getParameterList() {
+    public ArrayList<Object> getParameterList() {
         return parameterList;
     }
 
-    public void setParameterList(ArrayList<VariableInterpreter> parameterList) {
+    public void setParameterList(ArrayList<Object> parameterList) {
         this.parameterList = parameterList;
     }
 
@@ -56,8 +56,15 @@ public class FunctionInterpreter extends Node {
         message += "Nombre: " + getId().getText() + " - " + getLevel() + " - " + getType();
         if (getParameterList().size() > 0) {
             message += "\n Parametros:";
-            for (VariableInterpreter vn : getParameterList()) {
-                message += "\n\t" + vn.toString();
+            for (Object vn : getParameterList()) {
+                if(vn instanceof VariableInterpreter){
+                    VariableInterpreter variable = (VariableInterpreter) vn;
+                    message += "\n\t" + variable.toString();
+                }
+                if(vn instanceof ArrayInterpreter){
+                    ArrayInterpreter variable = (ArrayInterpreter) vn;
+                    message += "\n\t" + variable.toString();
+                }
             }
         }
 
@@ -65,9 +72,21 @@ public class FunctionInterpreter extends Node {
     }
 
     public void updateValue(String id, Object value){
-        for (VariableInterpreter parameter: getParameterList()){
-            if(parameter.getId().getText().equals(id))
-                parameter.updateValue(value);
+
+        for (int i = 0; i <getParameterList().size() ; i++) {
+            Object parameter = getParameterList().get(i);
+            if (parameter instanceof VariableInterpreter) {
+                VariableInterpreter variable = (VariableInterpreter) parameter;
+                if (variable.getId().getText().equals(id))
+                    variable.updateValue(value);
+            }else if(parameter instanceof ArrayInterpreter){
+                ArrayInterpreter variable = (ArrayInterpreter) parameter;
+                if (variable.getId().getText().equals(id)){
+                    getParameterList().add(i,value);
+                }
+            }
         }
     }
+
+
 }

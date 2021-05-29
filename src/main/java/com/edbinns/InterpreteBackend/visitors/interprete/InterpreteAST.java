@@ -3,14 +3,14 @@ package com.edbinns.InterpreteBackend.visitors.interprete;
 import com.edbinns.InterpreteBackend.generated.InterpreteParser;
 import com.edbinns.InterpreteBackend.generated.InterpreteParserBaseVisitor;
 import com.edbinns.InterpreteBackend.models.Type;
+import com.edbinns.InterpreteBackend.visitors.analisis_contextual.models.VariableNode;
 import com.edbinns.InterpreteBackend.visitors.analisis_contextual.utils.AContextualException;
 import com.edbinns.InterpreteBackend.visitors.interprete.models.ArrayInterpreter;
 import com.edbinns.InterpreteBackend.visitors.interprete.models.ClassInterpreter;
+import com.edbinns.InterpreteBackend.visitors.interprete.models.FunctionInterpreter;
 import com.edbinns.InterpreteBackend.visitors.interprete.models.VariableInterpreter;
 import com.edbinns.InterpreteBackend.visitors.interprete.utils.InterpreterUtils;
 import org.antlr.v4.runtime.Token;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
@@ -104,6 +104,7 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
         }
         storesSingleton.variableStore.imprimir();
         storesSingleton.arrayStore.imprimir();
+        storesSingleton.functionsStore.imprimir();
         storesSingleton.arrayStore.closeScope();
         storesSingleton.variableStore.closeScope();
         return null;
@@ -112,35 +113,66 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
     @Override
     public Object visitFunctionDeclAST(InterpreteParser.FunctionDeclASTContext ctx) {
 
+        int level = storesSingleton.functionsStore.getLevel();
         storesSingleton.functionsStore.openScope();
-        this.visit(ctx.type());
+
+        String type  = (String)this.visit(ctx.type());
 
 
+
+        ArrayList<Object> parametersList = new ArrayList<>();
         if (ctx.formalParams() != null) {
-            this.visit(ctx.formalParams());
+            parametersList.addAll((ArrayList<Object>) this.visit(ctx.formalParams()));
         }
 
-        this.visit(ctx.block());
+        Token id = ctx.ID().getSymbol();
 
+        FunctionInterpreter funcion = new FunctionInterpreter(id,level,ctx,(ArrayList<java.lang.Object>)parametersList,null,type);
+        storesSingleton.functionsStore.enter(funcion);
+        this.visit(ctx.block());
+        storesSingleton.functionsStore.imprimir();
         storesSingleton.functionsStore.closeScope();
         return null;
     }
 
     @Override
     public Object visitFormalParamsAST(InterpreteParser.FormalParamsASTContext ctx) {
-
-        this.visit(ctx.formalParam(0));
+        ArrayList<Object> parametersList = new ArrayList<>();
+        parametersList.add( this.visit(ctx.formalParam(0)));
         for (int i = 1; i <= ctx.formalParam().toArray().length - 1; i++) {
             visit(ctx.COMA(i - 1));
-            visit(ctx.formalParam(i));
+            Object vn = visit(ctx.formalParam(i));
+            parametersList.add(vn);
         }
-        return null;
+        return  (Object) parametersList;
     }
 
     @Override
     public Object visitFormalParamAST(InterpreteParser.FormalParamASTContext ctx) {
-        this.visit(ctx.type());
-        return null;
+        String type = (String)this.visit(ctx.type());
+        Token id = ctx.ID().getSymbol();
+        int level = storesSingleton.functionsStore.getLevel();
+        Object value = null;
+        if (type.contains("[]")) {
+
+            type = type.replace("[]", "");
+            ArrayInterpreter variable = new ArrayInterpreter(id, level, ctx, type, null);
+            storesSingleton.arrayStore.enter(variable);
+            return (Object) variable;
+        } else {
+            VariableInterpreter variable = null;
+            if (type.equals("INT") || type.equals("REAL")) {
+                variable = new VariableInterpreter(id, level, ctx, 0, type);
+            } else if (type.equals("STRING")) {
+                variable = new VariableInterpreter(id, level, ctx, "", type);
+            } else if (type.equals("CHAR")) {
+                variable = new VariableInterpreter(id, level, ctx, '\0', type);
+            } else if (type.equals("BOOLEAN")) {
+                variable = new VariableInterpreter(id, level, ctx, false, type);
+            }
+            storesSingleton.variableStore.enter(variable);
+            return (Object) variable;
+        }
     }
 
     @Override
@@ -171,16 +203,12 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
 
     @Override
     public Object visitReturnAST(InterpreteParser.ReturnASTContext ctx) {
-        this.visit(ctx.expression());
-
-        return null;
+        return  this.visit(ctx.expression());
     }
 
     @Override
     public Object visitPrintAST(InterpreteParser.PrintASTContext ctx) {
-
-
-        System.out.println(        this.visit(ctx.expression()));
+        System.out.println(this.visit(ctx.expression()));
         return null;
     }
 
@@ -215,8 +243,21 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
         if ((ctx.ASYGN() != null) && (ctx.expression() != null)) {
            value = this.visit(ctx.expression());
         }
-        VariableInterpreter attr = new VariableInterpreter(id,level,ctx,value,type);
-        return (Object) attr;
+        VariableInterpreter variable  = null;
+        if(value == null){
+            if(type.equals("INT") ||type.equals("REAL") ) {
+                variable  = new VariableInterpreter(id, level, ctx, 0, type);
+            }else if(type.equals("STRING")){
+                variable  = new VariableInterpreter(id, level, ctx, "", type);
+            }else if(type.equals("CHAR")){
+                variable  = new VariableInterpreter(id, level, ctx, '\0', type);
+            }else if(type.equals("BOOLEAN")){
+                variable  = new VariableInterpreter(id, level, ctx, false, type);
+            }
+        }else {
+            variable  = new VariableInterpreter(id, level, ctx, value, type);
+        }
+        return (Object) variable;
     }
 
 
@@ -596,19 +637,23 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
     @Override
     public Object visitIdFAST(InterpreteParser.IdFASTContext ctx) {
         VariableInterpreter var = storesSingleton.variableStore.searchNode( ctx.ID(0).getText());
+        ArrayInterpreter varArray = storesSingleton.arrayStore.searchNode( ctx.ID(0).getText());
 //        ClassInterpreter classNode = storesSingleton.classStore.searchNode(var.getType());
 
-        if (ctx.ID(1) != null && ctx.PUNTO() != null) {
-            ClassInterpreter classNode = (ClassInterpreter) var.getValue();
-            VariableInterpreter attr = classNode.searchAttr(ctx.ID(1).getText());
-            if(attr != null){
-                return (Object) attr.getValue();
-            }else{
-                throw new AContextualException("Este atributo no existe");
+        if(var != null){
+            if (ctx.ID(1) != null && ctx.PUNTO() != null) {
+                ClassInterpreter classNode = (ClassInterpreter) var.getValue();
+                VariableInterpreter attr = classNode.searchAttr(ctx.ID(1).getText());
+                if(attr != null){
+                    return (Object) attr.getValue();
+                }else{
+                    throw new AContextualException("Este atributo no existe");
+                }
             }
+            return (Object)  var.getValue();
+        } else {
+            return (Object) varArray.getDataList();
         }
-        return (Object)  var.getValue();
-
     }
 
     @Override
@@ -675,7 +720,14 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
     @Override
     public Object visitAllocationExpressionAST(InterpreteParser.AllocationExpressionASTContext ctx) {
         ClassInterpreter classInterpreter = storesSingleton.classStore.searchNode(ctx.ID().getText());
-        return (Object) classInterpreter;
+
+        ArrayList<VariableInterpreter> auxAttrList = new ArrayList<>();
+        for (VariableInterpreter attr: classInterpreter.getAttrList()) {
+            VariableInterpreter newInstance = new VariableInterpreter(attr.getId(),attr.getLevel(),attr.getDeclCtx(),attr.getValue(),attr.getType());
+            auxAttrList.add(newInstance);
+        }
+        ClassInterpreter newClassInstance = new ClassInterpreter(classInterpreter.getId(),classInterpreter.getLevel(),classInterpreter.getDeclCtx(),auxAttrList);
+        return (Object) newClassInstance;
     }
 
     @Override
@@ -695,24 +747,36 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
 
     @Override
     public Object visitFunctionCallAST(InterpreteParser.FunctionCallASTContext ctx) {
+        FunctionInterpreter function = storesSingleton.functionsStore.searchNode(ctx.ID().getText());
 
         if (ctx.actualParams() != null) {
-            this.visit(ctx.actualParams());
-
+            ArrayList<Object> paremeters = (ArrayList<Object>) this.visit(ctx.actualParams());
+            for (int i = 0; i < function.getParameterList().size(); i++) {
+                Object valueParameter = paremeters.get(i);
+                Object parameter = (Object) function.getParameterList().get(i);
+                if (parameter instanceof VariableInterpreter) {
+                    VariableInterpreter variable = (VariableInterpreter) parameter;
+                    variable.updateValue(valueParameter);
+                }else if(parameter instanceof ArrayInterpreter){
+                    ArrayInterpreter variable = (ArrayInterpreter) parameter;
+                    variable.setDataList((java.lang.Object[]) valueParameter);
+                }
+            }
         }
-        return null;
+        return (Object) "soy una llamada de una funcion";
     }
 
     @Override
     public Object visitActualParamsAST(InterpreteParser.ActualParamsASTContext ctx) {
 
-
-        visit(ctx.expression(0));
-
+        ArrayList<Object> paremeters = new ArrayList<>();
+        Object first = visit(ctx.expression(0));
+        paremeters.add(first);
         for (int i = 1; i <= ctx.expression().toArray().length - 1; i++) {
-            visit(ctx.expression(i));
+            Object obj = visit(ctx.expression(i));
+            paremeters.add(obj);
         }
-        return null;
+        return (Object) paremeters;
     }
 
     @Override
