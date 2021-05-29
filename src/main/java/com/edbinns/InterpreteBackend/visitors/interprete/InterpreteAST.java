@@ -335,14 +335,20 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
     public Object visitAssignAST(InterpreteParser.AssignASTContext ctx) {
 
         VariableInterpreter var = storesSingleton.variableStore.searchNode(ctx.ID(0).getText());
+        ArrayInterpreter varArray = storesSingleton.arrayStore.searchNode(ctx.ID(0).getText());
         Object value = this.visit(ctx.expression());
 
-        if (ctx.ID(1) != null && ctx.PUNTO() != null) {
-            ClassInterpreter classInter = (ClassInterpreter) var.getValue() ;
-            classInter.updateValue(ctx.ID(1).getText(), value);
-            return null;
+        if(var != null){
+            if (ctx.ID(1) != null && ctx.PUNTO() != null) {
+                ClassInterpreter classInter = (ClassInterpreter) var.getValue() ;
+                classInter.updateValue(ctx.ID(1).getText(), value);
+                return null;
+            }
+            var.updateValue(value);
+        }else{
+            varArray.setDataList((java.lang.Object[]) value);
         }
-        var.updateValue(value);
+
         return null;
     }
 
@@ -638,7 +644,6 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
     public Object visitIdFAST(InterpreteParser.IdFASTContext ctx) {
         VariableInterpreter var = storesSingleton.variableStore.searchNode( ctx.ID(0).getText());
         ArrayInterpreter varArray = storesSingleton.arrayStore.searchNode( ctx.ID(0).getText());
-//        ClassInterpreter classNode = storesSingleton.classStore.searchNode(var.getType());
 
         if(var != null){
             if (ctx.ID(1) != null && ctx.PUNTO() != null) {
@@ -652,7 +657,12 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
             }
             return (Object)  var.getValue();
         } else {
-            return (Object) varArray.getDataList();
+            int lenght = varArray.getDataList().length;
+            java.lang.Object[] array = new java.lang.Object[lenght];
+            for (int i = 0; i < lenght ; i++) {
+                array[i] = varArray.getDataList()[i];
+            }
+            return (Object) array;
         }
     }
 
@@ -760,6 +770,7 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
                 }else if(parameter instanceof ArrayInterpreter){
                     ArrayInterpreter variable = (ArrayInterpreter) parameter;
                     variable.setDataList((java.lang.Object[]) valueParameter);
+
                 }
             }
         }

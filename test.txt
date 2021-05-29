@@ -1,7 +1,11 @@
 String x(int[] y){
     return "";
 }
+
 int[] f = new int[10];
 String d = x(f);
+
+f[5] = 3;
+String  sd = x(f);
 {
 }

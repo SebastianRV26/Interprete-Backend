@@ -82,7 +82,8 @@ public class FunctionInterpreter extends Node {
             }else if(parameter instanceof ArrayInterpreter){
                 ArrayInterpreter variable = (ArrayInterpreter) parameter;
                 if (variable.getId().getText().equals(id)){
-                    getParameterList().add(i,value);
+                    variable.setDataList((java.lang.Object[]) value);
+                    getParameterList().add(i,variable);
                 }
             }
         }
