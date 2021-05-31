@@ -2,7 +2,7 @@ package com.edbinns.InterpreteBackend.visitors.analisis_contextual.utils;
 
 import com.edbinns.InterpreteBackend.visitors.analisis_contextual.models.ClassNode;
 import com.edbinns.InterpreteBackend.visitors.analisis_contextual.models.FunctionNode;
-import com.edbinns.InterpreteBackend.models.Type;
+import com.edbinns.InterpreteBackend.visitors.models.Type;
 import com.edbinns.InterpreteBackend.visitors.analisis_contextual.models.VariableNode;
 import org.antlr.v4.runtime.Token;
 

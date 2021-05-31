@@ -2,15 +2,19 @@ package com.edbinns.InterpreteBackend.visitors.interprete;
 
 import com.edbinns.InterpreteBackend.generated.InterpreteParser;
 import com.edbinns.InterpreteBackend.generated.InterpreteParserBaseVisitor;
-import com.edbinns.InterpreteBackend.models.Type;
-import com.edbinns.InterpreteBackend.visitors.analisis_contextual.models.VariableNode;
+import com.edbinns.InterpreteBackend.visitors.analisis_contextual.models.FunctionNode;
+import com.edbinns.InterpreteBackend.visitors.interprete.utils.ReturnUtils;
+import com.edbinns.InterpreteBackend.visitors.models.Type;
 import com.edbinns.InterpreteBackend.visitors.analisis_contextual.utils.AContextualException;
 import com.edbinns.InterpreteBackend.visitors.interprete.models.ArrayInterpreter;
 import com.edbinns.InterpreteBackend.visitors.interprete.models.ClassInterpreter;
 import com.edbinns.InterpreteBackend.visitors.interprete.models.FunctionInterpreter;
 import com.edbinns.InterpreteBackend.visitors.interprete.models.VariableInterpreter;
 import com.edbinns.InterpreteBackend.visitors.interprete.utils.InterpreterUtils;
+import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.tree.ParseTree;
+
 import java.util.ArrayList;
 
 public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
@@ -67,20 +71,18 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
 
     @Override
     public Object visitIfSAST(InterpreteParser.IfSASTContext ctx) {
-        this.visit(ctx.ifStatement());
-        return null;
+
+        return this.visit(ctx.ifStatement());
     }
 
     @Override
     public Object visitWhileSAST(InterpreteParser.WhileSASTContext ctx) {
-        this.visit(ctx.whileStatement());
-        return null;
+        return this.visit(ctx.whileStatement());
     }
 
     @Override
     public Object visitReturnSAST(InterpreteParser.ReturnSASTContext ctx) {
-        this.visit(ctx.returnStatement());
-        return null;
+        return  this.visit(ctx.returnStatement());
     }
 
     @Override
@@ -91,23 +93,27 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
 
     @Override
     public Object visitBlockSAST(InterpreteParser.BlockSASTContext ctx) {
-        this.visit(ctx.block());
-        return null;
+        return this.visit(ctx.block());
     }
 
     @Override
     public Object visitBlockAST(InterpreteParser.BlockASTContext ctx) {
         storesSingleton.arrayStore.openScope();
         storesSingleton.variableStore.openScope();
+        Object returVar = null;
         for (int i = 0; i < ctx.statement().size(); i++) {
-            this.visit(ctx.statement(i));
+            Object temp = this.visit(ctx.statement(i));
+            if (temp != null) {
+                returVar = temp;
+                break;
+            }
         }
         storesSingleton.variableStore.imprimir();
         storesSingleton.arrayStore.imprimir();
         storesSingleton.functionsStore.imprimir();
         storesSingleton.arrayStore.closeScope();
         storesSingleton.variableStore.closeScope();
-        return null;
+        return returVar;
     }
 
     @Override
@@ -129,7 +135,7 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
 
         FunctionInterpreter funcion = new FunctionInterpreter(id,level,ctx,(ArrayList<java.lang.Object>)parametersList,null,type);
         storesSingleton.functionsStore.enter(funcion);
-        this.visit(ctx.block());
+
         storesSingleton.functionsStore.imprimir();
         storesSingleton.functionsStore.closeScope();
         return null;
@@ -177,37 +183,39 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
 
     @Override
     public Object visitWhileAST(InterpreteParser.WhileASTContext ctx) {
-
         boolean value = (boolean)this.visit(ctx.expression());
+        Object returnValue = null;
         while (value){
-            this.visit(ctx.block());
+            returnValue = this.visit(ctx.block());
             value = (boolean)this.visit(ctx.expression());
         }
-        return null;
+        return returnValue;
     }
 
     @Override
     public Object visitIfAST(InterpreteParser.IfASTContext ctx) {
 
         boolean value = (boolean)this.visit(ctx.expression());
-
+        Object returnValue = null;
         if(value){
-            this.visit(ctx.block(0));
+            returnValue = this.visit(ctx.block(0));
         }else{
             if ((ctx.ELSE() != null) && (ctx.block(1) != null)) {
-                this.visit(ctx.block(1));
+                returnValue = this.visit(ctx.block(1));
             }
         }
-        return null;
+        return returnValue;
     }
 
     @Override
     public Object visitReturnAST(InterpreteParser.ReturnASTContext ctx) {
-        return  this.visit(ctx.expression());
+        ReturnUtils utils = new ReturnUtils(true,this.visit(ctx.expression()));
+        return this.visit(ctx.expression());
     }
 
     @Override
     public Object visitPrintAST(InterpreteParser.PrintASTContext ctx) {
+
         System.out.println(this.visit(ctx.expression()));
         return null;
     }
@@ -253,6 +261,8 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
                 variable  = new VariableInterpreter(id, level, ctx, '\0', type);
             }else if(type.equals("BOOLEAN")){
                 variable  = new VariableInterpreter(id, level, ctx, false, type);
+            }else{
+                variable  = new VariableInterpreter(id, level, ctx, null, type);
             }
         }else {
             variable  = new VariableInterpreter(id, level, ctx, value, type);
@@ -299,6 +309,8 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
                     variable  = new VariableInterpreter(id, level, ctx, '\0', type);
                 }else if(type.equals("BOOLEAN")){
                     variable  = new VariableInterpreter(id, level, ctx, false, type);
+                }else{
+                    variable  = new VariableInterpreter(id, level, ctx, null, type);
                 }
             }else {
                 variable  = new VariableInterpreter(id, level, ctx, value, type);
@@ -770,11 +782,13 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
                 }else if(parameter instanceof ArrayInterpreter){
                     ArrayInterpreter variable = (ArrayInterpreter) parameter;
                     variable.setDataList((java.lang.Object[]) valueParameter);
-
                 }
             }
         }
-        return (Object) "soy una llamada de una funcion";
+        InterpreteParser.FunctionDeclASTContext declASTContext = (InterpreteParser.FunctionDeclASTContext)function.getDeclCtx();
+        Object valueReturn =  this.visit( declASTContext.block());
+
+        return valueReturn;
     }
 
     @Override

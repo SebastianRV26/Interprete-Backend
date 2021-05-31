@@ -1,6 +1,6 @@
 package com.edbinns.InterpreteBackend.visitors.interprete;
 
-import com.edbinns.InterpreteBackend.models.Node;
+import com.edbinns.InterpreteBackend.visitors.models.Node;
 
 import java.util.LinkedList;
 

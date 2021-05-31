@@ -1,11 +1,11 @@
-String x(int[] y){
-    return "";
+int factorial(int n) {
+    int valor = 1;
+    if (n != 0) {
+        valor = n * factorial(n-1);
+    }
+    return valor;
 }
 
-int[] f = new int[10];
-String d = x(f);
-
-f[5] = 3;
-String  sd = x(f);
+print(factorial(5));
 {
 }

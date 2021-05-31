@@ -1,4 +1,4 @@
-package com.edbinns.InterpreteBackend.models;
+package com.edbinns.InterpreteBackend.visitors.models;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;

@@ -1,7 +1,6 @@
 package com.edbinns.InterpreteBackend.visitors.interprete.models;
 
-import com.edbinns.InterpreteBackend.models.Node;
-import com.edbinns.InterpreteBackend.models.Type;
+import com.edbinns.InterpreteBackend.visitors.models.Node;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 

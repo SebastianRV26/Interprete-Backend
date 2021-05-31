@@ -1,12 +1,9 @@
 package com.edbinns.InterpreteBackend.visitors.interprete.models;
 
-import com.edbinns.InterpreteBackend.models.Node;
-import com.edbinns.InterpreteBackend.models.Type;
+import com.edbinns.InterpreteBackend.visitors.models.Node;
 import com.edbinns.InterpreteBackend.visitors.analisis_contextual.utils.AContextualException;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
-
-import java.util.ArrayList;
 
 public class ArrayInterpreter extends Node {
 
