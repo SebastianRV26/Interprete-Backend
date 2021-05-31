@@ -3,6 +3,7 @@ package com.edbinns.InterpreteBackend.visitors.interprete;
 import com.edbinns.InterpreteBackend.generated.InterpreteParser;
 import com.edbinns.InterpreteBackend.generated.InterpreteParserBaseVisitor;
 import com.edbinns.InterpreteBackend.visitors.analisis_contextual.models.FunctionNode;
+import com.edbinns.InterpreteBackend.visitors.analisis_contextual.utils.AContextualErrorListener;
 import com.edbinns.InterpreteBackend.visitors.interprete.utils.ReturnUtils;
 import com.edbinns.InterpreteBackend.visitors.models.Type;
 import com.edbinns.InterpreteBackend.visitors.analisis_contextual.utils.AContextualException;
@@ -34,8 +35,9 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
             }
         }catch (AContextualException e){
             System.out.println(e.getMessage());
+            AContextualErrorListener errorListener = AContextualErrorListener.getInstance();
+            errorListener.sendError(e.getMessage());
         }
-
         return null;
     }
 
@@ -209,7 +211,6 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
 
     @Override
     public Object visitReturnAST(InterpreteParser.ReturnASTContext ctx) {
-        ReturnUtils utils = new ReturnUtils(true,this.visit(ctx.expression()));
         return this.visit(ctx.expression());
     }
 
@@ -785,9 +786,28 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
                 }
             }
         }
-        InterpreteParser.FunctionDeclASTContext declASTContext = (InterpreteParser.FunctionDeclASTContext)function.getDeclCtx();
-        Object valueReturn =  this.visit( declASTContext.block());
-
+        Object valueReturn =  null;
+        if(function.getId().getText().equals("len")){
+            VariableInterpreter parameter = (VariableInterpreter) function.getParameterList().get(0);
+            java.lang.Object value = (int) (((String)(parameter.getValue())).length());
+            valueReturn =(Object) value ;
+        }else if(function.getId().getText().equals("ord")){
+            //char a entero
+            VariableInterpreter parameter = (VariableInterpreter) function.getParameterList().get(0);
+            char value =  ((char)(parameter.getValue()));
+            java.lang.Object obj = Character.getNumericValue(value);
+            valueReturn =(Object) obj ;
+        }else if(function.getId().getText().equals("chr")){
+            //entero a char
+            int REDIX=10;
+            VariableInterpreter parameter = (VariableInterpreter) function.getParameterList().get(0);
+            char value = Character.forDigit((int)(parameter.getValue()),REDIX);
+            java.lang.Object obj = (char) value;
+            valueReturn =(Object) obj ;
+        }else {
+            InterpreteParser.FunctionDeclASTContext declASTContext = (InterpreteParser.FunctionDeclASTContext) function.getDeclCtx();
+            valueReturn = this.visit(declASTContext.block());
+        }
         return valueReturn;
     }
 

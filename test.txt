@@ -5,7 +5,9 @@ int factorial(int n) {
     }
     return valor;
 }
-
+int f = len("hola");
+int h = ord('j');
+char x = chr(10);
 print(factorial(5));
 {
 }
