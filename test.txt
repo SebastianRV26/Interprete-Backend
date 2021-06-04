@@ -1,13 +1,11 @@
 int factorial(int n) {
     int valor = 1;
     if (n != 0) {
-        valor = n * factorial(n-1);
+        return n * factorial(n-1);
     }
     return valor;
 }
-int f = len("hola");
-int h = ord('j');
-char x = chr(10);
-print(factorial(5));
+int x = 15+15+15+(5-1+1+5+3);
+print(x);
 {
 }

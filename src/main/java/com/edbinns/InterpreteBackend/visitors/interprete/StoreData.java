@@ -52,4 +52,14 @@ public class StoreData<T extends Node> {
         }
         System.out.println("----- FIN ALMACEN ------");
     }
+
+    public String showStore(String name){
+        String message = "";
+        message += "\n" + "----- Inicio de Almacen de " + name + " -----";
+        for (T t : store) {
+            message += "\n" + t.toString();
+        }
+        message += "\n" + "----- Fin de Almacen de  " + name + " -----";
+        return message;
+    }
 }

@@ -2,9 +2,13 @@ package com.edbinns.InterpreteBackend.functions;
 
 import com.edbinns.InterpreteBackend.generated.InterpreteParser;
 import com.edbinns.InterpreteBackend.generated.InterpreteScanner;
+import com.edbinns.InterpreteBackend.models.Message;
 import com.edbinns.InterpreteBackend.visitors.analisis_contextual.AnalisisContextualAST;
 import com.edbinns.InterpreteBackend.visitors.analisis_contextual.TablesSingleton;
 import com.edbinns.InterpreteBackend.visitors.analisis_contextual.utils.AContextualErrorListener;
+import com.edbinns.InterpreteBackend.visitors.interprete.InterpreteAST;
+import com.edbinns.InterpreteBackend.visitors.interprete.StoresSingleton;
+import com.edbinns.InterpreteBackend.visitors.interprete.utils.PrintUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.antlr.v4.runtime.CharStream;
@@ -13,6 +17,7 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNodeImpl;
+import org.springframework.boot.actuate.autoconfigure.web.servlet.ManagementErrorEndpoint;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -105,15 +110,33 @@ public class InterpreterFunctions {
             return  messages;
         }
 
-        TablesSingleton tables = TablesSingleton.getInstance();
-        String finalMessage = tables.classTable.showTable("Clases");
-        finalMessage += "\n" + tables.functionsTable.showTable("Funciones");
-        finalMessage += "\n" +  tables.variableTable.showTable("Variables");
+        InterpreteAST interprete = new InterpreteAST();
+        interprete.visit(tree);
+        if(aContextualErrorListener.getExistError()){
+            aContextualErrorListener.setExistError(false);
+            messages.add("error");
+            messages.add(aContextualErrorListener.getMessageError());
+            return  messages;
+        }
+//        TablesSingleton tables = TablesSingleton.getInstance();
+//        String finalMessage = tables.classTable.showTable("Clases");
+//        finalMessage += "\n" + tables.functionsTable.showTable("Funciones");
+//        finalMessage += "\n" +  tables.variableTable.showTable("Variables");
 
+        StoresSingleton stores = StoresSingleton.getInstance();
+        String finalMessage = stores.classStore.showStore("Clases");
+        finalMessage += "\n" +stores.functionsStore.showStore("Funciones");
+        finalMessage += "\n" +stores.variableStore.showStore("Variables");
+        finalMessage += "\n" +stores.arrayStore.showStore("Arrays");
         System.out.println("Compilación Terminada!!\n");
 
+        PrintUtils print = PrintUtils.getInstance();
+        String printMessage = print.println();
+        Message message = new Message(finalMessage, printMessage);
+
+        String gsonMessage = new Gson().toJson(message);
         messages.add("success");
-        messages.add(finalMessage);
+        messages.add(gsonMessage);
         return  messages;
 
     }

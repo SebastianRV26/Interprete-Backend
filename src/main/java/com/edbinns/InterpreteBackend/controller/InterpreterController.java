@@ -2,6 +2,8 @@ package com.edbinns.InterpreteBackend.controller;
 
 import com.edbinns.InterpreteBackend.functions.InterpreterFunctions;
 import com.edbinns.InterpreteBackend.visitors.analisis_contextual.TablesSingleton;
+import com.edbinns.InterpreteBackend.visitors.interprete.StoresSingleton;
+import com.edbinns.InterpreteBackend.visitors.interprete.utils.PrintUtils;
 import org.json.JSONException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -35,6 +37,10 @@ public class InterpreterController {
         if(snippet.equals("cls")){
             TablesSingleton ts = TablesSingleton.getInstance();
             ts.destroySingleton();
+            StoresSingleton ss = StoresSingleton.getInstance();
+            ss.destroySingleton();
+            PrintUtils pu = PrintUtils.getInstance();
+            pu.destroySingleton();
             return  new ResponseBody<>(HttpStatus.NOT_ACCEPTABLE.value(), "Failed", "Memoria limpia");
         }else{
             snippet = snippet.replace("!!!", "+");

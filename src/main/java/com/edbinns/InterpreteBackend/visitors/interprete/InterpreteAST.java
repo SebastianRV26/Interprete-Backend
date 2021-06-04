@@ -2,9 +2,8 @@ package com.edbinns.InterpreteBackend.visitors.interprete;
 
 import com.edbinns.InterpreteBackend.generated.InterpreteParser;
 import com.edbinns.InterpreteBackend.generated.InterpreteParserBaseVisitor;
-import com.edbinns.InterpreteBackend.visitors.analisis_contextual.models.FunctionNode;
 import com.edbinns.InterpreteBackend.visitors.analisis_contextual.utils.AContextualErrorListener;
-import com.edbinns.InterpreteBackend.visitors.interprete.utils.ReturnUtils;
+import com.edbinns.InterpreteBackend.visitors.interprete.utils.PrintUtils;
 import com.edbinns.InterpreteBackend.visitors.models.Type;
 import com.edbinns.InterpreteBackend.visitors.analisis_contextual.utils.AContextualException;
 import com.edbinns.InterpreteBackend.visitors.interprete.models.ArrayInterpreter;
@@ -12,9 +11,8 @@ import com.edbinns.InterpreteBackend.visitors.interprete.models.ClassInterpreter
 import com.edbinns.InterpreteBackend.visitors.interprete.models.FunctionInterpreter;
 import com.edbinns.InterpreteBackend.visitors.interprete.models.VariableInterpreter;
 import com.edbinns.InterpreteBackend.visitors.interprete.utils.InterpreterUtils;
-import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
-import org.antlr.v4.runtime.tree.ParseTree;
+
 
 import java.util.ArrayList;
 
@@ -126,8 +124,6 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
 
         String type  = (String)this.visit(ctx.type());
 
-
-
         ArrayList<Object> parametersList = new ArrayList<>();
         if (ctx.formalParams() != null) {
             parametersList.addAll((ArrayList<Object>) this.visit(ctx.formalParams()));
@@ -185,18 +181,19 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
 
     @Override
     public Object visitWhileAST(InterpreteParser.WhileASTContext ctx) {
-        boolean value = (boolean)this.visit(ctx.expression());
+        boolean value = (boolean) this.visit(ctx.expression());
         Object returnValue = null;
-        while (value){
+        while (value) {
             returnValue = this.visit(ctx.block());
-            value = (boolean)this.visit(ctx.expression());
+            if (returnValue != null)
+                break;
+            value = (boolean) this.visit(ctx.expression());
         }
         return returnValue;
     }
 
     @Override
     public Object visitIfAST(InterpreteParser.IfASTContext ctx) {
-
         boolean value = (boolean)this.visit(ctx.expression());
         Object returnValue = null;
         if(value){
@@ -217,7 +214,10 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
     @Override
     public Object visitPrintAST(InterpreteParser.PrintASTContext ctx) {
 
-        System.out.println(this.visit(ctx.expression()));
+        Object value = this.visit(ctx.expression());
+        System.out.println("Print " + value.toString());
+        PrintUtils print = PrintUtils.getInstance();
+        print.setValue(value.toString());
         return null;
     }
 
@@ -407,36 +407,43 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
     public Object visitExpressionAST(InterpreteParser.ExpressionASTContext ctx) {
 
         Object value = (Object) visit(ctx.simpleExpression(0));
+        java.lang.Object obj = null;
         for (int i = 1; i <= ctx.simpleExpression().toArray().length - 1; i++) {
 
             Token relativeOP = (Token) visit(ctx.relacionalop(i - 1));
             Object secondValue = (Object)visit(ctx.simpleExpression(i));
             //52 equals, 57 dif, mayor 58, mi 59, menor 60, mei 61, and 68, and 2 69, or 70, 0r2 71
-            java.lang.Object obj = null;
+
             switch (relativeOP.getType()) {
                 case 52:
                     obj = (boolean) (value == secondValue);
+                    value = (Object) obj;
                     break;
                 case 57:
                     obj = (boolean) (value != secondValue);
+                    value = (Object) obj;
                     break;
                 case 58:
                     if (value instanceof Integer && secondValue instanceof Integer) {
                         int firstInt = (int) value;
                         int secondInt = (int) secondValue;
                         obj = (boolean) (firstInt > secondInt);
+                        value = (Object) obj;
                     } else if (value instanceof Double && secondValue instanceof Double) {
                         double first = (double) value;
                         double second = (double) secondValue;
                         obj = (boolean) (first > second);
+                        value = (Object) obj;
                     } else  if ((value instanceof Integer && secondValue instanceof Double )) {
                         int first = (int) value;
                         double second = (double) secondValue;
                         obj = (boolean) (first > second);
+                        value = (Object) obj;
                     } else if ( value instanceof Double && secondValue instanceof Integer)  {
                         double first = (double) value;
                         int second = (int) secondValue;
                         obj = (boolean) (first > second);
+                        value = (Object) obj;
                     }
                     break;
                 case 59:
@@ -444,18 +451,22 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
                         int firstInt = (int) value;
                         int secondInt = (int) secondValue;
                         obj = (boolean) (firstInt >= secondInt);
+                        value = (Object) obj;
                     } else if (value instanceof Double && secondValue instanceof Double) {
                         double first = (double) value;
                         double second = (double) secondValue;
                         obj = (boolean) (first >= second);
+                        value = (Object) obj;
                     } else  if ((value instanceof Integer && secondValue instanceof Double )) {
                         int first = (int) value;
                         double second = (double) secondValue;
                         obj = (boolean) (first >= second);
+                        value = (Object) obj;
                     } else if ( value instanceof Double && secondValue instanceof Integer)  {
                         double first = (double) value;
                         int second = (int) secondValue;
                         obj = (boolean) (first >= second);
+                        value = (Object) obj;
                     }
                     break;
                 case 60:
@@ -463,18 +474,22 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
                         int firstInt = (int) value;
                         int secondInt = (int) secondValue;
                         obj = (boolean) (firstInt < secondInt);
+                        value = (Object) obj;
                     } else if (value instanceof Double && secondValue instanceof Double) {
                         double first = (double) value;
                         double second = (double) secondValue;
                         obj = (boolean) (first < second);
+                        value = (Object) obj;
                     } else  if ((value instanceof Integer && secondValue instanceof Double )) {
                         int first = (int) value;
                         double second = (double) secondValue;
                         obj = (boolean) (first < second);
+                        value = (Object) obj;
                     } else if ( value instanceof Double && secondValue instanceof Integer)  {
                         double first = (double) value;
                         int second = (int) secondValue;
                         obj = (boolean) (first < second);
+                        value = (Object) obj;
                     }
                     break;
                 case 61:
@@ -482,18 +497,22 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
                         int firstInt = (int) value;
                         int secondInt = (int) secondValue;
                         obj = (boolean) (firstInt <= secondInt);
+                        value = (Object) obj;
                     } else if (value instanceof Double && secondValue instanceof Double) {
                         double first = (double) value;
                         double second = (double) secondValue;
                         obj = (boolean) (first  <=  second);
+                        value = (Object) obj;
                     } else  if ((value instanceof Integer && secondValue instanceof Double )) {
                         int first = (int) value;
                         double second = (double) secondValue;
                         obj = (boolean) (first  <=  second);
+                        value = (Object) obj;
                     } else if ( value instanceof Double && secondValue instanceof Integer)  {
                         double first = (double) value;
                         int second = (int) secondValue;
                         obj = (boolean) (first  <=  second);
+                        value = (Object) obj;
                     }
                     break;
                 case 68:
@@ -503,6 +522,7 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
                     //Verificar luego si es cierto que siemopre es false
                     System.out.println("Valor del and en expression " + (firstBool && secondBool));
                     obj = (boolean) (firstBool && secondBool);
+                    value = (Object) obj;
                     break;
                 case 70:
                 case 71:
@@ -511,11 +531,11 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
                     //Verificar luego si es cierto que siemopre es false
                     System.out.println("Valor del or en expression " + (firstOr || secondOr));
                     obj = (boolean) (firstOr || secondOr);
+                    value = (Object) obj;
                     break;
                 default:
                     throw new AContextualException("Excepcion en el defaul de expression");
             }
-            return (Object) obj;
         }
 
         return value;
@@ -525,32 +545,37 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
     public Object visitSimpleExpressionAST(InterpreteParser.SimpleExpressionASTContext ctx) {
 
         Object value = visit(ctx.term(0));
+        java.lang.Object obj = null;
         for (int i = 1; i <= ctx.term().toArray().length - 1; i++) {
             Token additiveOP = (Token) this.visit(ctx.additiveop(i - 1));
             //53 suma ,54 resta ,70 or
             Object secondValue = this.visit(ctx.term(i));
-            java.lang.Object obj = null;
             if (additiveOP.getType() == 53) {
                 if (value instanceof Integer && secondValue instanceof Integer) {
                     int firstInt = (int) value;
                     int secondInt = (int) secondValue;
                     obj = (int) firstInt + secondInt;
+                    value = (Object) obj;
                 } else if (value instanceof Double && secondValue instanceof Double) {
                     double first = (double) value;
                     double second = (double) secondValue;
                     obj = (double) first + second;
+                    value = (Object) obj;
                 } else  if ((value instanceof Integer && secondValue instanceof Double )) {
                     int first = (int) value;
                     double second = (double) secondValue;
                     obj = (double) first + second;
+                    value = (Object) obj;
                 } else if ( value instanceof Double && secondValue instanceof Integer)  {
                     double first = (double) value;
                     int second = (int) secondValue;
+                    value = (Object) obj;
                     obj = (double) first + second;
                 }else if(value instanceof String && secondValue instanceof String){
                     String first = (String) value;
                     String second = (String) secondValue;
                     obj = (String) first + second;
+                    value = (Object) obj;
                 }
             } else if (additiveOP.getType() == 54) {
                 //resta
@@ -558,18 +583,22 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
                     int firstInt = (int) value;
                     int secondInt = (int) secondValue;
                     obj = (int) firstInt - secondInt;
+                    value = (Object) obj;
                 } else if (value instanceof Double && secondValue instanceof Double) {
                     double first = (double) value;
                     double second = (double) secondValue;
                     obj = (double) first - second;
+                    value = (Object) obj;
                 } else  if ((value instanceof Integer && secondValue instanceof Double )) {
                     int first = (int) value;
                     double second = (double) secondValue;
                     obj = (double) first - second;
+                    value = (Object) obj;
                 } else if ( value instanceof Double && secondValue instanceof Integer)  {
                     double first = (double) value;
                     int second = (int) secondValue;
                     obj = (double) first - second;
+                    value = (Object) obj;
                 }
             } else if (additiveOP.getType() == 70 || additiveOP.getType() == 71) {
                 boolean first = (boolean) value;
@@ -577,9 +606,10 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
                 //Verificar luego si es cierto que siemopre es false
                 System.out.println("Valor del or en simpleexpression " + (first || second));
                 obj = (boolean) (first || second);
+                value = (Object) obj;
             }
-            return (Object) obj;
         }
+
         return value;
     }
 
@@ -587,13 +617,14 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
     public Object visitTermAST(InterpreteParser.TermASTContext ctx) {
 
         Object value =this.visit(ctx.factor(0));
+        java.lang.Object obj = null;
         for (int i = 1; i <= ctx.factor().toArray().length - 1; i++) {
 
             InterpreterUtils utils = new InterpreterUtils();
             Token multiplicativeOP = (Token) this.visit(ctx.multiplicativeop(i - 1));
             Object secondValue = this.visit(ctx.factor(i));
             //55,56,68
-            java.lang.Object obj = null;
+
             if (multiplicativeOP.getType() == 55) {
                 //division
                 if (value instanceof Integer && secondValue instanceof Integer) {
@@ -601,39 +632,47 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
                     int secondInt = (int) secondValue;
                     utils.divisionBy0(secondInt);
                     obj = (int) firstInt / secondInt;
+                    value = (Object) obj;
                 } else if (value instanceof Double && secondValue instanceof Double) {
                     double first = (double) value;
                     double second = (double) secondValue;
                     utils.divisionBy0(second);
                     obj = (double) first / second;
+                    value = (Object) obj;
                 } else  if ((value instanceof Integer && secondValue instanceof Double )) {
                     int first = (int) value;
                     double second = (double) secondValue;
                     utils.divisionBy0(second);
                     obj = (double) first / second;
+                    value = (Object) obj;
                 } else if ( value instanceof Double && secondValue instanceof Integer)  {
                     double first = (double) value;
                     int second = (int) secondValue;
                     utils.divisionBy0(second);
                     obj = (double) first / second;
+                    value = (Object) obj;
                 }
             } else if (multiplicativeOP.getType() == 56) {
                 if (value instanceof Integer && secondValue instanceof Integer) {
                     int firstInt = (int) value;
                     int secondInt = (int) secondValue;
                     obj = (int) firstInt * secondInt;
+                    value = (Object) obj;
                 } else if (value instanceof Double && secondValue instanceof Double) {
                     double first = (double) value;
                     double second = (double) secondValue;
                     obj = (double) first * second;
+                    value = (Object) obj;
                 } else  if ((value instanceof Integer && secondValue instanceof Double )) {
                     int first = (int) value;
                     double second = (double) secondValue;
                     obj = (double) first * second;
+                    value = (Object) obj;
                 } else if ( value instanceof Double && secondValue instanceof Integer)  {
                     double first = (double) value;
                     int second = (int) secondValue;
                     obj = (double) first * second;
+                    value = (Object) obj;
                 }
             } else if (multiplicativeOP.getType() == 68 || multiplicativeOP.getType() == 69) {
                 //and
@@ -642,9 +681,10 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
                 //Verificar luego si es cierto que siemopre es false
                 System.out.println("Valor del and en term " + (first && second));
                 obj = (boolean) (first && second);
+                value = (Object) obj;
             }
-            return (Object) obj;
         }
+
         return value;
     }
 
@@ -794,14 +834,13 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
         }else if(function.getId().getText().equals("ord")){
             //char a entero
             VariableInterpreter parameter = (VariableInterpreter) function.getParameterList().get(0);
-            char value =  ((char)(parameter.getValue()));
-            java.lang.Object obj = Character.getNumericValue(value);
+            int value =  ((char)(parameter.getValue()));
+            java.lang.Object obj = value;
             valueReturn =(Object) obj ;
         }else if(function.getId().getText().equals("chr")){
             //entero a char
-            int REDIX=10;
             VariableInterpreter parameter = (VariableInterpreter) function.getParameterList().get(0);
-            char value = Character.forDigit((int)(parameter.getValue()),REDIX);
+            char value = (char)((int)(parameter.getValue()));
             java.lang.Object obj = (char) value;
             valueReturn =(Object) obj ;
         }else {
