@@ -98,6 +98,7 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
 
     @Override
     public Object visitBlockAST(InterpreteParser.BlockASTContext ctx) {
+
         storesSingleton.arrayStore.openScope();
         storesSingleton.variableStore.openScope();
         Object returVar = null;
@@ -109,8 +110,8 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
             }
         }
         storesSingleton.variableStore.imprimir();
-        storesSingleton.arrayStore.imprimir();
         storesSingleton.functionsStore.imprimir();
+        storesSingleton.arrayStore.imprimir();
         storesSingleton.arrayStore.closeScope();
         storesSingleton.variableStore.closeScope();
         return returVar;
@@ -174,7 +175,7 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
             } else if (type.equals("BOOLEAN")) {
                 variable = new VariableInterpreter(id, level, ctx, false, type);
             }
-            storesSingleton.variableStore.enter(variable);
+//            storesSingleton.variableStore.enter(variable);
             return (Object) variable;
         }
     }
@@ -811,7 +812,6 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
     @Override
     public Object visitFunctionCallAST(InterpreteParser.FunctionCallASTContext ctx) {
         FunctionInterpreter function = storesSingleton.functionsStore.searchNode(ctx.ID().getText());
-
         if (ctx.actualParams() != null) {
             ArrayList<Object> paremeters = (ArrayList<Object>) this.visit(ctx.actualParams());
             for (int i = 0; i < function.getParameterList().size(); i++) {
@@ -820,9 +820,11 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
                 if (parameter instanceof VariableInterpreter) {
                     VariableInterpreter variable = (VariableInterpreter) parameter;
                     variable.updateValue(valueParameter);
+                    storesSingleton.variableStore.enter(variable);
                 }else if(parameter instanceof ArrayInterpreter){
                     ArrayInterpreter variable = (ArrayInterpreter) parameter;
                     variable.setDataList((java.lang.Object[]) valueParameter);
+                    storesSingleton.arrayStore.enter(variable);
                 }
             }
         }
@@ -846,6 +848,8 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
         }else {
             InterpreteParser.FunctionDeclASTContext declASTContext = (InterpreteParser.FunctionDeclASTContext) function.getDeclCtx();
             valueReturn = this.visit(declASTContext.block());
+
+
         }
         return valueReturn;
     }

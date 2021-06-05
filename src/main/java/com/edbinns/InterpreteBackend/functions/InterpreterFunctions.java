@@ -137,6 +137,8 @@ public class InterpreterFunctions {
         String gsonMessage = new Gson().toJson(message);
         messages.add("success");
         messages.add(gsonMessage);
+
+        print.destroySingleton();
         return  messages;
 
     }

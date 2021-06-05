@@ -34,13 +34,13 @@ public class InterpreterController {
         if((snippet == null) || (snippet.isEmpty()) || (snippet.isBlank()) ){
             return new ResponseBody<>(HttpStatus.NOT_FOUND.value(), "Failed", "El snippet esta vacio");
         }
+        System.out.println("snippet " + snippet);
         if(snippet.equals("cls")){
             TablesSingleton ts = TablesSingleton.getInstance();
             ts.destroySingleton();
             StoresSingleton ss = StoresSingleton.getInstance();
             ss.destroySingleton();
-            PrintUtils pu = PrintUtils.getInstance();
-            pu.destroySingleton();
+
             return  new ResponseBody<>(HttpStatus.NOT_ACCEPTABLE.value(), "Failed", "Memoria limpia");
         }else{
             snippet = snippet.replace("!!!", "+");

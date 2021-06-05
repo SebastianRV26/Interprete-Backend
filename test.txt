@@ -1,11 +1,9 @@
-int factorial(int n) {
-    int valor = 1;
-    if (n != 0) {
-        return n * factorial(n-1);
-    }
-    return valor;
+int recur(int d){
+	if(d==2){
+		return 0;
+	}
+	return recur(d+1);
 }
-int x = 15+15+15+(5-1+1+5+3);
-print(x);
-{
-}
+print(recur(1));
+print("segunda");
+print(recur(2));
