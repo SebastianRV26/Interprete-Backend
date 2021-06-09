@@ -98,7 +98,8 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
 
     @Override
     public Object visitBlockAST(InterpreteParser.BlockASTContext ctx) {
-
+        storesSingleton.variableStore.imprimir();
+        storesSingleton.functionsStore.imprimir();
         storesSingleton.arrayStore.openScope();
         storesSingleton.variableStore.openScope();
         Object returVar = null;
@@ -109,8 +110,7 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
                 break;
             }
         }
-        storesSingleton.variableStore.imprimir();
-        storesSingleton.functionsStore.imprimir();
+
         storesSingleton.arrayStore.imprimir();
         storesSingleton.arrayStore.closeScope();
         storesSingleton.variableStore.closeScope();
@@ -159,10 +159,8 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
         int level = storesSingleton.functionsStore.getLevel();
         Object value = null;
         if (type.contains("[]")) {
-
             type = type.replace("[]", "");
             ArrayInterpreter variable = new ArrayInterpreter(id, level, ctx, type, null);
-            storesSingleton.arrayStore.enter(variable);
             return (Object) variable;
         } else {
             VariableInterpreter variable = null;
@@ -174,8 +172,9 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
                 variable = new VariableInterpreter(id, level, ctx, '\0', type);
             } else if (type.equals("BOOLEAN")) {
                 variable = new VariableInterpreter(id, level, ctx, false, type);
+            }else {
+                variable = new VariableInterpreter(id, level, ctx, null, type);
             }
-//            storesSingleton.variableStore.enter(variable);
             return (Object) variable;
         }
     }
@@ -848,8 +847,6 @@ public class InterpreteAST<Object> extends InterpreteParserBaseVisitor<Object> {
         }else {
             InterpreteParser.FunctionDeclASTContext declASTContext = (InterpreteParser.FunctionDeclASTContext) function.getDeclCtx();
             valueReturn = this.visit(declASTContext.block());
-
-
         }
         return valueReturn;
     }

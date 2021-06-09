@@ -144,10 +144,11 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
             for ( ParseTree child: ctx.children) {
                 if(child instanceof  InterpreteParser.BlockASTContext){
                     InterpreteParser.BlockASTContext blockChild = (InterpreteParser.BlockASTContext) child;
-                    for ( ParserRuleContext statement: blockChild.statement()) {
+                    System.out.println("lenght " + blockChild.children.size());
+                    for ( ParseTree statement: blockChild.children) {
                         if (statement instanceof InterpreteParser.ReturnSASTContext) {
+                            System.out.println("holaaa");
                             flag = true;
-                            break;
                         }
                     }
                 }
@@ -602,6 +603,9 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
             //53 suma ,54 resta ,70 or
             String typeObj2 =  (String) this.visit(ctx.term(i));
             if (additiveOP.getType() == 53) {
+                System.out.println("Sumas");
+                System.out.println(typeObj);
+                System.out.println(typeObj2);
                 if((typeObj.equals("STRING")) && (typeObj2.equals("STRING"))){
                     typeObj = utils.validateOP(typeObj, typeObj2, "STRING", "la suma");
                 } else if((typeObj.equals("INT")) && (typeObj2.equals("INT"))){
@@ -693,6 +697,14 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
             }
             return (Object) cn;
         }else if(vn != null){
+            if(ctx.ID(1) != null && ctx.PUNTO() != null){
+                ClassNode classNode = tablesSingleton.classTable.searchNode(vn.getType());
+                VariableNode attr = classNode.search(ctx.ID(1).getText());
+                if(attr == null){
+                    throw  new AContextualException("No se puede acceder al atributo " + attr.getId().getText() + " debido a que no es un atributo de la clase " + cn.getId().getText());
+                }
+                return (Object) attr;
+            }
             return (Object) vn;
         } else{
 
@@ -857,7 +869,7 @@ public class AnalisisContextualAST<Object> extends InterpreteParserBaseVisitor<O
         if(!vn.getIsArray()){
             throw  new AContextualException("A la variable " + ctx.ID().getText() +  " no es posible obtener su lenght");
         }
-        return (Object) ctx.LENGHT();
+        return (Object) "INT";
     }
 
     @Override
